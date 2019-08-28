@@ -1,0 +1,99 @@
+html, body {
+  height: 100%;
+  font-size: 1.2em;
+  margin: 0;
+}
+
+body * {
+  margin: 0;
+  font-size: 1em;
+  font-family: Ubuntu, sans-serif;
+  color: white;
+}
+
+#backgroundImage {
+  height: 100%;
+  width: 100%;
+  background-image: url('./wallpaper.jpg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  filter: blur(4px);
+}
+
+#backgroundColor {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#wrapper {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+}
+
+#mainContainer {
+  display: flex;
+  width: 100%;
+  height: 30% !important;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: absolute;
+  top: 30%;
+  left: 0;
+}
+
+#statusMsg {
+  line-height: 2em;
+}
+
+#text, #statusMsg {
+  text-align: center;
+}
+
+#text {
+  text-decoration: line-through;
+}
+
+#footer {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  background: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding-bottom: 1em;
+}
+
+#icon {
+  font-size: 0.9em;
+}
+
+#credits {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-direction: row;
+  width: 100%;
+}
+
+#credits * {
+  font-size: 0.9em;
+  height: auto;
+  margin: 1% 0 0 0;
+}
+
+/* Response design */
+@media (max-width: 720px) {
+  #wrapper {
+    background-size: auto !important;
+  }
+}

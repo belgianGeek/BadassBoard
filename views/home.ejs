@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home</title>
+  <link rel="icon" type="image/png" href="src/favicon.ico">
+  <link rel="stylesheet" href="src/css/app.css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div id="wrapper" class="wrapper">
+    <div id="backgroundImage" class="backgroundImage"></div>
+    <main id="mainContainer" class="mainContainer">
+      <header id="header" class="header">
+        <svg id="settingsBtn" class="settingsBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f8f4f4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
+        </svg>
+      </header>
+      <div id="upperContainer" class="upperContainer">
+        <div id="formContainer" class="formContainer">
+          <form id="form" class="form" method="get">
+            <input id="questionBox" class="questionBox" type="text" name="question" placeholder="What are you searching for ?">
+            <button type="submit" name="questionBox__submitBtn">
+              <svg id="formSubmit" class="formSubmit" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="lightgrey" stroke-width="3" stroke-linecap="round" stroke-linejoin="arcs">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+          </form>
+        </div>
+        <div class="suggestions"></div>
+        <div id='audio' class="audio">
+          <div id="audioMsg" class="audioMsg"></div>
+          <div class="player"></div>
+        </div>
+        <div id="msgContainer" class="msgContainer">
+          <%= typeof msg != 'undefined' ? msg : '' %>
+        </div>
+        <div id="moreContent" class="moreContent">
+          <div class="content 1" id="1">
+            <%- include('addFeedForm'); %>
+          </div>
+          <div class="content 2" id="2">
+            <%- include('addFeedForm'); %>
+          </div>
+          <div class="content 3" id="3">
+            <%- include('addFeedForm'); %>
+          </div>
+        </div>
+      </div>
+      <footer id="footer" class="footer">
+        <span id="icon" class="icon">̿̿ ̿̿ ̿̿ ̿'̿'\̵͇̿̿\з= ( ▀ ͜͞ʖ▀) =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿</span>
+        <span id="credits" class="credits">
+          <p>BadassBoard, proudly handmade in Belgium 🍺</p>
+        </span>
+      </footer>
+    </main>
+    <div class="settings__container">
+      <div id="settings__child" class="settings__child">
+        <span id="settings__child__header" class="settings__child__header">
+          <h1>BadassBoard settings</h1>
+        </span>
+        <span id="toggleRss" class="toggleRss">
+          <span id="toggleRss__Comment" class="toggleRss__Comment">Show the RSS feed containers on startup ?</span>
+          <label id="toggleRss__Switch" class="toggleRss__Switch">
+            <input id="toggleRss__Input" class="toggleRss__Input" type="checkbox" name="toggleRssInput" value="">
+            <span id="toggleRss__Slider" class="toggleRss__Slider"></span>
+          </label>
+        </span>
+        <form id="backgroundImageUploadForm" class="backgroundImageUploadForm" action="/" enctype="multipart/form-data" method="post">
+          <label for="backgroundImageUploadForm__label">This background is 🤮 !</label>
+          <button id="backgroundImageUploadForm__Btn" class="backgroundImageUploadForm__Btn" type="button" name="backgroundImageUploadBtn">Let's upload a BADASS picture !</button>
+          <input id="backgroundImageUploadForm__InputFile" class="backgroundImageUploadForm__InputFile" type="file" name="backgroundImageUploadInput" accept="image/png, image/jpg">
+          <input id="backgroundImageUploadForm__InputUrl" class="backgroundImageUploadForm__InputUrl" type="text" name="backgroundImageUrl" value="" placeholder='I prefer pasting an URL'>
+        </form>
+        <span id="owmToken" class="owmToken">
+          <span id='owmToken__Comment' class="owmToken__Comment">So you want to use weather forecast feature ? Please enter your OpenWeatherMap API token</span>
+          <input id="owmToken__input" class="owmToken__input" type="text" name="owmToken__input" value="" placeholder="OpenWeatherMap API token">
+        </span>
+        <!-- <span id="changeColorsContainer" class="changeColorsContainer">
+          <span id="textColorContainer" class="textColorContainer">
+            <label for="textColorInput"></label>
+            <input type="color" name="textColorInput" value="">
+          </span>
+        </span> -->
+        <span id="settings__BtnContainer" class="settings__BtnContainer">
+          <button id="settings__child__cancelBtn" class="settings__child__cancelBtn" type="button" name="cancelSettings">Cancel</button>
+          <button id="settings__child__saveBtn" class="settings__child__saveBtn" type="submit" name="saveSettings">Save settings</button>
+        </span>
+      </div>
+    </div>
+    <div class="rssTooltip"></div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" charset="utf-8"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/src/js/app.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js"></script>
+</body>
+
+</html>
