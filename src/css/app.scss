@@ -362,16 +362,21 @@ header {
   width: 30%;
   opacity: 0.7;
   border-radius: 0 0 15px 15px;
+  overflow-y: auto;
 
   * {
     color: black;
+  }
+
+  .active {
+    height: auto;
   }
 
   .suggestion {
     padding: 0.5% 0 0.5% 1%;
     display: flex;
     align-items: center;
-    width: 100%;
+    width: 99%;
     flex-direction: row;
     cursor: pointer;
 
@@ -742,7 +747,6 @@ header {
   width: auto;
   margin: 0 1em 0 0;
 } */
-
 .footer {
   display: flex;
   width: 100%;
@@ -777,6 +781,8 @@ header {
 /* Responsive design */
 @media (max-width: 720px) {
   .formContainer {
+    width: 60%;
+
     .questionBox {
       width: 80%;
       height: 2em;
@@ -793,6 +799,9 @@ header {
   }
 
   .suggestions {
+    height: auto;
+    overflow-y: auto;
+
     .suggestion {
       &__label {
         width: 30%;
@@ -801,12 +810,16 @@ header {
   }
 
   .moreContent {
-    flex-direction: column;
+    flex-direction: row;
     justify-content: flex-start;
     margin-top: 15%;
     overflow-y: auto;
     width: 80%;
     flex-wrap: wrap;
+
+    .content.first {
+      margin-top: 0;
+    }
 
     .content {
       height: auto;
@@ -818,6 +831,12 @@ header {
       .forecast,
       .rssContainer {
         height: 100%;
+
+        .linksContainer {
+          .article {
+            padding-left: 0.6em;
+          }
+        }
       }
     }
   }

@@ -324,15 +324,19 @@ header {
   width: 30%;
   opacity: 0.7;
   border-radius: 0 0 15px 15px;
+  overflow-y: auto;
 }
 .suggestions * {
   color: black;
+}
+.suggestions .active {
+  height: auto;
 }
 .suggestions .suggestion {
   padding: 0.5% 0 0.5% 1%;
   display: flex;
   align-items: center;
-  width: 100%;
+  width: 99%;
   flex-direction: row;
   cursor: pointer;
 }
@@ -676,6 +680,9 @@ header {
 
 /* Responsive design */
 @media (max-width: 720px) {
+  .formContainer {
+    width: 60%;
+  }
   .formContainer .questionBox {
     width: 80%;
     height: 2em;
@@ -689,17 +696,24 @@ header {
     height: 30px;
   }
 
+  .suggestions {
+    height: auto;
+    overflow-y: auto;
+  }
   .suggestions .suggestion__label {
     width: 30%;
   }
 
   .moreContent {
-    flex-direction: column;
+    flex-direction: row;
     justify-content: flex-start;
     margin-top: 15%;
     overflow-y: auto;
     width: 80%;
     flex-wrap: wrap;
+  }
+  .moreContent .content.first {
+    margin-top: 0;
   }
   .moreContent .content {
     height: auto;
@@ -711,6 +725,10 @@ header {
   .moreContent .content .forecast,
 .moreContent .content .rssContainer {
     height: 100%;
+  }
+  .moreContent .content .forecast .linksContainer .article,
+.moreContent .content .rssContainer .linksContainer .article {
+    padding-left: 0.6em;
   }
 }
 

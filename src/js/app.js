@@ -219,6 +219,8 @@ $.ajax({
           borderRadius: '30px',
           padding: '0.5% 1%'
         });
+
+        $('.suggestions').removeClass('active');
     }
 
     if (matches !== [] && search.length >= 2 && search.startsWith('!')) {
@@ -228,12 +230,49 @@ $.ajax({
           paddingBottom: 0
         });
 
+        if (!$('.suggestions').hasClass('active')) {
+          $('.suggestions').addClass('active');
+        }
+
       $('.suggestions')
         .css({
           width: $('.formContainer').innerWidth()
         });
 
-      outputHTML(matches);
+      // Check if matches are not null
+      if (matches !== [] && matches.length > 0) {
+        const html = matches.map(match => `
+            <div class="suggestion">
+              <img class="suggestion__icon" src="${match.icon}" alt="${match.desc} icon" height="20px" />
+              <span class="suggestion__label">${match.label}</span>
+              <span class="suggestion__desc">${match.desc}</span>
+            </div>
+            `)
+          .join('');
+
+        $('.suggestions').html(html);
+        $('.suggestion').click((event) => {
+          let nodevalue;
+          let target = event.target;
+          if (target.className === 'suggestion__label') {
+            nodevalue = target.textContent;
+          } else if (target.className === 'suggestion__icon') {
+            nodevalue = target.nextElementSibling.textContent;
+          } else if (target.className === 'suggestion__desc') {
+            nodevalue = target.previousElementSibling.textContent;
+          } else if (target.className === 'suggestion') {
+            nodevalue = target.children[1].textContent;
+          }
+
+          if (nodevalue) {
+            $('#questionBox')
+              .val(`${nodevalue} `)
+              .focus();
+          }
+        });
+      } else {
+        $('.suggestions').removeClass('active');
+      }
     }
   }
 
@@ -506,6 +545,8 @@ $.ajax({
         if (suggestions[i].url !== undefined && suggestions[i] !== null) {
           if (suggestions[i].label === '!iv') {
             window.open(`${suggestions[i].url}${keywords}&local=true`);
+          } else if (suggestions[i].label === '!pb') {
+              window.open(`${suggestions[i].url}${keywords}/-/`);
           } else {
             window.open(`${suggestions[i].url}${keywords}`);
           }
@@ -523,41 +564,6 @@ $.ajax({
       });
 
     $('.suggestion').hide();
-  }
-
-  const outputHTML = matches => {
-    // Check if matches are not null
-    if (matches !== [] && matches.length > 0) {
-      const html = matches.map(match => `
-        <div class="suggestion">
-          <img class="suggestion__icon" src="${match.icon}" alt="${match.desc} icon" height="20px" />
-          <span class="suggestion__label">${match.label}</span>
-          <span class="suggestion__desc">${match.desc}</span>
-        </div>
-        `)
-        .join('');
-
-      $('.suggestions').html(html);
-      $('.suggestion').click((event) => {
-        let nodevalue;
-        let target = event.target;
-        if (target.className === 'suggestion__label') {
-          nodevalue = target.textContent;
-        } else if (target.className === 'suggestion__icon') {
-          nodevalue = target.nextElementSibling.textContent;
-        } else if (target.className === 'suggestion__desc') {
-          nodevalue = target.previousElementSibling.textContent;
-        } else if (target.className === 'suggestion') {
-          nodevalue = target.children[1].textContent;
-        }
-
-        if (nodevalue) {
-          $('#questionBox')
-            .val(`${nodevalue} `)
-            .focus();
-        }
-      });
-    }
   }
 
   // Add content of other types than RSS
@@ -1294,6 +1300,11 @@ $.ajax({
       url: 'https://css-tricks.com/?s='
     },
     {
+      label: '!d',
+      desc: 'Download a YouTube audio stream',
+      icon: './src/css/icons/suggestions/'
+    },
+    {
       label: '!fdroid',
       desc: 'F-Droid',
       icon: './src/css/icons/suggestions/fdroid.png',
@@ -1354,6 +1365,12 @@ $.ajax({
       url: 'https://developer.mozilla.org/en-US/search?q='
     },
     {
+      label: '!pb',
+      desc: 'Pages Blanches (BE)',
+      icon: './src/css/icons/suggestions/pagesblanches.ico',
+      url: 'https://www.pagesblanches.be/chercher/personne/'
+    },
+    {
       label: '!os',
       desc: 'OpenSubtitles',
       icon: './src/css/icons/suggestions/opensub.ico',
@@ -1393,6 +1410,12 @@ $.ajax({
       desc: 'RTBF',
       icon: './src/css/icons/suggestions/rtbf.png',
       url: 'https://www.rtbf.be/info/recherche?q='
+    },
+    {
+      label: '!sc',
+      desc: 'SoundCloud',
+      icon: './src/css/icons/suggestions/soundcloud.ico',
+      url: 'https://soundcloud.com/search?q='
     },
     {
       label: '!so',
@@ -1516,9 +1539,9 @@ $.ajax({
   $(document).ready(() => {
     $('.credits').hide();
 
-    addContent('#1');
-    addContent('#2');
-    addContent('#3');
+    addContent('.first');
+    addContent('.second');
+    addContent('.third');
 
     // Show settings on button click
     showSettings();
