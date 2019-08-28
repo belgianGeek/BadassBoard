@@ -954,11 +954,18 @@ $.ajax({
           });
 
           socket.on('download ended', (data) => {
-            $('#msgContainer').text(`Your download for ${data.title} ended !`);
-            setTimeout(() => {
-              $('#msgContainer').fadeOut(1500);
-            }, 2000);
-            window.open(`http://${ip}:8080/download`);
+            if (data !== undefined) {
+              $('#msgContainer').text(`Your download for ${data.title} ended !`);
+              setTimeout(() => {
+                $('#msgContainer').fadeOut(1500);
+              }, 2000);
+              window.open(`http://${ip}:8080/download`);
+            } else {
+              $('#msgContainer').text(`Your download ended ! You can find your file in your Downloads folder`);
+              setTimeout(() => {
+                $('#msgContainer').fadeOut(1500);
+              }, 2000);
+            }
           });
         } else {
           printError(`You pasted an invalid link. If you tried to paste a URL, try the video ID only.`);
@@ -1252,7 +1259,8 @@ $.ajax({
     })
   }
 
-  const suggestions = [{
+  const suggestions = [
+    {
       label: '!1337x',
       desc: '1337x.to',
       icon: './src/css/icons/suggestions/1337x.ico',
