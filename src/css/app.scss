@@ -497,6 +497,8 @@ header {
     .warning {
       padding: 0 2% 3%;
       height: 100%;
+      margin-bottom: 2vh;
+      max-height: 100%;
     }
 
     .forecast {
@@ -740,6 +742,7 @@ header {
   width: auto;
   margin: 0 1em 0 0;
 } */
+
 .footer {
   display: flex;
   width: 100%;

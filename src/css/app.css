@@ -442,6 +442,8 @@ header {
 .moreContent .content .warning {
   padding: 0 2% 3%;
   height: 100%;
+  margin-bottom: 2vh;
+  max-height: 100%;
 }
 .moreContent .content .forecast {
   display: flex;

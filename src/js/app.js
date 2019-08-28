@@ -40,6 +40,7 @@ $.ajax({
 
     if (settings.owmToken !== undefined) {
       owmToken = settings.owmToken;
+      $('.owmToken__Comment').text(`Your OpenWeatherMap token is ${owmToken}. You can update it here !`);
     }
   });
 
@@ -1239,6 +1240,8 @@ $.ajax({
 
       // Send the updated settings to the server
       socket.emit('customization', updatedSettings);
+
+      $('.owmToken__Comment').text(`Your OpenWeatherMap token is ${updatedSettings.owmToken}. You can update it here !`);
 
       $('#backgroundImage, header, #mainContainer')
         .css('filter', 'none');
