@@ -1408,6 +1408,12 @@ $.ajax({
       url: 'https://fr.wikipedia.org/w/index.php?search='
     },
     {
+      label: '!yarn',
+      desc: 'Yarn',
+      icon: './src/css/icons/suggestions/yarn.ico',
+      url: 'https://yarnpkg.com/en/packages?q='
+    },
+    {
       label: '!yt',
       desc: 'Youtube',
       icon: './src/css/icons/suggestions/yt.ico',
