@@ -562,7 +562,7 @@ $.ajax({
   // Add content of other types than RSS
   const parseContent = () => {
     socket.on('parse content', (parsedData) => {
-      console.log(JSON.stringify(parsedData, null, 2));
+      // console.log(JSON.stringify(parsedData, null, 2));
 
       // Remove the event handler to show the "+" sign
       $(parsedData.element).off();
@@ -1289,6 +1289,18 @@ $.ajax({
       desc: 'CSS Tricks',
       icon: './src/css/icons/suggestions/csstricks.png',
       url: 'https://css-tricks.com/?s='
+    },
+    {
+      label: '!fdroid',
+      desc: 'F-Droid',
+      icon: './src/css/icons/suggestions/fdroid.png',
+      url: 'https://search.f-droid.org/?q='
+    },
+    {
+      label: '!g',
+      desc: 'Google',
+      icon: './src/css/icons/suggestions/google.png',
+      url: 'https://www.google.com/search?q='
     },
     {
       label: '!gh',

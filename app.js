@@ -451,7 +451,8 @@ app.get('/', (req, res) => {
               `C:\\Users\\${username}.LIGUE\\Downloads\\%(title)s.%(ext)s`,
               id,
               '--youtube-skip-dash-manifest',
-              '--embed-thumbnail'
+              '--embed-thumbnail',
+              '--add-metadata'
             ], (err) => {
               if (err) {
                 console.log(err);
