@@ -220,7 +220,7 @@ $.ajax({
           padding: '0.5% 1%'
         });
 
-        $('.suggestions').removeClass('active');
+      $('.suggestions').removeClass('active');
     }
 
     if (matches !== [] && search.length >= 2 && search.startsWith('!')) {
@@ -230,9 +230,9 @@ $.ajax({
           paddingBottom: 0
         });
 
-        if (!$('.suggestions').hasClass('active')) {
-          $('.suggestions').addClass('active');
-        }
+      if (!$('.suggestions').hasClass('active')) {
+        $('.suggestions').addClass('active');
+      }
 
       $('.suggestions')
         .css({
@@ -546,7 +546,7 @@ $.ajax({
           if (suggestions[i].label === '!iv') {
             window.open(`${suggestions[i].url}${keywords}&local=true`);
           } else if (suggestions[i].label === '!pb') {
-              window.open(`${suggestions[i].url}${keywords}/-/`);
+            window.open(`${suggestions[i].url}${keywords}/-/`);
           } else {
             window.open(`${suggestions[i].url}${keywords}`);
           }
@@ -961,18 +961,12 @@ $.ajax({
           });
 
           socket.on('download ended', (data) => {
-            if (data !== undefined) {
-              $('#msgContainer').text(`Your download for ${data.title} ended !`);
-              setTimeout(() => {
-                $('#msgContainer').fadeOut(1500);
-              }, 2000);
-              window.open(`http://${ip}:8080/download`);
-            } else {
-              $('#msgContainer').text(`Your download ended ! You can find your file in your Downloads folder`);
-              setTimeout(() => {
-                $('#msgContainer').fadeOut(1500);
-              }, 2000);
-            }
+            $('#msgContainer').text(`Your download for ${data.title} ended !`);
+            setTimeout(() => {
+              $('#msgContainer').fadeOut(1500);
+            }, 2000);
+
+            window.open(`http://${ip}:8080/download`);
           });
         } else {
           printError(`You pasted an invalid link. If you tried to paste a URL, try the video ID only.`);
@@ -1268,8 +1262,7 @@ $.ajax({
     })
   }
 
-  const suggestions = [
-    {
+  const suggestions = [{
       label: '!1337x',
       desc: '1337x.to',
       icon: './src/css/icons/suggestions/1337x.ico',

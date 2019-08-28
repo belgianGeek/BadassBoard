@@ -448,20 +448,38 @@ app.get('/', (req, res) => {
               '--audio-format',
               'mp3',
               '-o',
-              `C:\\Users\\${username}.LIGUE\\Downloads\\%(title)s.%(ext)s`,
+              `./temp/%(title)s.%(ext)s`,
               id,
               '--youtube-skip-dash-manifest',
               '--embed-thumbnail',
               '--add-metadata'
-            ], (err) => {
+            ], (err, stdout) => {
               if (err) {
                 console.log(err);
               }
+
+              let filename = stdout
+                .match(/temp([\\a-zA-Z0-9-()_\s]{1,100}.mp3)/i)[1]
+                .substring(1, 100);
+
+              downloadedFile.path = `./temp/${filename}`;
+
+              downloadedFile.name = filename;
             });
 
             download.on('close', () => {
               // Inform the client that the download ended
-              io.emit('download ended');
+              io.emit('download ended', {
+                title: downloadedFile.name
+              });
+
+              setTimeout(() => {
+                fs.unlink(downloadedFile.path, (err) => {
+                  if (err) {
+                    console.log(`Error cleaning the temp folder :\n${err}`);
+                  }
+                });
+              }, 100000);
             });
           }
         })
