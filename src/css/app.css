@@ -514,13 +514,13 @@ header {
   display: flex;
   margin: 0;
 }
-.moreContent .content .forecast__weatherIcon {
+.moreContent .content .forecast__weatherIcon, .moreContent .content .forecast .icon {
   display: flex;
   align-items: flex-start;
   justify-content: end;
   width: 50%;
 }
-.moreContent .content .forecast__weatherIcon__icon {
+.moreContent .content .forecast__weatherIcon__icon, .moreContent .content .forecast .icon__icon {
   font-size: 3.5em;
   margin-right: 5%;
 }

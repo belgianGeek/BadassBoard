@@ -194,13 +194,13 @@ $.ajax({
 
   const addContentOptions = (element) => {
     $(`${element} .rssContainer`).ready(() => {
-      removeContent(element, `${element} .rssContainer`);
-      updateContent(element, `${element} .rssContainer`);
+      removeContent(element, `${element} .rssContainer`, `${element} .rssContainer__header`);
+      updateContent(element, `${element} .rssContainer`, `${element} .rssContainer__header`);
     });
 
     $(`${element} .forecast`).ready(() => {
-      removeContent(element, `${element} .forecast`);
-      updateContent(element, `${element} .forecast`);
+      removeContent(element, `${element} .forecast`, `${element} .forecast__header`);
+      updateContent(element, `${element} .forecast`, `${element} .forecast__header`);
     });
   }
 
@@ -732,19 +732,8 @@ $.ajax({
                         .addClass('forecast__weatherIcon__icon')
                         .appendTo(weatherIconContainer);
 
-                      if (previsions.description.match(/clear sky/i)) {
-                        $('.forecast__weatherIcon__icon')
-                          .text('☼')
-                          .css({
-                            color: 'yellow'
-                          });
-                      } else if (previsions.description.match(/clouds/i)) {
-                        $('.forecast__weatherIcon__icon')
-                          .text('☁');
-                      } else if (previsions.description.match(/rain/i)) {
-                        $('.forecast__weatherIcon__icon')
-                          .text('🌧');
-                      }
+                      // Add weather icon
+                      updateWeatherIcon(previsions);
 
                       // Add content options
                       let contentOptions = $('<span></span>');
@@ -1098,9 +1087,9 @@ $.ajax({
     }
   }
 
-  const removeContent = (parent, element) => {
-    if ($(parent).length) {
-      $(parent)
+  const removeContent = (parent, element, child) => {
+    if ($(element).length) {
+      $(child)
         .mouseenter(() => {
           // Show the removeContentBtn on feedtitle hover
           $(`${parent} .contentOptions`)
@@ -1460,9 +1449,9 @@ $.ajax({
     }
   ];
 
-  const updateContent = (parent, element) => {
+  const updateContent = (parent, element, child) => {
     if ($(element).length) {
-      $(element)
+      $(child)
         .mouseenter(() => {
           // Show the removeContentBtn on content title hover
           $(`${element} .contentOptions`)
@@ -1520,12 +1509,42 @@ $.ajax({
                 $('.forecast__content__info__wind__desc').text(`${previsions.windSpeed} km/h`);
                 $('.forecast__content__info__humidity__desc').text(`${previsions.humidity} %`);
 
-                // TODO: update icon
+                updateWeatherIcon(previsions);
               })
             }
           });
         }
       });
+    }
+  }
+
+  const updateWeatherIcon = (previsions) => {
+    if (previsions.description.match(/clear sky/i)) {
+      $('.forecast__weatherIcon__icon')
+        .text('☼')
+        .css({
+          color: 'yellow'
+        });
+    } else if (previsions.description.match(/clouds/i)) {
+      $('.forecast__weatherIcon__icon')
+        .text('☁');
+    } else if (previsions.description.match(/rain/i)) {
+      $('.forecast__weatherIcon__icon')
+        .text('🌧');
+    } else if (previsions.description.match(/mist/i)) {
+      $('.forecast__weatherIcon__icon').addClass('icon');
+
+      let mistIcon = $('<img>')
+        .attr({
+          src: './src/css/icons/interface/mist.svg',
+          alt: 'Mist icon'
+        });
+
+      if (!$('.forecast__weatherIcon__icon img').length) {
+        mistIcon.appendTo($('.forecast__weatherIcon__icon'));
+      } else {
+        $('.forecast__weatherIcon__icon img').replaceWith(mistIcon);
+      }
     }
   }
 
