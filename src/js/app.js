@@ -166,11 +166,11 @@ $.ajax({
 
 
                       // Send the changes to the server side
-                      socket.emit('add content', {
+                      socket.emit('add content', [{
                         element: element,
                         location: $(`${element} .addContent__weather__input`).val(),
                         type: 'weather'
-                      });
+                      }]);
                     })
                   }
                 })

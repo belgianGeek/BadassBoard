@@ -185,147 +185,114 @@ app.get('/', (req, res) => {
             let settings;
             // try {
             settings = JSON.parse(data);
-            let elements = settings.elements;
+            var elements = settings.elements;
             if (settings === undefined) {
               console.log(`File content is undefined`);
             } else {
 
               // Check if feedData is an array
               if (Array.isArray(feedData)) {
-                console.log(JSON.stringify(feedData, null, 2));
+                // console.log(JSON.stringify(feedData, null, 2));
 
                 for (let i = 0; i < feedData.length; i++) {
-                  if (feedData[i].type === 'rss') {
-                    settings.RSS = true;
-                    let element = feedData[i].element;
-                    let iElt = element.match(/[0-9]/) - 1;
-                    if (feedData[i] !== undefined) {
-                      if (element !== undefined && element !== null) {
-                        if (elements[iElt] === undefined) {
-                          elements[iElt] = {
-                            elements: {}
-                          };
+                  let element = feedData[i].element;
+                  let iElt;
 
-                          elements[iElt].elements.element = element;
-                          elements[iElt].elements.url = feedData[i].url;
-                          elements[iElt].elements.type = feedData[i].type;
-                        } else {
-                          elements[iElt].elements.element = element;
-                          elements[iElt].elements.url = feedData[i].url;
-                          elements[iElt].elements.type = feedData[i].type;
-                        }
+                  switch (element) {
+                    case '.first':
+                      iElt = 0;
+                      break;
+                    case '.second':
+                      iElt = 1;
+                      break;
+                    case '.third':
+                      iElt = 2;
+                      break;
+                  }
 
-                        request
-                          .get(feedData[i].url)
-                          .on('response', (res) => {
-                            if (res.headers['content-type'] === 'text/xml' || res.headers['content-type'].match(/rss/gi)) {
-                              feedparser.parse(feedData[i].url)
-                                .then(items => {
-                                  // Send the results to the client
-                                  io.emit('parse content', {
-                                    feed: items,
-                                    element: element,
-                                    type: feedData[i].type
-                                  });
-                                })
-                                .catch((err) => {
-                                  if (err == 'Error: Not a feed') {
-                                    console.log('Invalid feed URL');
-                                  }
-                                });
-
-                              if (i === feedData.length - 1) {
-                                fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), (err) => {
-                                  if (err) throw err;
-                                });
+                  const parseFeed = () => {
+                    request
+                      .get(feedData[i].url)
+                      .on('response', (res) => {
+                        if (res.headers['content-type'] === 'text/xml' || res.headers['content-type'].match(/rss/gi)) {
+                          feedparser.parse(feedData[i].url)
+                            .then(items => {
+                              // Send the results to the client
+                              io.emit('parse content', {
+                                feed: items,
+                                element: element,
+                                type: feedData[i].type
+                              });
+                            })
+                            .catch((err) => {
+                              if (err == 'Error: Not a feed') {
+                                console.log('Invalid feed URL');
                               }
-                            } else {
-                              io.emit('errorMsg', `${feedData[i].url} is not a valid RSS feed`);
-                            }
-                          });
-                      }
-                    }
-                  } else if (feedData.type === 'weather') {
+                            });
 
-                    for (let i = 0; i < elements.length; i++) {
-                      let element = feedData[i].element;
-                      let iElt = element.match(/[0-9]/) - 1;
-
-                      if (feedData[i] !== undefined) {
-                        if (element !== undefined && element !== null) {
-                          if (elements[iElt] === undefined) {
-                            elements[iElt] = {
-                              elements: {}
-                            };
-                            elements[iElt].elements.element = element;
-                            elements[iElt].elements.url = feedData[i].url;
-                            elements[iElt].elements.type = feedData[i].type;
-                          } else {
-                            elements[iElt].elements.element = element;
-                            elements[iElt].elements.url = feedData[i].url;
-                            elements[iElt].elements.type = feedData[i].type;
+                          if (i === feedData.length - 1) {
+                            fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), (err) => {
+                              if (err) throw err;
+                            });
                           }
-
-                          // Send the results to the client
-                          io.emit('parse content', {
-                            location: feedData[i].location,
-                            element: element,
-                            type: feedData[i].type
-                          });
+                        } else {
+                          io.emit('errorMsg', `${feedData[i].url} is not a valid RSS feed`);
                         }
+                      });
+                  }
+
+                  const updateSettings = () => {
+                    if (feedData[i].type === 'rss') {
+                      elements[iElt].elements.element = element;
+                      elements[iElt].elements.url = feedData[i].url;
+                      elements[iElt].elements.type = feedData[i].type;
+
+                      parseFeed();
+                    } else if (feedData[i].type === 'weather') {
+                      delete elements[iElt].elements.url;
+                      elements[iElt].elements.element = element;
+                      elements[iElt].elements.location = feedData[i].location;
+                      elements[iElt].elements.type = feedData[i].type;
+                    }
+                  }
+
+                  if (feedData[i] !== undefined) {
+                    if (element !== undefined && element !== null) {
+                      if (feedData[i].type === 'rss') {
+                        settings.RSS = true;
+                      }
+
+                      if (elements[iElt] === undefined) {
+                        elements[iElt] = {
+                          elements: {}
+                        };
+
+                        updateSettings();
+                      } else {
+                        updateSettings();
+                      }
+
+                      if (feedData[i].type === 'weather') {
+                        io.emit('parse content', {
+                          type: 'weather',
+                          element: feedData[i].element,
+                          location: feedData[i].location
+                        });
                       }
                     }
 
-                    fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', () => {
-                      if (err) throw err;
-
-                      io.emit('parse content', {
-                        type: 'weather',
-                        element: feedData[i].element,
-                        location: feedData[i].location
-                      });
-                    });
                   }
                 }
-              } else if (feedData.type === 'weather') {
-
-                for (let i = 0; i < elements.length; i++) {
-                  let iElt = feedData.element.match(/[0-9]/) - 1;
-
-                  if (elements[iElt] === undefined) {
-                    elements[iElt] = {
-                      elements: {}
-                    };
-                    elements[iElt].elements.element = element;
-                    elements[iElt].elements.location = feedData.location;
-                  } else {
-                    // console.log(JSON.stringify(elements[iElt], null, 2));
-                    if (elements[iElt].elements.url !== undefined) {
-                      delete elements[iElt].elements.url;
-                      elements[iElt].elements.element = feedData.element;
-                      elements[iElt].elements.location = feedData.location;
-                      elements[iElt].elements.type = feedData.type;
-                    } else {
-                      elements[iElt].elements.element = feedData.element;
-                      elements[iElt].elements.location = feedData.location;
-                      elements[iElt].elements.type = feedData.type;
-                    }
-                  }
-
-                  io.emit('parse content', {
-                    element: feedData.element,
-                    location: feedData.location,
-                    type: feedData.type
-                  })
-                }
-
-                fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', () => {
-                  if (err) throw err;
-                });
               }
             }
-            // Backup the new config
-            backupSettings();
+
+            // console.log(JSON.stringify(settings, null, 2));
+            fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
+              if (err) throw err;
+
+              // Backup the new config
+              backupSettings();
+            });
             // } catch (err) {
             //   // If parsing fail, restore the backup
             //   console.log(`Error parsing settings !`);
@@ -574,7 +541,7 @@ app.get('/', (req, res) => {
                 backupSettings(settings);
               });
             } catch (err) {
-              console.log(`Error reading settings file !`);
+              console.log(`Error reading settings file !\n${err}`);
             };
           }
         });
@@ -597,7 +564,7 @@ app.get('/', (req, res) => {
               customizeBackground(settings.backgroundImage);
             } catch (err) {
               // If parsing fail, restore the backup
-              console.log(`Error parsing settings !`);
+              console.log(`Error parsing settings !\n${err}`);
               fs.copyFile('./settings/settings.json.bak', './settings/settings.json', (err) => {
                 if (err) {
                   if (err.code === 'EBUSY') {
