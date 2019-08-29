@@ -569,7 +569,7 @@ $.ajax({
   // Add content of other types than RSS
   const parseContent = () => {
     socket.on('parse content', (parsedData) => {
-      // console.log(JSON.stringify(parsedData, null, 2));
+      console.log(JSON.stringify(parsedData.element, null, 2));
 
       // Remove the event handler to show the "+" sign
       $(parsedData.element).off();
@@ -823,10 +823,11 @@ $.ajax({
                 .text(feed[i].title)
                 .appendTo(article);
 
+
               let summary = $('<div></div>');
               summary
                 .addClass('article__desc')
-                .text(feed[i].summary)
+                .append(feed[i].summary)
                 .appendTo(linksContainer);
             }
           };
@@ -1251,7 +1252,8 @@ $.ajax({
     })
   }
 
-  const suggestions = [{
+  const suggestions = [
+    {
       label: '!1337x',
       desc: '1337x.to',
       icon: './src/css/icons/suggestions/1337x.ico',
@@ -1560,7 +1562,6 @@ $.ajax({
 
     // Add containers on startup
     parseContent();
-
 
     socket.on('refresh app', () => {
       location.reload();
