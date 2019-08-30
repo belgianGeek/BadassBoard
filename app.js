@@ -136,8 +136,11 @@ app.use("/src", express.static(__dirname + "/src"))
   .use("/settings", express.static(__dirname + "/settings"))
   .use("/tmp", express.static(__dirname + "/tmp"))
 
-
-console.log(`Hey ${username} ! You can connect to the web interface here : http://${ip.address()}:8080.`);
+if (!ip.address().match(/169.254/)) {
+  console.log(`Hey ${username} ! You can connect to the web interface here : http://${ip.address()}:8080.`);
+} else {
+  console.log(`Sorry Dude, I won't work properly if I don't have access to the Internet. Please fix your connection and try again.`);
+}
 
 app.get('/', (req, res) => {
     res.render('home.ejs');
@@ -199,13 +202,13 @@ app.get('/', (req, res) => {
                   let iElt;
 
                   switch (element) {
-                    case '.first':
+                    case '.content1':
                       iElt = 0;
                       break;
-                    case '.second':
+                    case '.content2':
                       iElt = 1;
                       break;
-                    case '.third':
+                    case '.content3':
                       iElt = 2;
                       break;
                   }
