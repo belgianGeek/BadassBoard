@@ -2,8 +2,6 @@ const ytdl = require('ytdl-core');
 const fs = require('fs');
 const express = require('express');
 const app = express();
-const server = require('http').Server(app);
-const io = require('socket.io')(server);
 const feedparser = require("feedparser-promised")
 const ip = require('ip');
 const {
@@ -13,6 +11,8 @@ const os = require('os');
 const path = require('path');
 const request = require('request');
 const multer = require('multer');
+
+// Upload configuration
 const storage = multer.diskStorage({
   destination: './upload',
   filename: (req, file, callback) => {
@@ -29,6 +29,19 @@ const upload = multer({
   }
 }).single('backgroundImageUploadInput');
 
+// HTTPS server config
+// const options = {
+//   key: fs.readFileSync('./certs/badassBoard.key'),
+//   cert: fs.readFileSync( './certs/badassBoard.pem' )
+// };
+//
+// const server = require('https').Server(options, app);
+// const io = require('socket.io')(server);
+
+// execFile.exec('node serverFallback.js');
+
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 
 server.listen(8080, ip.address());
 
@@ -41,35 +54,43 @@ const backupSettings = (settings) => {
 const readSettings = () => {
   fs.readFile('./settings/settings.json', 'utf-8', (err, data) => {
     if (err) throw err;
-    let startupElements = [];
     let settings;
     if (data !== undefined) {
       // try {
       settings = JSON.parse(data);
       let elements = settings.elements;
+      var eltsArray = [];
       if (settings.RSS === true) {
         io.emit('RSS status retrieved', settings.RSS);
-        for (let i = 0; i < elements.length; i++) {
-          if (elements[i].elements !== undefined) {
-            if (elements[i].elements.type === 'rss') {
-              feedparser.parse(elements[i].elements.url)
+        var bigI, i;
+        // let iArray = 0;
+        let totalLength = 0;
+        for (const [bigI, value] of elements.entries()) {
+          var subElts = value.elements;
+          totalLength += value.elements.length;
+          for (const [i, subEltsValue] of subElts.entries()) {
+            const sendData = () => {
+              if (eltsArray.length === totalLength) {
+                // console.log(`Array : ${JSON.stringify(eltsArray.length, null, 2)}`);
+                io.emit('parse content', eltsArray);
+              }
+            }
+
+            if (subEltsValue.type === 'rss') {
+              let elt = subEltsValue;
+              feedparser.parse(subEltsValue.url)
                 .then(items => {
-                  // Parse rss
-                  io.emit('parse content', {
-                    feed: items,
-                    element: elements[i].elements.element,
-                    type: elements[i].elements.type
-                  });
+                  elt.feed = items;
+                  eltsArray.push(elt);
+                  // console.log(`bigI : ${bigI}`, `elements : ${eltsArray.length}`, `totalLength : ${totalLength}`);
+                  sendData();
                 })
                 .catch(console.error);
-            } else if (elements[i].elements.type === 'weather') {
-              if (elements[i].elements.location !== undefined) {
-                io.emit('parse content', {
-                  type: 'weather',
-                  element: elements[i].elements.element,
-                  location: elements[i].elements.location
-                });
-              }
+            } else if (subEltsValue.type === 'weather') {
+              let newElt = subEltsValue;
+              eltsArray.push(newElt);
+              // console.log(`bigI : ${bigI}`, `elements : ${elements.length}`, `totalLength : ${totalLength}`);
+              sendData();
             }
           }
         }
@@ -143,6 +164,7 @@ if (!ip.address().match(/169.254/)) {
 }
 
 app.get('/', (req, res) => {
+    // console.log(req.secure);
     res.render('home.ejs');
 
     // Open only one socket connection, to avoid memory leaks
@@ -151,19 +173,20 @@ app.get('/', (req, res) => {
       let settings = {
         "RSS": false,
         "elements": [{
-            "elements": {}
+            "elements": []
           },
           {
-            "elements": {}
+            "elements": []
           },
           {
-            "elements": {}
+            "elements": []
           }
         ]
       }
 
       let settingsPath = './settings/settings.json';
 
+      // Read the settings file or create it if it doesn't exist
       fs.stat(settingsPath, (err) => {
         if (err === null) {
           readSettings();
@@ -196,22 +219,11 @@ app.get('/', (req, res) => {
               // Check if feedData is an array
               if (Array.isArray(feedData)) {
                 // console.log(JSON.stringify(feedData, null, 2));
+                let newElt = {};
 
                 for (let i = 0; i < feedData.length; i++) {
-                  let element = feedData[i].element;
-                  let iElt;
-
-                  switch (element) {
-                    case '.content1':
-                      iElt = 0;
-                      break;
-                    case '.content2':
-                      iElt = 1;
-                      break;
-                    case '.content3':
-                      iElt = 2;
-                      break;
-                  }
+                  // Store the parent element number
+                  let iParent = Number(feedData[i].parent.match(/\d/)) - 1;
 
                   const parseFeed = () => {
                     request
@@ -220,12 +232,12 @@ app.get('/', (req, res) => {
                         if (res.headers['content-type'] === 'text/xml' || res.headers['content-type'].match(/rss/gi)) {
                           feedparser.parse(feedData[i].url)
                             .then(items => {
-                              // Send the results to the client
-                              io.emit('parse content', {
+                              io.emit('parse content', [{
                                 feed: items,
-                                element: element,
+                                element: feedData[i].element,
+                                parent: feedData[i].parent,
                                 type: feedData[i].type
-                              });
+                              }]);
                             })
                             .catch((err) => {
                               if (err == 'Error: Not a feed') {
@@ -244,52 +256,55 @@ app.get('/', (req, res) => {
                       });
                   }
 
-                  const updateSettings = () => {
+                  for (const [j, value] of elements.entries()) {
+                    // console.log(`j : ${j}\nValue : ${JSON.stringify(value.elements, null, 2)}\n${feedData[i].parent}`);
+
+                    newElt.element = feedData[i].element;
+                    newElt.parent = feedData[i].parent;
+
                     if (feedData[i].type === 'rss') {
-                      elements[iElt].elements.element = element;
-                      elements[iElt].elements.url = feedData[i].url;
-                      elements[iElt].elements.type = feedData[i].type;
+                      settings.RSS = true;
+                      newElt.url = feedData[i].url;
+                      newElt.type = feedData[i].type;
 
                       parseFeed();
+                      // console.log(`newElt : ${JSON.stringify(newElt, null, 2)}`);
                     } else if (feedData[i].type === 'weather') {
-                      delete elements[iElt].elements.url;
-                      elements[iElt].elements.element = element;
-                      elements[iElt].elements.location = feedData[i].location;
-                      elements[iElt].elements.type = feedData[i].type;
-                    }
-                  }
+                      newElt.location = feedData[i].location;
+                      newElt.type = feedData[i].type;
 
-                  if (feedData[i] !== undefined) {
-                    if (element !== undefined && element !== null) {
-                      if (feedData[i].type === 'rss') {
-                        settings.RSS = true;
-                      }
-
-                      if (elements[iElt] === undefined) {
-                        elements[iElt] = {
-                          elements: {}
-                        };
-
-                        updateSettings();
-                      } else {
-                        updateSettings();
-                      }
-
-                      if (feedData[i].type === 'weather') {
-                        io.emit('parse content', {
-                          type: 'weather',
-                          element: feedData[i].element,
-                          location: feedData[i].location
-                        });
-                      }
+                      io.emit('parse content', [{
+                        type: 'weather',
+                        element: feedData[i].element,
+                        parent: feedData[i].parent,
+                        location: feedData[i].location
+                      }]);
                     }
 
+                    if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
+                      // if (value.elements[0].element.match(feedData[i].element) && value.elements[0].parent.match(feedData[i].parent)) {
+                      //   console.log(1);
+                      //   // Append the new element to the "elements" settings array
+                      //   value.elements.splice(0, 1, newElt);
+                      // } else if (feedData[i].new && value.elements[0].parent.match(feedData[i].parent)) {
+                      //   console.log(2);
+                      //   value.elements.push(newElt);
+                      // } else {
+                        for (const [k, kValue] of value.elements.entries()) {
+                          if (kValue.element === feedData[i].element && kValue.parent === feedData[i].parent) {
+                            value.elements.splice(k, 1, newElt);
+                          }
+                        }
+                      // }
+                    } else if (value.elements[0] === undefined && iParent === j) {
+                      // Append the new element to the "elements" settings array
+                      value.elements.push(newElt);
+                    }
                   }
                 }
               }
             }
 
-            // console.log(JSON.stringify(settings, null, 2));
             fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
               if (err) throw err;
 
@@ -418,7 +433,7 @@ app.get('/', (req, res) => {
               '--audio-format',
               'mp3',
               '-o',
-              `./temp/%(title)s.%(ext)s`,
+              `./tmp/%(title)s.%(ext)s`,
               id,
               '--youtube-skip-dash-manifest',
               '--embed-thumbnail',
@@ -429,10 +444,10 @@ app.get('/', (req, res) => {
               }
 
               let filename = stdout
-                .match(/temp([\\a-zA-Z0-9-()_\s]{1,100}.mp3)/i)[1]
+                .match(/tmp([\\a-zA-ZùéàçÉÈÁÀÊîïôÔ0-9-_\[\]()\s.,;:=+~µ@&#!]{1,}\.mp3)/i)[1]
                 .substring(1, 100);
 
-              downloadedFile.path = `./temp/${filename}`;
+              downloadedFile.path = `./tmp/${filename}`;
 
               downloadedFile.name = filename;
             });
@@ -472,20 +487,24 @@ app.get('/', (req, res) => {
       });
 
       io.on('update feed', (feed2update) => {
+        // console.log(JSON.stringify(feed2update, null, 2));
         fs.readFile(settingsPath, 'utf-8', (err, data) => {
           try {
             let settings = JSON.parse(data);
-            for (let i = 0; i < settings.elements.length; i++) {
-              if (settings.elements[i].element === feed2update.element) {
-                feedparser.parse(settings.elements[i].url)
-                  .then(items => {
-                    // Parse rss
-                    io.emit('rss parsed', {
-                      feed: items,
-                      element: feed2update.element
-                    });
-                  })
-                  .catch(console.error);
+            for (const i of settings.elements) {
+              for (const j of i.elements) {
+                let regex = new RegExp(j.element, 'gi');
+                if (feed2update.element.match(regex)) {
+                  feedparser.parse(j.url)
+                    .then(items => {
+                      // Parse rss
+                      io.emit('feed updated', {
+                        feed: items,
+                        element: feed2update.element
+                      });
+                    })
+                    .catch(console.error);
+                }
               }
             }
           } catch (err) {
@@ -496,15 +515,25 @@ app.get('/', (req, res) => {
 
       io.on('parse playlist', (playlistUrl) => {
         request(playlistUrl, (err, response, body) => {
-          if (err) throw err;
+          if (err === 'socket hang up') {
+            console.log('There is some trouble at line 518... :(');
+          } else {
+            console.log(err);
+          }
           try {
             var result = JSON.parse(body);
-            fs.writeFile('./tmp/playlist.json', JSON.stringify(result, null, 2), 'utf-8', (err) => {
-              if (err) throw err;
-              io.emit('playlist parsed');
-            });
+
+            if (result.error === undefined) {
+              fs.writeFile('./tmp/playlist.json', JSON.stringify(result, null, 2), 'utf-8', (err) => {
+                if (err) throw err;
+                io.emit('playlist parsed');
+              });
+            } else if (result.error !== undefined && result.error === 'Playlist is empty') {
+              io.emit('errorMsg', 'Invalid playlist reference :((');
+            }
           } catch (e) {
             console.log(`Error parsing playlist : ${e}`);
+            io.emit('errorMsg', 'Error parsing playlist :((');
           }
         });
       });
@@ -554,37 +583,33 @@ app.get('/', (req, res) => {
 
   // 404 errors handling
   .use((req, res, next) => {
-    // Only display an error page if the requested URL isn't /download
-    if (req.url !== '/download') {
-      res.status(404).render('404.ejs');
-      io.once('connection', (io) => {
-        fs.readFile('./settings/settings.json', 'utf-8', (err, data) => {
-          if (err) throw err;
-          let settings;
-          if (data !== undefined) {
-            try {
-              settings = JSON.parse(data);
-              customizeBackground(settings.backgroundImage);
-            } catch (err) {
-              // If parsing fail, restore the backup
-              console.log(`Error parsing settings !\n${err}`);
-              fs.copyFile('./settings/settings.json.bak', './settings/settings.json', (err) => {
-                if (err) {
-                  if (err.code === 'EBUSY') {
-                    io.emit('refresh app');
-                    console.log(err);
-                  } else {
-                    console.log(`Unknown error code :\n${err}`);
-                  }
+    res.status(404).render('404.ejs');
+    io.once('connection', (io) => {
+      fs.readFile('./settings/settings.json', 'utf-8', (err, data) => {
+        if (err) throw err;
+        let settings;
+        if (data !== undefined) {
+          try {
+            settings = JSON.parse(data);
+          } catch (err) {
+            // If parsing fail, restore the backup
+            console.log(`Error parsing settings !\n${err}`);
+            fs.copyFile('./settings/settings.json.bak', './settings/settings.json', (err) => {
+              if (err) {
+                if (err.code === 'EBUSY') {
+                  io.emit('refresh app');
+                  console.log(err);
                 } else {
-                  console.log(`Settings file successfully restored !`);
+                  console.log(`Unknown error code :\n${err}`);
                 }
-              });
-            }
-          } else {
-            console.log(`File content is undefined !`);
+              } else {
+                console.log(`Settings file successfully restored !`);
+              }
+            });
           }
-        });
+        } else {
+          console.log(`File content is undefined !`);
+        }
       });
-    } else;
+    });
   });

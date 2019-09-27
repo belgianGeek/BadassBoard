@@ -13,11 +13,14 @@ body * {
   color: white;
 }
 
+.flex {
+  display: flex;
+}
+
 .wrapper {
   height: 100%;
   padding: 0;
   margin: 0;
-  display: flex;
   flex-direction: column;
 }
 .wrapper .backgroundImage {
@@ -35,7 +38,6 @@ body * {
   font-style: italic;
 }
 .wrapper .rssTooltip {
-  display: flex;
   width: 100%;
   height: 100%;
   position: relative;
@@ -57,7 +59,7 @@ header {
   left: 0;
   width: 100%;
   justify-content: flex-end;
-  align-items: baseline;
+  align-items: center;
 }
 
 .settingsBtn {
@@ -90,7 +92,6 @@ header {
   font-size: 1em;
 }
 .settings__container .settings__child {
-  display: flex;
   justify-content: start;
   align-items: start;
   flex-direction: column;
@@ -102,7 +103,6 @@ header {
   border: 1px solid gray;
 }
 .settings__container .settings__child__header {
-  display: flex;
   flex-direction: row;
   width: auto;
   margin: 1% 0 0 1%;
@@ -134,7 +134,6 @@ header {
 .settings__container .settings__child .backgroundImageUploadForm,
 .settings__container .settings__child .owmToken,
 .settings__container .settings__child .toggleRss {
-  display: flex;
   flex-direction: row;
   align-items: baseline;
 }
@@ -242,10 +241,10 @@ header {
   color: red;
   font-style: italic;
   margin-top: 1em;
+  font-size: 1.2em;
 }
 
 .mainContainer {
-  display: flex;
   width: 100%;
   height: 100%;
   align-items: center;
@@ -258,8 +257,8 @@ header {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-around;
-  height: auto;
+  justify-content: center;
+  height: 100%;
   width: 100%;
 }
 .upperContainer .msgContainer {
@@ -325,6 +324,7 @@ header {
   opacity: 0.7;
   border-radius: 0 0 15px 15px;
   overflow-y: auto;
+  margin-bottom: 2%;
 }
 .suggestions * {
   color: black;
@@ -334,7 +334,6 @@ header {
 }
 .suggestions .suggestion {
   padding: 0.5% 0 0.5% 1%;
-  display: flex;
   align-items: center;
   width: 99%;
   flex-direction: row;
@@ -356,7 +355,7 @@ header {
   background-color: rgba(0, 0, 0, 0.5);
   padding: 0.5%;
   border-radius: 15px;
-  margin-top: 1%;
+  margin: 1% 0;
   display: none;
   flex-direction: column;
   height: auto;
@@ -364,24 +363,22 @@ header {
 .audio .player {
   height: min-content;
   width: 100%;
-  display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-evenly;
 }
 .audio .player__leftSvg, .audio .player__rightSvg {
   width: 10%;
   cursor: pointer;
 }
 .audio__player {
-  width: 90%;
+  width: 100%;
 }
 .audioMsg {
   height: min-content;
   width: 100%;
   font-size: 1.6em;
   margin-bottom: 0.3em;
-  display: flex;
 }
 .audioMsg .playlistInfo {
   font-size: 0.8em;
@@ -394,77 +391,81 @@ header {
 .audioMsg #streamTitle {
   font-style: italic;
 }
+.audio__remove {
+  height: min-content;
+  cursor: pointer;
+}
 
 .moreContent {
-  display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-around;
   align-items: flex-start;
-  height: 45%;
+  height: 70%;
   width: 100%;
   font-size: 1.1em;
   flex-wrap: wrap;
   overflow: auto;
 }
-.moreContent .content,
-.moreContent .rssContainer {
-  display: flex;
-}
-.moreContent .content {
-  align-items: flex-start;
-  justify-content: flex-start;
-  height: min-content;
+.moreContent .content__container {
   width: 30%;
-  font-size: 1.2em;
-  margin: 1.3%;
+  justify-content: space-between;
   flex-direction: column;
+  font-size: 1em;
 }
-.moreContent .content .blank {
+.moreContent .content__container .content {
+  height: 40vh;
+  width: 100%;
+  font-size: 1.2em;
+}
+.moreContent .content__container .content .blank {
   display: none;
   justify-content: center;
   align-items: center;
 }
-.moreContent .content .addContent,
-.moreContent .content .blank,
-.moreContent .content .forecast,
-.moreContent .content .rssContainer,
-.moreContent .content .warning {
+.moreContent .content__container .content .flex {
+  display: flex;
+}
+.moreContent .content__container .content .visible {
+  visibility: visible;
+}
+.moreContent .content__container .content .invisible {
+  visibility: hidden;
+}
+.moreContent .content__container .content .addContent,
+.moreContent .content__container .content .blank,
+.moreContent .content__container .content .forecast,
+.moreContent .content__container .content .rssContainer,
+.moreContent .content__container .content .warning {
   flex-direction: column;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
   border-radius: 15px;
   width: 100%;
   font-size: 1.05em;
 }
-.moreContent .content .forecast,
-.moreContent .content .rssContainer {
-  margin-bottom: 2vh;
+.moreContent .content__container .content .forecast,
+.moreContent .content__container .content .rssContainer {
   max-height: 100%;
 }
-.moreContent .content .addContent,
-.moreContent .content .blank,
-.moreContent .content .rssContainer,
-.moreContent .content .warning {
-  padding: 0 2% 3%;
+.moreContent .content__container .content .addContent,
+.moreContent .content__container .content .blank,
+.moreContent .content__container .content .rssContainer,
+.moreContent .content__container .content .warning {
+  padding: 0 2%;
   height: 100%;
   margin-bottom: 2vh;
   max-height: 100%;
 }
-.moreContent .content .forecast {
-  display: flex;
-  padding-bottom: 3%;
-  height: 100%;
-}
-.moreContent .content .forecast__header {
+.moreContent .content__container .content .forecast__header {
   display: inline-flex;
   align-items: center;
   padding-right: 2%;
 }
-.moreContent .content .forecast__header__title {
+.moreContent .content__container .content .forecast__header__title {
   width: 100%;
   margin: 2% 0;
   text-align: center;
 }
-.moreContent .content .forecast__header .contentOptions {
+.moreContent .content__container .content .forecast__header .contentOptions {
   display: none;
   flex-direction: row;
   align-items: baseline;
@@ -472,37 +473,35 @@ header {
   width: 17%;
   margin-top: 1%;
 }
-.moreContent .content .forecast__header .contentOptions .removeContentBtn,
-.moreContent .content .forecast__header .contentOptions .updateContentBtn {
+.moreContent .content__container .content .forecast__header .contentOptions .removeContentBtn,
+.moreContent .content__container .content .forecast__header .contentOptions .updateContentBtn {
   padding: 5%;
   cursor: pointer;
 }
-.moreContent .content .forecast__header .contentOptions .removeContentBtn {
+.moreContent .content__container .content .forecast__header .contentOptions .removeContentBtn {
   border: 1px solid red;
   border-radius: 45%;
 }
-.moreContent .content .forecast__content {
-  display: flex;
+.moreContent .content__container .content .forecast__content {
   flex-direction: row;
   width: 100%;
   height: 100%;
   font-size: 1.1em;
 }
-.moreContent .content .forecast__content__info {
+.moreContent .content__container .content .forecast__content__info {
   margin: 0 2%;
-  display: flex;
   height: 100%;
   width: 50%;
   flex-direction: column;
 }
-.moreContent .content .forecast__content__info * {
+.moreContent .content__container .content .forecast__content__info * {
   display: flex;
   align-items: center;
 }
-.moreContent .content .forecast__content__info span {
+.moreContent .content__container .content .forecast__content__info span {
   margin-top: 2%;
 }
-.moreContent .content .forecast__content__info .forecastIcon {
+.moreContent .content__container .content .forecast__content__info .forecastIcon {
   width: 15%;
   height: 100%;
   justify-content: center;
@@ -510,25 +509,25 @@ header {
   margin-right: 10%;
   font-size: 1.5em;
 }
-.moreContent .content .forecast__content__info__description__desc, .moreContent .content .forecast__content__info__humidity__desc, .moreContent .content .forecast__content__info__temp__desc {
-  display: flex;
+.moreContent .content__container .content .forecast__content__info__description__desc, .moreContent .content__container .content .forecast__content__info__humidity__desc, .moreContent .content__container .content .forecast__content__info__temp__desc {
   margin: 0;
 }
-.moreContent .content .forecast__weatherIcon, .moreContent .content .forecast .icon {
-  display: flex;
+.moreContent .content__container .content .forecast__weatherIcon,
+.moreContent .content__container .content .forecast .icon {
   align-items: flex-start;
   justify-content: end;
   width: 50%;
 }
-.moreContent .content .forecast__weatherIcon__icon, .moreContent .content .forecast .icon__icon {
+.moreContent .content__container .content .forecast__weatherIcon__icon,
+.moreContent .content__container .content .forecast .icon__icon {
   font-size: 3.5em;
   margin-right: 5%;
 }
-.moreContent .rssContainer__header {
+.moreContent .content__container .rssContainer__header {
   display: inline-flex;
   align-items: center;
 }
-.moreContent .rssContainer__header .contentOptions {
+.moreContent .content__container .rssContainer__header .contentOptions {
   display: none;
   flex-direction: row;
   align-items: baseline;
@@ -536,39 +535,39 @@ header {
   width: 17%;
   margin-top: 1%;
 }
-.moreContent .rssContainer__header .contentOptions .removeContentBtn,
-.moreContent .rssContainer__header .contentOptions .updateContentBtn {
+.moreContent .content__container .rssContainer__header .contentOptions .removeContentBtn,
+.moreContent .content__container .rssContainer__header .contentOptions .updateContentBtn {
   padding: 5%;
   cursor: pointer;
 }
-.moreContent .rssContainer__header .contentOptions .removeContentBtn {
+.moreContent .content__container .rssContainer__header .contentOptions .removeContentBtn {
   border: 1px solid red;
   border-radius: 45%;
 }
-.moreContent .feedTitle {
+.moreContent .content__container .feedTitle {
   display: block;
   width: 90%;
   text-align: center;
   margin: 2% 0;
 }
-.moreContent .addContent {
+.moreContent .content__container .addContent {
   display: none;
   width: 100%;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
 }
-.moreContent .addContent label {
+.moreContent .content__container .addContent label {
   margin: 2% 0;
 }
-.moreContent .addContent__select {
+.moreContent .content__container .addContent__select {
   color: black;
-  height: auto;
+  height: 2.1em;
 }
-.moreContent .addContent .select {
+.moreContent .content__container .addContent .select {
   padding: 1%;
 }
-.moreContent .addContent__feed, .moreContent .addContent__weather {
+.moreContent .content__container .addContent__feed, .moreContent .content__container .addContent__weather {
   display: none;
   width: 100%;
   height: 100%;
@@ -576,15 +575,14 @@ header {
   align-items: center;
   flex-direction: column;
 }
-.moreContent .addContent__btnContainer {
-  position: fixed;
-  top: 65%;
-  width: 27%;
+.moreContent .content__container .addContent__btnContainer {
+  width: 100%;
   display: none;
   height: max-content;
   justify-content: end;
+  margin-bottom: 2vh;
 }
-.moreContent .addContent__feed__input, .moreContent .addContent__weather__input {
+.moreContent .content__container .addContent__feed__input, .moreContent .content__container .addContent__weather__input {
   background: none;
   border-top: none;
   border-left: none;
@@ -592,48 +590,47 @@ header {
   border-bottom: 1px solid lightblue;
   border-radius: 5px;
 }
-.moreContent .addContent__cancelBtn, .moreContent .addContent__submitBtn {
+.moreContent .content__container .addContent__cancelBtn, .moreContent .content__container .addContent__submitBtn {
   border: none;
   border-radius: 12px;
-  padding: 1%;
+  padding: 1.5%;
   cursor: pointer;
 }
-.moreContent .addContent__submitBtn {
+.moreContent .content__container .addContent__submitBtn {
   background-color: green;
   margin-left: 3%;
 }
-.moreContent .addContent__cancelBtn {
+.moreContent .content__container .addContent__cancelBtn {
   background-color: red;
 }
-.moreContent .addContent .warning {
+.moreContent .content__container .addContent .warning {
   align-items: center;
   background: none;
   font-size: 0.9em;
   height: auto;
 }
-.moreContent .menu {
+.moreContent .content__container .menu {
   justify-content: center;
 }
-.moreContent .linksContainer {
+.moreContent .content__container .linksContainer {
   min-width: 0;
   flex: 1;
 }
-.moreContent .linksContainer a:visited {
+.moreContent .content__container .linksContainer a:visited {
   color: grey;
 }
-.moreContent .linksContainer .article {
-  display: flex;
+.moreContent .content__container .linksContainer .article {
   flex-direction: column;
   margin-top: 0.5em;
 }
-.moreContent .linksContainer .article .link {
+.moreContent .content__container .linksContainer .article .link {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
   cursor: pointer;
 }
-.moreContent .linksContainer .article__desc {
+.moreContent .content__container .linksContainer .article__desc {
   display: none;
   position: relative;
   top: -100px;
@@ -644,13 +641,14 @@ header {
   text-align: justify;
   padding: 5%;
 }
+.moreContent .content__container .newContent .blank {
+  visibility: hidden;
+}
+.moreContent .content__container .subRow {
+  margin-top: 7%;
+}
 
-/* .pubDate {
-  width: auto;
-  margin: 0 1em 0 0;
-} */
 .footer {
-  display: flex;
   width: 100%;
   flex-direction: column;
   align-items: center;
@@ -666,7 +664,6 @@ header {
   font-size: 1.3em;
 }
 .footer .credits {
-  display: flex;
   align-items: baseline;
   justify-content: center;
   flex-direction: row;
@@ -712,22 +709,25 @@ header {
     width: 80%;
     flex-wrap: wrap;
   }
-  .moreContent .content.first {
-    margin-top: 0;
+  .moreContent .content__container {
+    width: 100%;
   }
-  .moreContent .content {
+  .moreContent .content__container .content.content1 {
+    margin-top: 5%;
+  }
+  .moreContent .content__container .content {
     height: auto;
     width: 100%;
     align-items: end;
     justify-content: flex-start;
     margin-top: 1.5em;
   }
-  .moreContent .content .forecast,
-.moreContent .content .rssContainer {
+  .moreContent .content__container .content .forecast,
+.moreContent .content__container .content .rssContainer {
     height: 100%;
   }
-  .moreContent .content .forecast .linksContainer .article,
-.moreContent .content .rssContainer .linksContainer .article {
+  .moreContent .content__container .content .forecast .linksContainer .article,
+.moreContent .content__container .content .rssContainer .linksContainer .article {
     padding-left: 0.6em;
   }
 }
