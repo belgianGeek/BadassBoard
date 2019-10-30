@@ -11,8 +11,8 @@
 </head>
 
 <body>
+  <div class="backgroundImage"></div>
   <div id="wrapper" class="wrapper flex">
-    <div id="backgroundImage" class="backgroundImage"></div>
     <main id="mainContainer" class="mainContainer flex">
       <header id="header" class="header">
         <svg id="settingsBtn" class="settingsBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f8f4f4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -39,9 +39,8 @@
           <%= typeof msg != 'undefined' ? msg : '' %>
         </div>
         <div id='audio' class="audio">
-          <div id="audioMsg" class="audioMsg flex">
-            <img class="audio__remove removeContentBtn flex" alt="Remove the audio player" src="./src/css/icons/interface/cross.svg">
-          </div>
+          <img class="audio__remove removeContentBtn flex" alt="Remove the audio player" src="./src/css/icons/interface/cross.svg">
+          <div id="audioMsg" class="audioMsg flex"></div>
           <div class="player flex"></div>
         </div>
         <div id="moreContent" class="moreContent flex">

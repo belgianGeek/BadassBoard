@@ -3,7 +3,7 @@ const minify = require('minify');
 
 minify('./src/js/app.js')
   .then((code) => {
-    fs.writeFile('./src/js/app2.js', code, 'utf-8', (err) => {
+    fs.writeFile('./src/js/app_minified.js', code, 'utf-8', (err) => {
       if (err) {
         console.log(err);
       } else {

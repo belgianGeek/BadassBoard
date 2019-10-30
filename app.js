@@ -42,12 +42,87 @@ const upload = multer({
 
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
+const settingsPath = './settings/settings.json';
 
 server.listen(8080, ip.address());
 
 const backupSettings = (settings) => {
   fs.writeFile('./settings/settings.json.bak', JSON.stringify(settings, null, 2), (err) => {
     if (err) throw err;
+  });
+}
+
+const customize = (customizationData) => {
+  // console.log(JSON.stringify(customizationData, null, 2));
+
+  fs.readFile(settingsPath, 'utf-8', (err, data) => {
+    if (err) throw err;
+    let settings;
+    if (data !== undefined) {
+      // try {
+      settings = JSON.parse(data);
+
+      const processNewSettings = (callback) => {
+        if (customizationData.backgroundImage !== null && customizationData.backgroundImage !== undefined) {
+          if (!customizationData.backgroundImage.match(/^http/)) {
+            // fs.rename(customizationData.backgroundImage, `./upload/wallpaper.${customizationData.backgroundImage.match(/[a-z]{1,4}$/im)}`, (err) => {
+            //   if (err) throw err;
+            // settings.backgroundImage = `./upload/wallpaper.${customizationData.backgroundImage.match(/[a-z]{1,4}$/im)}`;
+            // console.log(`file renamed : ./upload/wallpaper.${customizationData.backgroundImage.match(/[a-z]{1,4}$/im)}`);
+            // });
+            settings.backgroundImage = customizationData.backgroundImage;
+          } else {
+            settings.backgroundImage = customizationData.backgroundImage;
+          }
+        }
+
+        if (customizationData.RSS !== null && customizationData.RSS !== undefined) {
+          settings.RSS = customizationData.RSS;
+        }
+
+        if (customizationData.owmToken !== null && customizationData.owmToken !== undefined) {
+          settings.owmToken = customizationData.owmToken;
+        }
+
+        callback();
+      }
+
+      processNewSettings(() => {
+        setTimeout(() => {
+          fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
+            if (err) throw err;
+            // console.log(`config saved : ${settings.backgroundImage}`);
+
+            if (settings.backgroundImage !== null && settings.backgroundImage !== undefined) {
+              io.emit('server settings updated', {
+                backgroundImage: settings.backgroundImage
+              });
+            }
+
+            // Backup the new config
+            backupSettings(settings);
+          });
+        }, 1000)
+      });
+      // } catch (err) {
+      //   // If parsing fail, restore the backup
+      //   console.log(`Error parsing settings !`);
+      //   fs.copyFile('./settings/settings.json.bak', settingsPath, (err) => {
+      //     if (err) {
+      //       if (err.code === 'EBUSY') {
+      //         io.emit('refresh app');
+      //         console.log(err);
+      //       } else {
+      //         console.log(`Unknown error code :\n${err}`);
+      //       }
+      //     } else {
+      //       console.log(`Settings file successfully restored !`);
+      //     }
+      //   });
+      // }
+    } else {
+      console.log(`File content is undefined !`);
+    }
   });
 }
 
@@ -184,8 +259,6 @@ app.get('/', (req, res) => {
         ]
       }
 
-      let settingsPath = './settings/settings.json';
-
       // Read the settings file or create it if it doesn't exist
       fs.stat(settingsPath, (err) => {
         if (err === null) {
@@ -215,6 +288,7 @@ app.get('/', (req, res) => {
             if (settings === undefined) {
               console.log(`File content is undefined`);
             } else {
+              settings.RSS = true;
 
               // Check if feedData is an array
               if (Array.isArray(feedData)) {
@@ -225,92 +299,113 @@ app.get('/', (req, res) => {
                   // Store the parent element number
                   let iParent = Number(feedData[i].parent.match(/\d/)) - 1;
 
-                  const parseFeed = () => {
-                    request
-                      .get(feedData[i].url)
-                      .on('response', (res) => {
-                        if (res.headers['content-type'] === 'text/xml' || res.headers['content-type'].match(/rss/gi)) {
-                          feedparser.parse(feedData[i].url)
-                            .then(items => {
-                              io.emit('parse content', [{
-                                feed: items,
-                                element: feedData[i].element,
-                                parent: feedData[i].parent,
-                                type: feedData[i].type
-                              }]);
-                            })
-                            .catch((err) => {
-                              if (err == 'Error: Not a feed') {
-                                console.log('Invalid feed URL');
-                              }
-                            });
-
-                          if (i === feedData.length - 1) {
-                            fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), (err) => {
-                              if (err) throw err;
-                            });
-                          }
-                        } else {
-                          io.emit('errorMsg', `${feedData[i].url} is not a valid RSS feed`);
-                        }
-                      });
-                  }
+                  // Define a counter to prevent multiple addings
+                  let iAddElt = 0;
 
                   for (const [j, value] of elements.entries()) {
                     // console.log(`j : ${j}\nValue : ${JSON.stringify(value.elements, null, 2)}\n${feedData[i].parent}`);
 
-                    newElt.element = feedData[i].element;
-                    newElt.parent = feedData[i].parent;
+                    const processData = (callback) => {
+                      if (feedData[i].type === 'rss') {
+                        request
+                          .get(feedData[i].url)
+                          .on('response', (res) => {
+                            if (res.headers['content-type'].match(/xml/gi) || res.headers['content-type'].match(/rss/gi)) {
+                              console.log(res.headers['content-type']);
+                              newElt.element = feedData[i].element;
+                              newElt.parent = feedData[i].parent;
+                              newElt.url = feedData[i].url;
+                              newElt.type = feedData[i].type;
 
-                    if (feedData[i].type === 'rss') {
-                      settings.RSS = true;
-                      newElt.url = feedData[i].url;
-                      newElt.type = feedData[i].type;
+                              feedparser.parse(feedData[i].url)
+                                .then(items => {
+                                  io.emit('parse content', [{
+                                    feed: items,
+                                    element: feedData[i].element,
+                                    parent: feedData[i].parent,
+                                    type: feedData[i].type
+                                  }]);
 
-                      parseFeed();
-                      // console.log(`newElt : ${JSON.stringify(newElt, null, 2)}`);
-                    } else if (feedData[i].type === 'weather') {
-                      newElt.location = feedData[i].location;
-                      newElt.type = feedData[i].type;
+                                  callback();
+                                })
+                                .catch((err) => {
+                                  if (err == 'Error: Not a feed') {
+                                    console.log('Invalid feed URL');
+                                  }
+                                });
 
-                      io.emit('parse content', [{
-                        type: 'weather',
-                        element: feedData[i].element,
-                        parent: feedData[i].parent,
-                        location: feedData[i].location
-                      }]);
+                              if (i === feedData.length - 1) {
+                                fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), (err) => {
+                                  if (err) throw err;
+                                });
+                              }
+                            } else {
+                              newElt = {};
+                              console.log(1, newElt);
+
+                              io.emit('errorMsg', {
+                                type: 'rss verification',
+                                element: `${feedData[i].parent} ${feedData[i].element}`,
+                                msg: `${feedData[i].url} is not a valid RSS feed`
+                              });
+                            }
+                          });
+                        // console.log(`newElt : ${JSON.stringify(newElt, null, 2)}`);
+                      } else if (feedData[i].type === 'weather') {
+                        newElt.element = feedData[i].element;
+                        newElt.parent = feedData[i].parent;
+                        newElt.location = feedData[i].location;
+                        newElt.type = feedData[i].type;
+
+                        io.emit('parse content', [{
+                          type: 'weather',
+                          element: feedData[i].element,
+                          parent: feedData[i].parent,
+                          location: feedData[i].location
+                        }]);
+
+                        callback();
+                      }
                     }
 
-                    if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
-                      // if (value.elements[0].element.match(feedData[i].element) && value.elements[0].parent.match(feedData[i].parent)) {
-                      //   console.log(1);
-                      //   // Append the new element to the "elements" settings array
-                      //   value.elements.splice(0, 1, newElt);
-                      // } else if (feedData[i].new && value.elements[0].parent.match(feedData[i].parent)) {
-                      //   console.log(2);
-                      //   value.elements.push(newElt);
-                      // } else {
-                        for (const [k, kValue] of value.elements.entries()) {
-                          if (kValue.element === feedData[i].element && kValue.parent === feedData[i].parent) {
-                            value.elements.splice(k, 1, newElt);
+                    processData(() => {
+                      console.log(2, newElt);
+                      if (newElt !== {}) {
+                        if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
+                          for (const [k, kValue] of value.elements.entries()) {
+                            if (kValue.element === feedData[i].element && kValue.parent === feedData[i].parent) {
+                              console.log(1);
+                              value.elements.splice(k, 1, newElt);
+                            } else if (kValue.element !== feedData[i].element && kValue.parent === feedData[i].parent) {
+                              if (iAddElt === 0) {
+                                console.log(2);
+                                value.elements.push(newElt);
+                                iAddElt++;
+                              }
+                              // console.log(JSON.stringify(value.elements[k], null, 2));
+                            }
                           }
+                        } else if (value.elements[0] === undefined && iParent === j) {
+                          console.log(3);
+                          // Append the new element to the "elements" settings array
+                          value.elements.push(newElt);
                         }
-                      // }
-                    } else if (value.elements[0] === undefined && iParent === j) {
-                      // Append the new element to the "elements" settings array
-                      value.elements.push(newElt);
-                    }
+
+                        fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
+                          if (err) throw err;
+
+                          // Reset the addings counter
+                          iAddElt = 0;
+
+                          // Backup the new config
+                          backupSettings();
+                        });
+                      }
+                    });
                   }
                 }
               }
             }
-
-            fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
-              if (err) throw err;
-
-              // Backup the new config
-              backupSettings();
-            });
             // } catch (err) {
             //   // If parsing fail, restore the backup
             //   console.log(`Error parsing settings !`);
@@ -328,66 +423,17 @@ app.get('/', (req, res) => {
             //   });
             // }
           });
-        } else if (feedData === undefined) {
-          io.emit('errorMsg', `Sorrry, RSS feed couldn't be added. Intense reflexion.`);
-          console.log('Error adding feed : data is undefined');
-        } else if (feedData === null) {
-          io.emit('errorMsg', `Sorrry, RSS feed couldn't be added. Intense reflexion.`);
-          console.log('Error adding feed : data is null');
+        } else if (feedData === undefined || feedData === null) {
+          io.emit('errorMsg', {
+            msg: `Sorrry, RSS feed couldn't be added. Intense reflexion.`,
+            type: 'generic'
+          });
+          console.log('Error adding feed : data is null or undefined');
         }
       });
 
       io.on('customization', (customizationData) => {
-        // console.log(JSON.stringify(customizationData, null, 2));
-        fs.readFile(settingsPath, 'utf-8', (err, data) => {
-          if (err) throw err;
-          let settings;
-          if (data !== undefined) {
-            try {
-              settings = JSON.parse(data);
-
-              if (customizationData.backgroundImage !== null && customizationData.backgroundImage !== undefined) {
-                settings.backgroundImage = customizationData.backgroundImage;
-              }
-
-              if (customizationData.RSS !== null && customizationData.RSS !== undefined) {
-                settings.RSS = customizationData.RSS;
-              }
-
-              if (customizationData.owmToken !== null && customizationData.owmToken !== undefined) {
-                settings.owmToken = customizationData.owmToken;
-              }
-
-              fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
-                if (err) throw err;
-
-                io.emit('server settings updated', {
-                  backgroundImage: settings.backgroundImage
-                });
-
-                // Backup the new config
-                backupSettings(settings);
-              });
-            } catch (err) {
-              // If parsing fail, restore the backup
-              console.log(`Error parsing settings !`);
-              fs.copyFile('./settings/settings.json.bak', settingsPath, (err) => {
-                if (err) {
-                  if (err.code === 'EBUSY') {
-                    io.emit('refresh app');
-                    console.log(err);
-                  } else {
-                    console.log(`Unknown error code :\n${err}`);
-                  }
-                } else {
-                  console.log(`Settings file successfully restored !`);
-                }
-              });
-            }
-          } else {
-            console.log(`File content is undefined !`);
-          }
-        });
+        customize(customizationData);
       });
 
       io.on('download', (id) => {
@@ -487,7 +533,7 @@ app.get('/', (req, res) => {
       });
 
       io.on('update feed', (feed2update) => {
-        // console.log(JSON.stringify(feed2update, null, 2));
+        console.log(JSON.stringify(feed2update, null, 2));
         fs.readFile(settingsPath, 'utf-8', (err, data) => {
           try {
             let settings = JSON.parse(data);
@@ -500,7 +546,8 @@ app.get('/', (req, res) => {
                       // Parse rss
                       io.emit('feed updated', {
                         feed: items,
-                        element: feed2update.element
+                        element: feed2update.element,
+                        update: true
                       });
                     })
                     .catch(console.error);
@@ -529,11 +576,17 @@ app.get('/', (req, res) => {
                 io.emit('playlist parsed');
               });
             } else if (result.error !== undefined && result.error === 'Playlist is empty') {
-              io.emit('errorMsg', 'Invalid playlist reference :((');
+              io.emit('errorMsg', {
+                msg: 'Invalid playlist reference :((',
+                type: 'generic'
+              });
             }
           } catch (e) {
             console.log(`Error parsing playlist : ${e}`);
-            io.emit('errorMsg', 'Error parsing playlist :((');
+            io.emit('errorMsg', {
+              msg: 'Error parsing playlist :((',
+              type: 'generic'
+            });
           }
         });
       });
@@ -549,34 +602,26 @@ app.get('/', (req, res) => {
 
   .post('/upload', (req, res) => {
     upload(req, res, (err) => {
-      if (err) {
-        res.render('home.ejs', {
-          msg: err
-        });
+      if (req.file !== undefined) {
+        console.log(req.file);
+        let data = {
+          backgroundImage: `${req.file.destination}/${req.file.filename}`
+        };
+
+        console.log(`customize : ${data.backgroundImage}`);
+        if (err) {
+          res.render('home.ejs', {
+            msg: err
+          });
+        } else {
+          res.render('home.ejs', {
+            msg: `${req.file.originalname} successfully uploaded !`,
+          });
+
+          customize(data);
+        }
       } else {
-        res.render('home.ejs', {
-          msg: `${req.file.originalname} successfully uploaded !`,
-        });
-
-        // Add filepath to the settings
-        fs.readFile('./settings/settings.json', 'utf-8', (err, data) => {
-          if (err) {
-            console.log(err);
-          } else {
-            try {
-              let settings = JSON.parse(data);
-              settings.backgroundImage = `${req.file.destination}/${req.file.filename}`;
-              fs.writeFile('./settings/settings.json', JSON.stringify(settings, null, 2), 'utf-8', (err) => {
-                if (err) throw err;
-
-                // Backup the new config
-                backupSettings(settings);
-              });
-            } catch (err) {
-              console.log(`Error reading settings file !\n${err}`);
-            };
-          }
-        });
+        console.log('Error uploading file :((');
       }
     });
   })

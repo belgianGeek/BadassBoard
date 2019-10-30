@@ -1,3 +1,7 @@
+html {
+  height: 100%;
+}
+
 body,
 html {
   font-size: 1.2em;
@@ -5,7 +9,7 @@ html {
 
 body {
   margin: 0;
-  height: 100%;
+  min-height: 100%;
 }
 body * {
   font-size: 0.9em;
@@ -17,30 +21,35 @@ body * {
   display: flex;
 }
 
-.wrapper {
-  height: 100%;
-  padding: 0;
-  margin: 0;
-  flex-direction: column;
-}
-.wrapper .backgroundImage {
-  background-image: url("./wallpaper.jpg");
+.backgroundImage {
+  background-image: url("./wallpaper.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
+  background-attachment: fixed;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.wrapper {
+  padding: 0;
+  margin: 0;
+  flex-direction: column;
   position: absolute;
   top: 0;
-  height: 100%;
-  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 .wrapper ::placeholder {
   color: lightgray;
   font-style: italic;
 }
 .wrapper .rssTooltip {
-  width: 100%;
-  height: 100%;
-  position: relative;
+  position: absolute;
 }
 .wrapper .rssTooltip .article__desc {
   padding: 1%;
@@ -85,7 +94,7 @@ header {
 .settings__container {
   display: none;
   width: 100%;
-  height: 95%;
+  height: 100%;
   justify-content: center;
   align-items: center;
   position: absolute;
@@ -250,7 +259,6 @@ header {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  position: absolute;
 }
 
 .upperContainer {
@@ -258,8 +266,8 @@ header {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
   width: 100%;
+  height: 100%;
 }
 .upperContainer .msgContainer {
   width: auto;
@@ -280,6 +288,8 @@ header {
   padding: 0.5% 1%;
   border-radius: 30px;
   opacity: 0.7;
+  position: sticky;
+  top: 8%;
 }
 .formContainer .form {
   display: inline-flex;
@@ -325,6 +335,8 @@ header {
   border-radius: 0 0 15px 15px;
   overflow-y: auto;
   margin-bottom: 2%;
+  position: sticky;
+  top: 14.5%;
 }
 .suggestions * {
   color: black;
@@ -351,14 +363,16 @@ header {
 }
 
 .audio {
-  width: 50%;
-  background-color: rgba(0, 0, 0, 0.5);
+  width: 70%;
+  background-color: rgba(0, 0, 0, 0.8);
   padding: 0.5%;
   border-radius: 15px;
-  margin: 1% 0;
+  margin-bottom: 1vh;
   display: none;
-  flex-direction: column;
-  height: auto;
+  position: sticky;
+  top: 85%;
+  flex-direction: row;
+  align-items: center;
 }
 .audio .player {
   height: min-content;
@@ -376,35 +390,32 @@ header {
 }
 .audioMsg {
   height: min-content;
-  width: 100%;
-  font-size: 1.6em;
-  margin-bottom: 0.3em;
+  width: 70%;
+  font-size: 1.4em;
 }
 .audioMsg .playlistInfo {
-  font-size: 0.8em;
-  width: 10%;
-}
-.audioMsg #YtId,
-.audioMsg #streamTitle {
-  display: inline;
-}
-.audioMsg #streamTitle {
-  font-style: italic;
+  width: min-content;
+  margin: 0 1.5vh;
 }
 .audio__remove {
-  height: min-content;
+  height: 2.5vh;
   cursor: pointer;
+}
+.audio .streamInfoContainer {
+  width: max-content;
+  margin: 0 1vh;
 }
 
 .moreContent {
   flex-direction: row;
   justify-content: space-around;
   align-items: flex-start;
-  height: 70%;
   width: 100%;
   font-size: 1.1em;
   flex-wrap: wrap;
   overflow: auto;
+  margin-top: 8vh;
+  position: relative;
 }
 .moreContent .content__container {
   width: 30%;
@@ -653,12 +664,10 @@ header {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: auto;
   background: none;
-  position: fixed;
-  bottom: 0;
-  left: 0;
   padding-bottom: 1em;
+  position: fixed;
+  bottom: 3%;
 }
 .footer .icon {
   font-size: 1.3em;

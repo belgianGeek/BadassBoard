@@ -29,8 +29,8 @@ $.ajax({
         dataType: '',
         statusCode: {
           200: () => {
-            $('#backgroundImage')
-              .css('background-image', `url(${settings.backgroundImage})`);
+            $('.backgroundImage')
+              .css('backgroundImage', `url(${settings.backgroundImage})`);
           },
           404: () => {
             $('#msgContainer').text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
@@ -51,19 +51,21 @@ $.ajax({
     let svg = `${parent} ${element} .blank`;
     contentHeight = $('.content').height();
 
-    if (!$(`${element} .rssContainer`).length && !$(`${element} .forecast`).length) {
-      $(element)
-        .mouseenter(() => {
-          $(svg)
-            .addClass('flex visible')
-            .removeClass('invisible');
-        })
-        .mouseleave(() => {
-          $(svg)
-            .addClass('invisible')
-            .removeClass('visible');
-        });
-    }
+    setTimeout(() => {
+      if (!$(`${element} .rssContainer`).length && !$(`${element} .forecast`).length) {
+        $(element)
+          .mouseenter(() => {
+            $(svg)
+              .addClass('flex visible')
+              .removeClass('invisible');
+          })
+          .mouseleave(() => {
+            $(svg)
+              .addClass('invisible')
+              .removeClass('visible');
+          });
+      }
+    }, 1000);
 
     // Show the "addContent" form on svg click
     $(svg).click(() => {
@@ -104,27 +106,37 @@ $.ajax({
             }
 
             // Add RSS feed on form submit
-            $(`${parent} ${element} .addContent__submitBtn`)
-              .click(() => {
-                // Call a server-side function to parse the feed if the url isn't null or undefined
-                if ($(`${parent} ${element} .addContent__feed__input`).val() !== null && $(`${parent} ${element} .addContent__feed__input`).val() !== undefined && $(`${parent} ${element} .addContent__feed__input`).val() !== '') {
-                  // Ask the server to parse the feed
-                  socket.emit('add content', [{
-                    element: element,
-                    parent: parent,
-                    url: $(`${parent} ${element} .addContent__feed__input`).val(),
-                    type: 'rss',
-                    new: false
-                  }]);
-                } else {
-                  printError(`Bad RSS feed URL`);
-                }
+            const submitForm = () => {
+              $(`${parent} ${element} .addContent__submitBtn`)
+                .click(() => {
+                  // Call a server-side function to parse the feed if the url isn't null or undefined
+                  if ($(`${parent} ${element} .addContent__feed__input`).val() !== null && $(`${parent} ${element} .addContent__feed__input`).val() !== undefined && $(`${parent} ${element} .addContent__feed__input`).val().match(/^http/i)) {
+                    // Ask the server to parse the feed
+                    socket.emit('add content', [{
+                      element: element,
+                      parent: parent,
+                      url: $(`${parent} ${element} .addContent__feed__input`).val(),
+                      type: 'rss',
+                      new: false
+                    }]);
 
-                // Add content to the page
-                parseContent();
+                    // Add content to the page
+                    parseContent();
 
-                $(`${parent} ${element} .addContent`).hide();
-              });
+                    $(`${parent} ${element} .addContent`).hide();
+                  } else {
+                    printError({
+                      type: 'rss',
+                      msg: `Hey, this value is invalid !`,
+                      element: `${parent} ${element} .addContent__feed`
+                    });
+
+                    submitForm();
+                  }
+                });
+            }
+
+            submitForm();
           } else if ($(`${parent} ${element} .addContent__select`).val() === 'Weather forecast') {
 
             $(`${parent} ${element} .addContent`).removeClass('menu');
@@ -144,33 +156,52 @@ $.ajax({
               .addClass('flex');
 
             // Search for weather forecast on form submit
-            $(`${parent} ${element} .addContent__submitBtn`)
-              .click(() => {
-                $.ajax({
-                  url: `https://api.openweathermap.org/data/2.5/find?q=${$(`${parent} ${element} .addContent__weather__input`).val()}&units=metric&lang=en&appid=${owmToken}`,
-                  method: 'POST',
-                  dataType: 'json',
-                  statusCode: {
-                    401: () => {
-                      displayWeatherError(element);
-                    },
-                    200: (forecast => {
+            const submitForm = () => {
+              $(`${parent} ${element} .addContent__submitBtn`)
+                .click(() => {
+                  $.ajax({
+                    url: `https://api.openweathermap.org/data/2.5/find?q=${$(`${parent} ${element} .addContent__weather__input`).val()}&units=metric&lang=en&appid=${owmToken}`,
+                    method: 'POST',
+                    dataType: 'json',
+                    statusCode: {
+                      401: () => {
+                        printError({
+                          type: 'weather',
+                          msg: 'Sorry dude, your OpenWeatherMap token is invalid 😢. Please modify it in the settings.',
+                          element: `${parent} ${element}`
+                        });
 
-                      // Add content to the page
-                      parseContent();
+                        submitForm();
+                      },
+                      200: (forecast => {
+                        let count = forecast.count;
 
-                      // Send the changes to the server side
-                      socket.emit('add content', [{
-                        element: element,
-                        parent: parent,
-                        location: $(`${parent} ${element} .addContent__weather__input`).val(),
-                        type: 'weather',
-                        new: false
-                      }]);
-                    })
-                  }
+                        if (count === 1) {
+                          // Add content to the page
+                          parseContent();
+
+                          // Send the changes to the server side
+                          socket.emit('add content', [{
+                            element: element,
+                            parent: parent,
+                            location: $(`${parent} ${element} .addContent__weather__input`).val(),
+                            type: 'weather',
+                            new: false
+                          }]);
+                        } else {
+                          printError({
+                            type: 'weather',
+                            msg: 'Sorry homie, it seems this location doesn\'t exist...',
+                            element: `${parent} ${element}`
+                          });
+                        }
+                      })
+                    }
+                  });
                 });
-              });
+            }
+
+            submitForm();
           } else {
             $(`${parent} ${element} .addContent`).addClass('menu');
             $(`${parent} ${element} .addContent__select`).removeClass('select');
@@ -233,17 +264,91 @@ $.ajax({
             $(`${element} .contentOptions`).hide();
           });
 
-        $(`${element} .updateContentBtn`).click(() => {
-
+        $(`${element} .updateContentBtn`).click(function() {
           // Update RSS
           if (element.match(/rss/i)) {
             socket.emit('update feed', {
-              element: element
+              element: $(this).parents('.rssContainer')
             });
 
-            socket.on('rss parsed', (parsedData) => {
-              console.log('update');
-              parseContent(parsedData.element);
+            socket.on('feed updated', (parsedData) => {
+              console.log('update', JSON.stringify(parsedData.element, null, 2));
+              let feed = parsedData.feed;
+              let element = $(parsedData.element).parent().attr('class').split(' ')[1];
+              buildRssContainer(feed, (feed, rssContainer) => {
+                let rssContainerHeader = $('<div></div>')
+                  .addClass('rssContainer__header')
+                  .prependTo(rssContainer);
+
+                let feedTitle = $('<a></a>')
+                  .addClass('feedTitle')
+                  .attr({
+                    href: feed[0].meta.link
+                  })
+                  .text(feed[0].meta.title)
+                  .prependTo(rssContainerHeader);
+
+                // Add content options
+                let contentOptions = $('<span></span>')
+                  .addClass('contentOptions')
+                  .appendTo(rssContainerHeader);
+
+                let updateContentBtn = $('<img>')
+                  .addClass('updateContentBtn')
+                  .attr({
+                    alt: 'Update content',
+                    src: './src/css/icons/interface/refresh.svg'
+                  })
+                  .appendTo(contentOptions);
+
+                let removeContentBtn = $('<img>')
+                  .addClass('removeContentBtn')
+                  .attr({
+                    alt: 'Remove content',
+                    src: './src/css/icons/interface/cross.svg'
+                  })
+                  .appendTo(contentOptions);
+
+                $(`${element} .article`)
+                  .mouseenter((event) => {
+                    if (event.currentTarget.className.match('article')) {
+                      $(event.currentTarget.nextElementSibling)
+                        .clone()
+                        .appendTo('.rssTooltip');
+
+                      if (mousePosition.x < ($(window).width() / 100 * 30)) {
+                        $('.rssTooltip .article__desc')
+                          .css({
+                            display: 'inline-block',
+                            top: mousePosition.y - ($(window).width() / 100 * 5),
+                            left: mousePosition.x + ($(window).width() / 100 * 15)
+                          });
+                      } else {
+                        $('.rssTooltip .article__desc')
+                          .css({
+                            display: 'inline-block',
+                            top: mousePosition.y - ($(window).width() / 100 * 5),
+                            left: mousePosition.x - ($(window).width() / 100 * 35)
+                          });
+                      }
+                    }
+                  }).mouseleave((event) => {
+                    $('.rssTooltip .article__desc').remove();
+                  })
+
+                addContentOptions(element);
+
+                $(rssContainerHeader)
+                  .mouseenter(() => {
+                    $(`${element} .contentOptions`).addClass('flex');
+                  })
+                  .mouseleave(() => {
+                    $(`${element} .contentOptions`).addClass('flex');
+                  })
+
+                $(parsedData.element).replaceWith(rssContainer);
+                console.log('update successfull');
+              });
             });
           } else if (element.match(/forecast/i)) {
             // Remove the "Weather in..." part of the title to extract the location
@@ -256,7 +361,11 @@ $.ajax({
               dataType: 'json',
               statusCode: {
                 401: () => {
-                  displayWeatherError(parent);
+                  printError({
+                    type: 'weather',
+                    msg: 'Sorry dude, your OpenWeatherMap token is invalid 😢. Please modify it in the settings.',
+                    element: parent
+                  });
                 },
                 200: (forecast => {
                   // Retrieve the updated data
@@ -376,6 +485,38 @@ $.ajax({
     }
   }
 
+  const buildRssContainer = (feed, callback) => {
+    let rssContainer = $('<section></section>');
+    let linksContainer = $('<div></div>');
+    for (let i = 0; i < 10; i++) {
+      if (feed[i] !== undefined && feed[i].title !== undefined && feed[i].link !== undefined) {
+        rssContainer
+          .addClass('rssContainer flex');
+
+        linksContainer
+          .addClass('linksContainer')
+          .appendTo(rssContainer);
+
+        let article = $('<div></div>')
+          .addClass('article flex')
+          .appendTo(linksContainer);
+
+        let link = $('<a></a>')
+          .addClass('link')
+          .attr('href', feed[i].link)
+          .text(feed[i].title)
+          .appendTo(article);
+
+
+        let summary = $('<div></div>')
+          .addClass('article__desc')
+          .append(feed[i].summary)
+          .appendTo(linksContainer);
+      }
+    };
+    callback(feed, rssContainer);
+  }
+
   const displaySvg = (data) => {
     // Playlist controls
 
@@ -429,40 +570,6 @@ $.ajax({
     }
   }
 
-  const displayUploadWarning = (text) => {
-    let warning = $('<b></b>');
-    warning
-      .text(text)
-      .addClass('warning');
-    $('#backgroundImageUploadForm').after(warning);
-  }
-
-  const displayWeatherError = (parsedElement) => {
-    let warningMsg = 'Sorry dude, your OpenWeatherMap token is invalid 😢. Please modify it in the settings.';
-    if ($('.addContent:visible').length) {
-      if (!$('.addContent .warning').length) {
-        let warning = $('<span></span>');
-        warning
-          .addClass('warning')
-          .text(warningMsg)
-          .appendTo($('.addContent__weather'));
-      }
-    } else {
-      // Prevent duplicates
-      if (!$(`${parsedElement} .warning`).length) {
-        let errorMsg = $('<span></span>');
-        errorMsg
-          .addClass('warning')
-          .css({
-            marginTop: 0,
-            alignItems: 'center'
-          })
-          .text(warningMsg)
-          .appendTo(parsedElement);
-      }
-    }
-  }
-
   const fade = (element) => {
     $(element).fadeIn(2000, () => {
       setTimeout(() => {
@@ -487,16 +594,19 @@ $.ajax({
     removeAudioPlayer();
 
     if (data.videos[iPlaylist] === undefined) {
-      printError('Invalid playlist reference !');
+      printError({
+        type: 'generic',
+        msg: 'Invalid playlist reference !'
+      });
     } else {
       if (iPlaylist < data.videoCount && !data.videos[iPlaylist].title.match(/deleted video/gi) && data.videos[iPlaylist] !== undefined) {
         // Adapt the #moreContent height so all the elements can fit on the page
-        $('.moreContent').height('60%');
+        $('.moreContent').css('marginTop', 0);
 
         // Define the audio player
         if (!$('.audio__player').length) {
-          let audioPlayer = $('<audio></audio>');
-          audioPlayer.attr({
+          let audioPlayer = $('<audio></audio>')
+            .attr({
               id: 'audio__player',
               controls: 'controls',
               autoplay: 'autoplay'
@@ -505,17 +615,15 @@ $.ajax({
             .text('Your browser does not support the audio element :(')
             .appendTo('.player');
 
-          let leftSvg = $('<svg class="player__leftSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>');
-          leftSvg
-            .prependTo('.player');
+          let leftSvg = $('<svg class="player__leftSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>')
+            .prependTo('.audio');
 
-          let rightSvg = $('<svg class="player__rightSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>');
-          rightSvg
-            .appendTo('.player');
+          let rightSvg = $('<svg class="player__rightSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>')
+            .appendTo('.audio');
 
           // Define the source tag
-          let audioSrc = $('<source>');
-          audioSrc.attr({
+          let audioSrc = $('<source>')
+            .attr({
               id: 'audioSrc',
               src: `https://www.invidio.us/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`,
               type: ' audio/mpeg',
@@ -526,13 +634,11 @@ $.ajax({
 
           // Add playlist controls if they do not exist
           if (!$('.player__leftSvg').length) {
-            let leftSvg = $('<svg class="player__leftSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>');
-            leftSvg
+            let leftSvg = $('<svg class="player__leftSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>')
               .hide()
               .prependTo('.player');
 
-            let rightSvg = $('<svg class="player__rightSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>');
-            rightSvg
+            let rightSvg = $('<svg class="player__rightSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>')
               .hide()
               .appendTo('.player');
           }
@@ -543,49 +649,32 @@ $.ajax({
 
         // If the info about the track are not displayed, add them
         if (!$('.streamInfoContainer').length) {
-          let playlistInfo = $('<span></span>');
-          playlistInfo
+          let playlistInfo = $('<span></span>')
             .addClass('playlistInfo')
             .text(`${iPlaylist + 1}/${data.videoCount}`)
             .show()
             .prependTo('.audioMsg');
 
-          let streamInfoContainer = $('<span></span>');
-          streamInfoContainer
+          let streamInfoContainer = $('<span></span>')
             .addClass('streamInfoContainer')
-            .css({
-              width: '90%'
-            })
-            .insertBefore('.audio__remove');
+            .appendTo('.audioMsg');
 
           // Display some info about the played track
-          let audioText = $('<span></span>');
-          audioText
-            .attr('id', 'streamText')
-            .text(`You're listening to `)
-            .appendTo('.streamInfoContainer');
-
-          let streamTitle = $('<span></span>');
-          streamTitle
+          let streamTitle = $('<span></span>')
             .attr('id', 'streamTitle')
             .text(data.videos[iPlaylist].title)
             .appendTo('.streamInfoContainer');
 
-          let streamId = $('<span></span>');
-          streamId
+          let streamId = $('<span></span>')
             .text(` (Youtube ID : ${data.videos[iPlaylist].videoId})`)
             .attr('id', 'YtId')
             .appendTo('.streamInfoContainer');
         } else {
           $('#streamTitle').text(data.videos[iPlaylist].title);
-          $('#YtId').text(` (Youtube ID : ${data.videos[iPlaylist].videoId})`);
-          $('streamInfoContainer').css({
-            width: '90%'
-          });
+          $('#YtId').text(`(Youtube ID : ${data.videos[iPlaylist].videoId})`);
 
           if (!$('.playlistInfo').length) {
-            let playlistInfo = $('<span></span>');
-            playlistInfo
+            let playlistInfo = $('<span></span>')
               .addClass('playlistInfo')
               .text(`${iPlaylist + 1}/${data.videoCount}`)
               .show()
@@ -610,8 +699,7 @@ $.ajax({
             $('.player, .streamInfoContainer, .playlistInfo').hide();
 
             if (!$('.endOfPlaylist').length) {
-              let endOfPlaylist = $('<span></span>');
-              endOfPlaylist
+              let endOfPlaylist = $('<span></span>')
                 .text('There is no track left in here... 😭')
                 .addClass('playlistEndMsg')
                 .prependTo('.audioMsg');
@@ -626,12 +714,17 @@ $.ajax({
 
         $('.audio__player').show();
         $('.audioMsg').show();
-        $('.audio').fadeIn(1500);
+        $('.audio').fadeIn(1500, () => {
+          $('.audio').css('display', 'flex');
+        });
 
         // Display playlist controls
         displaySvg(data);
       } else if (data.videos[iPlaylist] === undefined) {
-        printError('Video ID not found !');
+        printError({
+          type: 'generic',
+          msg: 'Video ID not found !'
+        });
       } else if (data.videos[iPlaylist].title.match(/(deleted video) || (private video)/gi)) {
         iPlaylist++;
         listen2Playlist(data);
@@ -675,6 +768,7 @@ $.ajax({
   // Add content of other types than RSS
   const parseContent = () => {
     socket.on('parse content', (parsedData) => {
+      console.log('parsing requested');
       // console.log(JSON.stringify(parsedData, null, 2));
       for (const [i, value] of parsedData.entries()) {
         // console.log(i, `${value.parent} ${value.element}`);
@@ -737,7 +831,9 @@ $.ajax({
                         .off()
                         .hide();
 
-                      $(`${parent} .newContent .addContent`).addClass('flex');
+                      $(`${parent} .newContent .addContent`)
+                        .css('display', '')
+                        .addClass('flex');
 
                       $(`${parent} .newContent`)
                         .mouseenter(() => {
@@ -758,6 +854,7 @@ $.ajax({
 
                           newContainer
                             .removeClass('newContent')
+                            .attr('id', `content${iNewElt}`)
                             .addClass(`content${iNewElt}`);
                         }
 
@@ -780,29 +877,40 @@ $.ajax({
                             $(`${parent} .newContent .addContent__feed`).addClass('flex');
 
                             // Add RSS feed on form submit
-                            $(`${parent} .newContent .addContent__submitBtn`)
-                              .click(() => {
-                                updateClass();
+                            const submitForm = (btnClass) => {
+                              $(`${btnClass} .addContent__submitBtn`)
+                                .click(() => {
+                                  updateClass();
 
-                                $(`${parent} .newContent .addContent`).hide();
+                                  // Call a server-side function to parse the feed if the url isn't null or undefined
+                                  if ($(`${parent} .content${iNewElt} .addContent__feed__input`).val() !== null && $(`${parent} .content${iNewElt} .addContent__feed__input`).val() !== undefined && $(`${parent} .content${iNewElt} .addContent__feed__input`).val().match(/^http/i)) {
+                                    console.log('add content');
+                                    // Ask the server to parse the feed
+                                    socket.emit('add content', [{
+                                      element: `.content${iNewElt}`,
+                                      parent: parent,
+                                      url: $(`${parent} .content${iNewElt} .addContent__feed__input`).val(),
+                                      type: 'rss',
+                                      new: true
+                                    }]);
 
-                                // Call a server-side function to parse the feed if the url isn't null or undefined
-                                if ($(`${parent} .content${iNewElt} .addContent__feed__input`).val() !== null && $(`${parent} .content${iNewElt} .addContent__feed__input`).val() !== undefined && $(`${parent} .newContent .addContent__feed__input`).val() !== '') {
-                                  // Ask the server to parse the feed
-                                  socket.emit('add content', [{
-                                    element: `.content${iNewElt}`,
-                                    parent: parent,
-                                    url: $(`${parent} .content${iNewElt} .addContent__feed__input`).val(),
-                                    type: 'rss',
-                                    new: true
-                                  }]);
-                                } else {
-                                  printError(`Bad RSS feed URL`);
-                                }
+                                    $(`${parent} .content${iNewElt} .addContent`).hide();
 
-                                // Add content to the page
-                                parseContent();
-                              });
+                                    // Add content to the page
+                                    parseContent();
+                                  } else {
+                                    printError({
+                                      type: 'rss',
+                                      msg: `Hey, this value is invalid !`,
+                                      element: `${parent} .content${iNewElt} .addContent__feed`
+                                    });
+
+                                    submitForm(`${parent} .content${iNewElt}`);
+                                  }
+                                });
+                            }
+
+                            submitForm(`${parent} .newContent`);
                           } else if ($(`${parent} .newContent .addContent__select`).val() === 'Weather forecast') {
 
                             $(`${parent} .newContent .addContent`).removeClass('menu');
@@ -821,9 +929,13 @@ $.ajax({
                               .addClass('flex');
 
                             // Search for weather forecast on form submit
-                            $(`${parent} .newContent .addContent__submitBtn`)
-                              .click(() => {
+                            const submitForm = (btnClass) => {
+                              // Avoid ES6 here because it breaks $(this)
+                              $(btnClass).click(function() {
                                 updateClass();
+
+                                let parent = $(this).parents('.content__container').attr('id');
+                                let element = $(this).parents('.content').attr('id');
 
                                 $.ajax({
                                   url: `https://api.openweathermap.org/data/2.5/find?q=${$(`${parent} .content${iNewElt} .addContent__weather__input`).val()}&units=metric&lang=en&appid=${owmToken}`,
@@ -831,21 +943,27 @@ $.ajax({
                                   dataType: 'json',
                                   statusCode: {
                                     401: () => {
-                                      displayWeatherError(fullElementClassName);
+                                      printError({
+                                        type: 'weather',
+                                        msg: 'Sorry dude, your OpenWeatherMap token is invalid 😢. Please modify it in the settings.',
+                                        element: `.${parent} .${element}`
+                                      });
+
+                                      submitForm(`${parent} .content${iNewElt} .addContent__submitBtn`);
                                     },
                                     200: (forecast => {
 
                                       // Add content to the page
                                       parseContent();
 
-                                      $(`${parent} .content${iNewElt} .addContent`).hide();
+                                      $(`${parent} ${element} .addContent`).hide();
                                       // console.log(`${parent} .content${iNewElt}`);
 
                                       // Send the changes to the server side
                                       socket.emit('add content', [{
-                                        element: `.content${iNewElt}`,
+                                        element: element,
                                         parent: parent,
-                                        location: $(`${parent} .content${iNewElt} .addContent__weather__input`).val(),
+                                        location: $(`${parent} ${element} .addContent__weather__input`).val(),
                                         type: 'weather',
                                         new: true
                                       }]);
@@ -853,6 +971,9 @@ $.ajax({
                                   }
                                 })
                               });
+                            }
+
+                            submitForm(`${parent} .newContent .addContent__submitBtn`);
                           } else {
                             $(`${parent} .newContent .addContent`).addClass('menu');
                             $(`${parent} .newContent .addContent__select`).removeClass('select');
@@ -861,13 +982,13 @@ $.ajax({
                         });
 
                         // Cancel new content adding
-                        $(`${parent} .newContent .addContent__cancelBtn`).click(() => {
-                          $(`${parent} .newContent .addContent`).hide();
-                          // $(svg)
-                          //   .css({
-                          //     visibility: 'visible',
-                          //     display: 'flex'
-                          //   })
+                        $(`${parent} .newContent .addContent__cancelBtn`).click(function() {
+                          $(this).parent('.addContent').hide();
+                          $(this).parent('.blank')
+                            .css({
+                              visibility: 'visible',
+                              display: 'flex'
+                            })
                         });
                       });
                     });
@@ -896,7 +1017,11 @@ $.ajax({
                   dataType: 'json',
                   statusCode: {
                     401: () => {
-                      displayWeatherError(fullElementClassName);
+                      printError({
+                        type: 'weather',
+                        msg: 'Sorry dude, your OpenWeatherMap token is invalid 😢. Please modify it in the settings.',
+                        element: fullElementClassName
+                      });
                     },
                     200: (forecast => {
                       let resCode = forecast.cod;
@@ -905,8 +1030,8 @@ $.ajax({
                       // 404 errors handling (forecast.count can't be equals to 0)
                       if (count === 1) {
 
-                        if ($('.addContent:visible').length) {
-                          $('.addContent').hide();
+                        if ($(`${fullElementClassName} .addContent:visible`).length) {
+                          $(`${fullElementClassName} .addContent`).hide();
                         }
 
                         let cityID = forecast.list[0].id;
@@ -930,80 +1055,66 @@ $.ajax({
 
                         // Prevent duplicates
                         if (!$(`${fullElementClassName} .forecast`).length) {
-                          let forecastContainer = $('<section></section>');
-                          forecastContainer
+                          let forecastContainer = $('<section></section>')
                             .addClass('forecast flex')
                             .appendTo(fullElementClassName);
 
-                          let forecastHeader = $('<span></span>');
-                          forecastHeader
+                          let forecastHeader = $('<span></span>')
                             .addClass('forecast__header')
                             .appendTo(forecastContainer);
 
-                          let forecastTitle = $('<a></a>');
-                          forecastTitle
+                          let forecastTitle = $('<a></a>')
                             .addClass('forecast__header__title')
                             .text(`Weather in ${previsions.city}`)
                             .attr('href', `https://openweathermap.org/city/${cityID}`)
                             .appendTo(forecastHeader);
 
-                          let forecastContent = $('<div></div>');
-                          forecastContent
+                          let forecastContent = $('<div></div>')
                             .addClass('forecast__content flex')
                             .appendTo(forecastContainer);
 
-                          let forecastInfo = $('<div></div>');
-                          forecastInfo
+                          let forecastInfo = $('<div></div>')
                             .addClass('forecast__content__info flex')
                             .appendTo(forecastContent);
 
-                          let description = $('<span></span>');
-                          description
+                          let description = $('<span></span>')
                             .addClass('forecast__content__info__desc')
                             .appendTo(forecastInfo);
 
-                          let descriptionDesc = $('<p></p>');
-                          descriptionDesc
+                          let descriptionDesc = $('<p></p>')
                             .addClass('forecast__content__info__description__desc flex')
                             .text(previsions.description)
                             .appendTo(description);
 
-                          let descriptionIcon = $('<span></span>');
-                          descriptionIcon
+                          let descriptionIcon = $('<span></span>')
                             .addClass('forecastIcon')
                             .text('🛈')
                             .prependTo(description);
 
-                          let temp = $('<span></span>');
-                          temp
+                          let temp = $('<span></span>')
                             .addClass('forecast__content__info__temp')
                             .appendTo(forecastInfo);
 
-                          let tempDesc = $('<p></p>');
-                          tempDesc
+                          let tempDesc = $('<p></p>')
                             .addClass('forecast__content__info__temp__desc flex')
                             .text(`${previsions.temp} °C`)
                             .appendTo(temp);
 
-                          let tempIcon = $('<span></span>');
-                          tempIcon
+                          let tempIcon = $('<span></span>')
                             .addClass('forecastIcon')
                             .text('🌡')
                             .prependTo(temp);
 
-                          let windSpeed = $('<span></span>');
-                          windSpeed
+                          let windSpeed = $('<span></span>')
                             .addClass('forecast__content__info__wind')
                             .appendTo(forecastInfo);
 
-                          let windDesc = $('<p></p>');
-                          windDesc
+                          let windDesc = $('<p></p>')
                             .addClass('forecast__content__info__wind__desc')
                             .text(`${previsions.windSpeed} km/h`)
                             .appendTo(windSpeed);
 
-                          let windIcon = $('<img>');
-                          windIcon
+                          let windIcon = $('<img>')
                             .addClass('forecastIcon')
                             .attr({
                               alt: 'wind icon',
@@ -1011,32 +1122,27 @@ $.ajax({
                             })
                             .prependTo(windSpeed);
 
-                          let humidity = $('<span></span>');
-                          humidity
+                          let humidity = $('<span></span>')
                             .addClass('forecast__content__info__humidity')
                             .appendTo(forecastInfo);
 
-                          let humidityDesc = $('<p></p>');
-                          humidityDesc
+                          let humidityDesc = $('<p></p>')
                             .addClass('forecast__content__info__humidity__desc flex')
                             .text(`${previsions.humidity} %`)
                             .appendTo(humidity);
 
-                          let humidityIcon = $('<span></span>');
-                          humidityIcon
+                          let humidityIcon = $('<span></span>')
                             .addClass('forecastIcon')
                             .text(`💧`)
                             .prependTo(humidity);
 
                           // Create a div to store the weather icon
-                          let weatherIconContainer = $('<div></div>');
-                          weatherIconContainer
+                          let weatherIconContainer = $('<div></div>')
                             .addClass('forecast__weatherIcon flex')
                             .appendTo(forecastContent);
 
                           // Define the weather icon
-                          let weatherIcon = $('<span></span>');
-                          weatherIcon
+                          let weatherIcon = $('<span></span>')
                             .addClass('forecast__weatherIcon__icon')
                             .appendTo(weatherIconContainer);
 
@@ -1044,13 +1150,11 @@ $.ajax({
                           updateWeatherIcon(previsions);
 
                           // Add content options
-                          let contentOptions = $('<span></span>');
-                          contentOptions
+                          let contentOptions = $('<span></span>')
                             .addClass('contentOptions')
                             .appendTo(forecastHeader);
 
-                          let updateContentBtn = $('<img>');
-                          updateContentBtn
+                          let updateContentBtn = $('<img>')
                             .addClass('updateContentBtn')
                             .attr({
                               alt: 'Update content',
@@ -1058,8 +1162,7 @@ $.ajax({
                             })
                             .appendTo(contentOptions);
 
-                          let removeContentBtn = $('<img>');
-                          removeContentBtn
+                          let removeContentBtn = $('<img>')
                             .addClass('removeContentBtn')
                             .attr({
                               alt: 'Remove content',
@@ -1070,29 +1173,11 @@ $.ajax({
                           addContentOptions(fullElementClassName);
                         }
                       } else {
-                        let warningMsg = 'Sorry homie, it seems this location doesn\'t exist...';
-                        if ($('.addContent:visible').length) {
-                          if (!$('.addContent .warning').length) {
-                            let warning = $('<span></span>');
-                            warning
-                              .addClass('warning')
-                              .text(warningMsg)
-                              .appendTo($('.addContent__weather'));
-                          }
-                        } else {
-                          // Prevent duplicates
-                          if (!$(`${fullElementClassName} .warning`).length) {
-                            let errorMsg = $('<span></span>');
-                            errorMsg
-                              .addClass('warning')
-                              .css({
-                                marginTop: 0,
-                                alignItems: 'center'
-                              })
-                              .text(warningMsg)
-                              .appendTo(fullElementClassName);
-                          }
-                        }
+                        printError({
+                          type: 'weather',
+                          msg: 'Sorry homie, it seems this location doesn\'t exist...',
+                          element: fullElementClassName
+                        });
                       }
                     })
                   }
@@ -1104,52 +1189,15 @@ $.ajax({
           if (value.type === 'rss') {
             let feed = value.feed;
 
-            const buildRssContainer = (feed, callback) => {
-              let rssContainer = $('<section></section>');
-              let linksContainer = $('<div></div>');
-              for (let i = 0; i < 10; i++) {
-                if (feed[i] !== undefined && feed[i].title !== undefined && feed[i].link !== undefined) {
-                  rssContainer
-                    .addClass('rssContainer flex');
-
-                  linksContainer
-                    .addClass('linksContainer')
-                    .appendTo(rssContainer);
-
-                  let article = $('<div></div>');
-                  article
-                    .addClass('article flex')
-                    .appendTo(linksContainer);
-
-                  let link = $('<a></a>');
-                  link
-                    .addClass('link')
-                    .attr('href', feed[i].link)
-                    .text(feed[i].title)
-                    .appendTo(article);
-
-
-                  let summary = $('<div></div>');
-                  summary
-                    .addClass('article__desc')
-                    .append(feed[i].summary)
-                    .appendTo(linksContainer);
-                }
-              };
-              callback(feed, rssContainer);
-            }
-
             if (!$(`${fullElementClassName} .rssContainer`).length) {
               buildRssContainer(feed, (feed, rssContainer) => {
                 rssContainer.appendTo(fullElementClassName);
 
-                let rssContainerHeader = $('<div></div>');
-                rssContainerHeader
+                let rssContainerHeader = $('<div></div>')
                   .addClass('rssContainer__header')
                   .prependTo(`${fullElementClassName} .rssContainer`);
 
-                let feedTitle = $('<a></a>');
-                feedTitle
+                let feedTitle = $('<a></a>')
                   .addClass('feedTitle')
                   .attr({
                     href: feed[0].meta.link
@@ -1158,13 +1206,11 @@ $.ajax({
                   .prependTo(`${fullElementClassName} .rssContainer__header`);
 
                 // Add content options
-                let contentOptions = $('<span></span>');
-                contentOptions
+                let contentOptions = $('<span></span>')
                   .addClass('contentOptions')
                   .appendTo(rssContainerHeader);
 
-                let updateContentBtn = $('<img>');
-                updateContentBtn
+                let updateContentBtn = $('<img>')
                   .addClass('updateContentBtn')
                   .attr({
                     alt: 'Update content',
@@ -1172,8 +1218,7 @@ $.ajax({
                   })
                   .appendTo(contentOptions);
 
-                let removeContentBtn = $('<img>');
-                removeContentBtn
+                let removeContentBtn = $('<img>')
                   .addClass('removeContentBtn')
                   .attr({
                     alt: 'Remove content',
@@ -1231,17 +1276,52 @@ $.ajax({
     });
   }
 
-  const printError = (msg) => {
-    $('.msgContainer')
-      .addClass('warning')
-      .text(msg)
-      .show();
-
-    setTimeout(() => {
+  const printError = (err) => {
+    if (err.type === 'generic') {
       $('.msgContainer')
-        .hide()
-        .removeClass('warning');
-    }, 5000);
+        .addClass('warning')
+        .text(err.msg)
+        .show();
+
+      setTimeout(() => {
+        $('.msgContainer')
+          .hide()
+          .removeClass('warning');
+      }, 5000);
+    } else if (err.type === 'weather') {
+      if (err.element !== null && err.element !== undefined) {
+        console.log(err.element);
+        if (!$(`${err.element} .warning`).length) {
+          let warning = $('<span></span>')
+            .addClass('warning')
+            .text(err.msg)
+            .appendTo(`${err.element} .addContent__weather`);
+        }
+      }
+    } else if (err.type === 'rss') {
+      let errMsg = $('<span></span>')
+        .addClass('warning')
+        .text(err.msg)
+        .appendTo(err.element);
+    } else if (err.type === 'rss verification') {
+      if (!$(`${err.element} .rssWarning`).length) {
+        $(`${err.element} .addContent, ${err.element} .addContent__feed`)
+          .css('display', '')
+          .addClass('flex');
+
+        let errMsg = $('<span></span>')
+          .addClass('warning rssWarning')
+          .text(err.msg)
+          .appendTo($(`${err.element} .addContent__feed`));
+      }
+    } else if (err.type === 'upload') {
+      if (!$(`.settings__container .uploadWarning`).length) {
+        let warning = $('<b></b>')
+          .text(err.msg)
+          .addClass('warning uploadWarning');
+        $('#backgroundImageUploadForm').after(warning);
+      }
+    }
   }
 
   const processInput = (msg) => {
@@ -1281,7 +1361,10 @@ $.ajax({
             window.open(`http://${ip}:8080/download`);
           });
         } else {
-          printError(`You pasted an invalid link. If you tried to paste a URL, try the video ID only.`);
+          printError({
+            type: 'generic',
+            msg: `You pasted an invalid link. If you tried to paste a URL, try the video ID only`
+          });
         }
       } else if (msg.startsWith('!p ')) {
         // Play audio function
@@ -1320,7 +1403,7 @@ $.ajax({
           document.getElementById('audio__player').load();
 
           // Adapt the #moreContent height so all the elements can fit on the page
-          $('.moreContent').height('60%');
+          // $('.moreContent').css('marginTop', 0);
 
 
           socket.on('audio info retrieved', (streamInfo) => {
@@ -1329,11 +1412,17 @@ $.ajax({
 
             // If the info about the track are not displayed, add them
             if (!$('.streamInfoContainer').length) {
-              let streamInfoContainer = $('<span></span>');
-              streamInfoContainer
+              let streamInfoContainer = $('<span></span>')
                 .addClass('streamInfoContainer')
-                .append(`<span id="streamText">You're listening to </span><span id="streamTitle"></span><p id="YtId"></p>`)
                 .appendTo('.audioMsg');
+
+              let streamTitle = $('<span></span>')
+                .attr('id', 'streamTitle')
+                .appendTo(streamInfoContainer);
+
+              let YtId = $('<span></span>')
+                .attr('id', 'YtId')
+                .appendTo(streamInfoContainer);
             }
 
             // Hide playlist controls if they exists
@@ -1343,12 +1432,7 @@ $.ajax({
 
             // Else, just replace the old info with the new ones
             $('#streamTitle').text(streamInfo.title);
-            $('#YtId')
-              .text(` (Youtube ID : ${id})`)
-              .css({
-                display: 'block',
-                margin: '0.5em 0 0.1em 0'
-              });
+            $('#YtId').text(`(Youtube ID : ${id})`);
 
             $('.streamInfoContainer')
               .css({
@@ -1357,10 +1441,10 @@ $.ajax({
               });
 
             $('.audioMsg, .streamInfoContainer, .audio__player').show();
-            $('.audio').fadeIn(1500);
+            $('.audio').fadeIn(1500, () => {
+              $('.audio').css('display', 'flex');
+            });
           });
-
-          $('.audio').addClass('flex');
 
           document.getElementById('audio__player').onended = () => {
             $('.audio').fadeOut(1500);
@@ -1388,7 +1472,10 @@ $.ajax({
             });
           });
         } else {
-          printError('Bad URL :((');
+          printError({
+            type: 'generic',
+            msg: 'Bad URL :(('
+          });
         }
       }
     } else {
@@ -1406,13 +1493,13 @@ $.ajax({
   const removeAudioPlayer = () => {
     $('.audio__remove').click(() => {
       // Stop the audio playback
-      document.getElementById('audio__player').stop();
+      document.getElementById('audio__player').pause();
 
       // Hide the whole audio container
       $('.audio').hide();
 
       // Adapt the height of the moreContent container
-      $('.moreContent').height('70%');
+      $('.moreContent').css('marginTop', '');
     });
   }
 
@@ -1441,12 +1528,11 @@ $.ajax({
     }
 
     $('#settingsBtn').click(() => {
-      $('#backgroundImage, header, #mainContainer')
+      $('.backgroundImage, header, #mainContainer')
         .css('filter', 'blur(4px)');
       $('.settings__container')
         .fadeIn()
-        .css('display', 'flex')
-        .addClass('flex');
+        .css('display', 'flex');
     });
 
     // Simulate click on the input to upload a file and enable the rss feed feature on startup
@@ -1465,12 +1551,15 @@ $.ajax({
     });
 
     $('#settings__child__cancelBtn').click(() => {
-      $('#backgroundImage, header, #mainContainer')
+      $('.backgroundImage, header, #mainContainer')
         .css('filter', 'none');
       $('.settings__container').fadeOut();
     });
 
     $('#settings__child__saveBtn').click(() => {
+      // Is there error = true, cancel the settings div hiding
+      let error = false;
+
       // Only submit the form if one of the fields are fullfilled
       if ($('#backgroundImageUploadForm__InputFile').val() !== '' && $('#backgroundImageUploadForm__InputUrl').val() === '') {
         let fullPath = $('#backgroundImageUploadForm__InputFile').val().split('\\');
@@ -1481,6 +1570,7 @@ $.ajax({
         let fd = new FormData();
         fd.append('backgroundImageUploadInput', $('#backgroundImageUploadForm__InputFile')[0].files[0], imagePath);
 
+        console.log(`./upload/${imagePath}`);
         $.ajax({
           url: '/upload',
           type: 'POST',
@@ -1488,55 +1578,75 @@ $.ajax({
           processData: false,
           contentType: false,
           statusCode: {
-            200: () => {
-              console.log(fd, 'file sent !');
-            },
             404: () => {
               console.log('page not found !');
             }
+          },
+          success: (res) => {
+            console.log(`${updatedSettings.backgroundImage} uploaded successfully`);
+            $('.backgroundImage').css('backgroundImage', updatedSettings.backgroundImage);
+          },
+          error: (err) => {
+            console.log(`Error uploading file :\n${JSON.stringify(err, null, 2)}`);
           }
         });
-
-        $('#backgroundImage').css('backgroundImage', updatedSettings.backgroundImageFile);
-      } else if ($('#backgroundImageUploadForm__InputFile').val() === '' && $('#backgroundImageUploadForm__InputUrl').val() !== '') {
-        if ($('#backgroundImageUploadForm__InputUrl').val().match(/^(http|https):\/\/(www.|)[a-zA-Z0-9\/]{1,}\.\w.+/i)) {
-          if ($('#backgroundImageUploadForm__InputUrl').val().length < 100) {
-            updatedSettings.backgroundImage = $('#backgroundImageUploadForm__InputUrl').val();
-            $('#backgroundImage').css('backgroundImage', updatedSettings.backgroundImage);
-          } else {
-            displayUploadWarning('Your URL is too large ! Please shorten it !');
+      } else {
+        if ($('#backgroundImageUploadForm__InputFile').val() === '' && $('#backgroundImageUploadForm__InputUrl').val() !== '') {
+          if ($('#backgroundImageUploadForm__InputUrl').val().match(/^(http|https):\/\/(www.|)[a-zA-Z0-9\/]{1,}\.\w.+/i)) {
+            if ($('#backgroundImageUploadForm__InputUrl').val().length < 200) {
+              updatedSettings.backgroundImage = $('#backgroundImageUploadForm__InputUrl').val();
+              $('.backgroundImage').css('backgroundImage', updatedSettings.backgroundImage);
+            } else {
+              error = true;
+              printError({
+                type: 'upload',
+                msg: 'Your URL is too large ! Please shorten it !'
+              });
+            }
           }
+        } else if ($('#backgroundImageUploadForm__InputFile').val() !== '' && $('#backgroundImageUploadForm__InputUrl').val() !== '') {
+          error = true;
+          printError({
+            type: 'upload',
+            msg: 'Hey, don\'t be too powerful dude ! One field at a time !'
+          });
         }
-      } else if ($('#backgroundImageUploadForm__InputFile').val() !== '' && $('#backgroundImageUploadForm__InputUrl').val() !== '') {
-        displayUploadWarning('Hey, don\'t be too powerful dude ! One field at a time !');
+
+        if (checkboxState !== $('.toggleRss__Input').prop('checked')) {}
+
+        if ($('#backgroundImageUploadForm__InputFile').val() === '' && $('#backgroundImageUploadForm__InputUrl').val() === '' && $('.owmToken__input').val() === '') {
+          // If none of the fields are fullfilled, just hide the settings menu
+          $('.backgroundImage, header, #mainContainer')
+            .css('filter', 'none');
+
+          $('.settings__container').fadeOut();
+        }
+
+        if ($('.owmToken__input').val().match(/[a-z0-9]{32}/)) {
+          // OpenWeatherMap token
+          updatedSettings.owmToken = $('.owmToken__input').val();
+          owmToken = $('.owmToken__input').val();
+        }
+
+        setTimeout(() => {
+          // Send the updated settings to the server
+          socket.emit('customization', updatedSettings);
+        }, 1000);
       }
 
-      if (checkboxState !== $('.toggleRss__Input').prop('checked')) {}
+      $('.owmToken__Comment').text(`Your OpenWeatherMap token is ${updatedSettings.owmToken}. You can update it here !`);
 
-      if ($('#backgroundImageUploadForm__InputFile').val() === '' && $('#backgroundImageUploadForm__InputUrl').val() === '' && $('.owmToken__input').val() === '') {
-        // If none of the fields are fullfilled, just hide the settings menu
-        $('#backgroundImage, header, #mainContainer')
+      // If there is no errors, hide the div
+      if (!error) {
+        $('.backgroundImage, header, #mainContainer')
           .css('filter', 'none');
+
+        $('.settings__container .warning').hide();
 
         $('.settings__container').fadeOut();
       }
 
-      if ($('.owmToken__input').val().match(/[a-z0-9]{32}/)) {
-        // OpenWeatherMap token
-        updatedSettings.owmToken = $('.owmToken__input').val();
-      }
-
-      // Send the updated settings to the server
-      socket.emit('customization', updatedSettings);
-
-      $('.owmToken__Comment').text(`Your OpenWeatherMap token is ${updatedSettings.owmToken}. You can update it here !`);
-
-      $('#backgroundImage, header, #mainContainer')
-        .css('filter', 'none');
-
-      $('.settings__container').fadeOut();
-
-      if (updatedSettings.RSS !== checkboxState) {
+      if (updatedSettings.RSS !== undefined && updatedSettings.RSS !== checkboxState) {
         location.reload();
       }
     });
@@ -1550,7 +1660,8 @@ $.ajax({
     })
   }
 
-  const suggestions = [{
+  const suggestions = [
+    {
       label: '!1337x',
       desc: '1337x.to',
       icon: './src/css/icons/suggestions/1337x.ico',
@@ -1818,16 +1929,16 @@ $.ajax({
       location.reload();
     });
 
-    socket.on('errorMsg', (msg) => {
-      printError(msg);
+    socket.on('errorMsg', (err) => {
+      printError(err);
     });
 
     socket.on('server settings updated', (data) => {
       if (data !== null && data !== undefined) {
-        $('#backgroundImage')
+        $('.backgroundImage')
           .css('background-image', `url(${data.backgroundImage})`);
 
-        $('#backgroundImage, header, #mainContainer')
+        $('.backgroundImage, header, #mainContainer')
           .css('filter', 'none');
 
         $('#settings').fadeOut();
