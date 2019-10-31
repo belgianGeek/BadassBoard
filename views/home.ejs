@@ -23,18 +23,20 @@
         </svg>
       </header>
       <div id="upperContainer" class="upperContainer">
-        <div id="formContainer" class="formContainer">
-          <form id="form" class="form" method="get">
-            <input id="questionBox" class="questionBox" type="text" name="question" placeholder="What are you searching for ?">
-            <button type="submit" name="questionBox__submitBtn">
-              <svg id="formSubmit" class="formSubmit" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="lightgrey" stroke-width="3" stroke-linecap="round" stroke-linejoin="arcs">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            </button>
-          </form>
+        <div class="formContainer__container">
+          <div id="formContainer" class="formContainer">
+            <form id="form" class="form" method="get">
+              <input id="questionBox" class="questionBox" type="text" name="question" placeholder="What are you searching for ?">
+              <button type="submit" name="questionBox__submitBtn">
+                <svg id="formSubmit" class="formSubmit" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="lightgrey" stroke-width="3" stroke-linecap="round" stroke-linejoin="arcs">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </button>
+            </form>
+          </div>
+          <div class="suggestions"></div>
         </div>
-        <div class="suggestions"></div>
         <div id="msgContainer" class="msgContainer">
           <%= typeof msg != 'undefined' ? msg : '' %>
         </div>
@@ -61,12 +63,6 @@
           </div>
         </div>
       </div>
-      <footer id="footer" class="footer flex">
-        <span id="icon" class="icon">̿̿ ̿̿ ̿̿ ̿'̿'\̵͇̿̿\з= ( ▀ ͜͞ʖ▀) =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿</span>
-        <span id="credits" class="credits flex">
-          <p>BadassBoard, proudly handmade in Belgium 🍺</p>
-        </span>
-      </footer>
     </main>
     <div class="settings__container">
       <div id="settings__child" class="settings__child flex">
@@ -103,6 +99,12 @@
       </div>
     </div>
     <div class="rssTooltip flex"></div>
+    <footer id="footer" class="footer flex">
+      <span id="icon" class="icon">̿̿ ̿̿ ̿̿ ̿'̿'\̵͇̿̿\з= ( ▀ ͜͞ʖ▀) =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿</span>
+      <span id="credits" class="credits flex">
+        <p>BadassBoard, proudly handmade in Belgium 🍺</p>
+      </span>
+    </footer>
   </div>
   <script src="https://code.jquery.com/jquery-3.4.1.min.js" charset="utf-8" type="application/javascript"></script>
   <script src="/socket.io/socket.io.js" type="application/javascript"></script>

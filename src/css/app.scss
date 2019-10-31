@@ -1,7 +1,3 @@
-html {
-  height: 100%;
-}
-
 body,
 html {
   font-size: 1.2em;
@@ -9,7 +5,6 @@ html {
 
 body {
   margin: 0;
-  min-height: 100%;
 
   * {
     font-size: 0.9em;
@@ -86,7 +81,6 @@ header {
   animation-duration: 1s;
   animation-iteration-count: 1;
 }
-
 @keyframes turnRound {
   0% {
     transform: translate(0px, 0px) rotate(0deg);
@@ -311,96 +305,105 @@ header {
   }
 }
 
-.formContainer {
-  display: inline-flex;
-  width: 50%;
-  align-items: baseline;
+.formContainer__container {
+  display: flex;
+  height: 20%;
+  flex-direction: column;
   justify-content: center;
-  background-color: white;
-  padding: 0.5% 1%;
-  border-radius: 30px;
-  opacity: 0.7;
+  align-items: center;
   position: sticky;
-  top: 8%;
-  // margin: 4vh 0;
-  .form {
+  top: 5%;
+  width: 100%;
+  z-index: 2;
+
+
+  .formContainer {
     display: inline-flex;
-    width: 100%;
-    align-items: center;
-    font-size: 1.2em;
+    width: 50%;
+    align-items: baseline;
+    justify-content: center;
+    background-color: white;
+    padding: 0.5% 1%;
+    border-radius: 30px;
+    opacity: 0.7;
 
-    .questionBox {
+    .form {
+      display: inline-flex;
       width: 100%;
-      height: 2em;
-      border: none;
-      background: none;
-      color: black;
-    }
-
-    ::placeholder {
-      color: black;
+      align-items: center;
       font-size: 1.2em;
-      font-style: italic;
+
+      .questionBox {
+        width: 100%;
+        height: 2em;
+        border: none;
+        background: none;
+        color: black;
+      }
+
+      ::placeholder {
+        color: black;
+        font-size: 1.2em;
+        font-style: italic;
+      }
+      /* Error placeholder style*/
+      .placeholder::placeholder {
+        color: red;
+        font-weight: bold;
+        text-align: center;
+        font-style: normal;
+        font-size: 1.5em;
+      }
+
+      button {
+        border: none;
+        background: none;
+        padding: 0;
+        cursor: pointer;
+      }
+
+      &__Submit {
+        margin-left: 1%;
+      }
     }
-    /* Error placeholder style*/
-    .placeholder::placeholder {
-      color: red;
-      font-weight: bold;
-      text-align: center;
-      font-style: normal;
-      font-size: 1.5em;
+  }
+
+  .suggestions {
+    font-size: 1.3em;
+    background-color: white;
+    width: 30%;
+    opacity: 0.7;
+    border-radius: 0 0 15px 15px;
+    overflow-y: auto;
+    margin-bottom: 2%;
+
+    * {
+      color: black;
     }
 
-    button {
-      border: none;
-      background: none;
-      padding: 0;
+    .active {
+      height: auto;
+    }
+
+    .suggestion {
+      padding: 0.5% 0 0.5% 1%;
+      align-items: center;
+      width: 99%;
+      flex-direction: row;
       cursor: pointer;
-    }
 
-    &__Submit {
-      margin-left: 1%;
-    }
-  }
-}
+      &__icon {
+        padding-right: 2%;
+      }
 
-.suggestions {
-  font-size: 1.3em;
-  background-color: white;
-  width: 30%;
-  opacity: 0.7;
-  border-radius: 0 0 15px 15px;
-  overflow-y: auto;
-  margin-bottom: 2%;
-  position: sticky;
-  top: 14.5%;
+      &__label {
+        width: 10%;
+      }
 
-  * {
-    color: black;
-  }
-
-  .active {
-    height: auto;
-  }
-
-  .suggestion {
-    padding: 0.5% 0 0.5% 1%;
-    align-items: center;
-    width: 99%;
-    flex-direction: row;
-    cursor: pointer;
-
-    &__icon {
-      padding-right: 2%;
-    }
-
-    &__label {
-      width: 10%;
-    }
-
-    &__desc {
-      font-style: italic;
-      color: gray;
+      &__desc {
+        font-style: italic;
+        color: gray;
+      }
     }
   }
 }
@@ -464,9 +467,8 @@ header {
   width: 100%;
   font-size: 1.1em;
   flex-wrap: wrap;
-  overflow: auto;
-  margin-top: 8vh;
   position: relative;
+  top: 50%;
 
   .content__container {
     width: 30%;
@@ -772,8 +774,8 @@ header {
   justify-content: center;
   background: none;
   padding-bottom: 1em;
-  position: fixed;
-  bottom: 3%;
+  position: relative;
+  top: 97%;
 
   .icon {
     font-size: 1.3em;

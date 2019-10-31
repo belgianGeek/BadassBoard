@@ -268,13 +268,13 @@ $.ajax({
           // Update RSS
           if (element.match(/rss/i)) {
             socket.emit('update feed', {
-              element: $(this).parents('.rssContainer')
+              element: `.${$(this).parents('.rssContainer').parent().attr('id')}`
             });
 
             socket.on('feed updated', (parsedData) => {
               console.log('update', JSON.stringify(parsedData.element, null, 2));
               let feed = parsedData.feed;
-              let element = $(parsedData.element).parent().attr('class').split(' ')[1];
+
               buildRssContainer(feed, (feed, rssContainer) => {
                 let rssContainerHeader = $('<div></div>')
                   .addClass('rssContainer__header')
@@ -309,7 +309,7 @@ $.ajax({
                   })
                   .appendTo(contentOptions);
 
-                $(`${element} .article`)
+                $(`${parsedData.element} .article`)
                   .mouseenter((event) => {
                     if (event.currentTarget.className.match('article')) {
                       $(event.currentTarget.nextElementSibling)
@@ -334,19 +334,19 @@ $.ajax({
                     }
                   }).mouseleave((event) => {
                     $('.rssTooltip .article__desc').remove();
-                  })
+                  });
 
-                addContentOptions(element);
+                addContentOptions(parsedData.element);
 
-                $(rssContainerHeader)
+                $(`${parsedData.element} .rssContainer__header`)
                   .mouseenter(() => {
-                    $(`${element} .contentOptions`).addClass('flex');
+                    $(`${parsedData.element} .contentOptions`).addClass('flex');
                   })
                   .mouseleave(() => {
-                    $(`${element} .contentOptions`).addClass('flex');
+                    $(`${parsedData.element} .contentOptions`).addClass('flex');
                   })
 
-                $(parsedData.element).replaceWith(rssContainer);
+                $(`${parsedData.element} .rssContainer`).replaceWith(rssContainer);
                 console.log('update successfull');
               });
             });
