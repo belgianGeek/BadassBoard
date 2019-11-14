@@ -27,7 +27,7 @@ const upload = multer({
   limits: {
     fileSize: 5000000
   }
-}).single('backgroundImageUploadInput');
+}).single('backgroundImageUploadInput'); // the name cannot be modified because it is linked to the input name in the formData object
 
 // HTTPS server config
 // const options = {
@@ -53,7 +53,7 @@ const backupSettings = (settings) => {
 }
 
 const customize = (customizationData) => {
-  // console.log(JSON.stringify(customizationData, null, 2));
+  console.log(JSON.stringify(customizationData, null, 2));
 
   fs.readFile(settingsPath, 'utf-8', (err, data) => {
     if (err) throw err;
@@ -91,7 +91,7 @@ const customize = (customizationData) => {
         setTimeout(() => {
           fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
             if (err) throw err;
-            // console.log(`config saved : ${settings.backgroundImage}`);
+            console.log(`config saved : ${settings.backgroundImage}`);
 
             if (settings.backgroundImage !== null && settings.backgroundImage !== undefined) {
               io.emit('server settings updated', {
@@ -192,7 +192,7 @@ const readSettings = () => {
   });
 }
 
-const existPath = (path) => {
+const existPath = (path, callback) => {
   fs.stat(path, (err, stats) => {
     if (err) {
       if (path.match(/\w.+\/$/)) {
@@ -204,6 +204,11 @@ const existPath = (path) => {
           if (err) throw err;
         });
       }
+    }
+
+    // Only execute the callback if it is defined
+    if (callback) {
+      callback();
     }
   });
 }
@@ -219,13 +224,13 @@ let downloadedFile = {
 
 // Check if folders exist
 existPath('upload/');
-existPath('settings/');
 existPath('tmp/');
-
-// Write the current IP in a file to send it to the client
-fs.writeFile('./settings/ip.txt', ip.address(), 'utf-8', (err) => {
-  if (err) throw err;
-})
+existPath('settings/', () => {
+  // Write the current IP in a file to send it to the client
+  fs.writeFile('./settings/ip.txt', ip.address(), 'utf-8', (err) => {
+    if (err) throw err;
+  });
+});
 
 app.use("/src", express.static(__dirname + "/src"))
   .use("/upload", express.static(__dirname + "/upload"))
@@ -369,16 +374,16 @@ app.get('/', (req, res) => {
                     }
 
                     processData(() => {
-                      console.log(2, newElt);
+                      // console.log(2, newElt);
                       if (newElt !== {}) {
                         if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
                           for (const [k, kValue] of value.elements.entries()) {
                             if (kValue.element === feedData[i].element && kValue.parent === feedData[i].parent) {
-                              console.log(1);
+                              // console.log(1);
                               value.elements.splice(k, 1, newElt);
                             } else if (kValue.element !== feedData[i].element && kValue.parent === feedData[i].parent) {
                               if (iAddElt === 0) {
-                                console.log(2);
+                                // console.log(2);
                                 value.elements.push(newElt);
                                 iAddElt++;
                               }
@@ -386,7 +391,7 @@ app.get('/', (req, res) => {
                             }
                           }
                         } else if (value.elements[0] === undefined && iParent === j) {
-                          console.log(3);
+                          // console.log(3);
                           // Append the new element to the "elements" settings array
                           value.elements.push(newElt);
                         }
@@ -533,20 +538,24 @@ app.get('/', (req, res) => {
       });
 
       io.on('update feed', (feed2update) => {
-        console.log(JSON.stringify(feed2update, null, 2));
+        // console.log(JSON.stringify(feed2update, null, 2));
         fs.readFile(settingsPath, 'utf-8', (err, data) => {
           try {
             let settings = JSON.parse(data);
             for (const i of settings.elements) {
               for (const j of i.elements) {
-                let regex = new RegExp(j.element, 'gi');
-                if (feed2update.element.match(regex)) {
+                // console.log(JSON.stringify(j, null, 2));
+                let eltRegex = new RegExp(j.element, 'gi');
+                let parentRegex = new RegExp(j.parent, 'gi');
+                if (feed2update.element.match(eltRegex) && feed2update.parent.match(parentRegex)) {
+                  console.log('ok');
                   feedparser.parse(j.url)
                     .then(items => {
                       // Parse rss
                       io.emit('feed updated', {
                         feed: items,
                         element: feed2update.element,
+                        parent: feed2update.parent,
                         update: true
                       });
                     })
@@ -563,7 +572,7 @@ app.get('/', (req, res) => {
       io.on('parse playlist', (playlistUrl) => {
         request(playlistUrl, (err, response, body) => {
           if (err === 'socket hang up') {
-            console.log('There is some trouble at line 518... :(');
+            console.log('The websocket died... :(');
           } else {
             console.log(err);
           }
@@ -620,8 +629,9 @@ app.get('/', (req, res) => {
 
           customize(data);
         }
-      } else {
-        console.log('Error uploading file :((');
+      } else if (err) {
+        console.log(JSON.stringify(req.file, null, 2));
+        console.log(`Error uploading file :(( :\n${err}`);
       }
     });
   })

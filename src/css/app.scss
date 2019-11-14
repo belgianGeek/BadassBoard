@@ -11,34 +11,29 @@ body {
     font-family: Ubuntu, sans-serif;
     color: white;
   }
+
+  .backgroundImage {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-image: url("./wallpaper.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+  }
 }
 
 .flex {
   display: flex;
 }
 
-.backgroundImage {
-  background-image: url("./wallpaper.png");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  background-attachment: fixed;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
 .wrapper {
   padding: 0;
   margin: 0;
   flex-direction: column;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
 
   ::placeholder {
     color: lightgray;
@@ -68,6 +63,7 @@ header {
   width: 100%;
   justify-content: flex-end;
   align-items: center;
+  z-index: 3;
 }
 
 .settingsBtn {
@@ -292,7 +288,6 @@ header {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100%;
 
   .msgContainer {
     width: auto;
@@ -312,7 +307,7 @@ header {
   justify-content: center;
   align-items: center;
   position: sticky;
-  top: 5%;
+  top: 0;
   width: 100%;
   z-index: 2;
 
@@ -326,6 +321,7 @@ header {
     padding: 0.5% 1%;
     border-radius: 30px;
     opacity: 0.7;
+    margin: 3% 0;
 
     .form {
       display: inline-flex;
@@ -419,6 +415,7 @@ header {
   top: 85%;
   flex-direction: row;
   align-items: center;
+  z-index: 2;
 
   .player {
     height: min-content;
@@ -468,7 +465,7 @@ header {
   font-size: 1.1em;
   flex-wrap: wrap;
   position: relative;
-  top: 50%;
+  // top: 50%;
 
   .content__container {
     width: 30%;
