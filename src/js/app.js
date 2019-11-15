@@ -966,19 +966,26 @@ $.ajax({
                           $(btnClass).click(function() {
                             updateClass();
 
-                            let parent = $(this).parents('.content__container').attr('id');
-                            let element = $(this).parents('.content').attr('id');
+                            let parent = `.${$(this).parents('.content__container').attr('id')}`;
+                            let element = `.${$(this).parents('.content').attr('id')}`;
 
                             $.ajax({
                               url: `https://api.openweathermap.org/data/2.5/find?q=${$(`${parent} .content${iNewElt} .addContent__weather__input`).val()}&units=metric&lang=en&appid=${owmToken}`,
                               method: 'POST',
                               dataType: 'json',
                               statusCode: {
+                                400: () => {
+                                  printError({
+                                    type: 'weather',
+                                    msg: 'Something is wrong with your request... Please contact the dev to fix it.',
+                                    element: `${parent} ${element}`
+                                  });
+                                },
                                 401: () => {
                                   printError({
                                     type: 'weather',
                                     msg: 'Sorry dude, your OpenWeatherMap token is invalid 😢. Please modify it in the settings.',
-                                    element: `.${parent} .${element}`
+                                    element: `${parent} ${element}`
                                   });
 
                                   submitForm(`${parent} .content${iNewElt} .addContent__submitBtn`);
@@ -1034,7 +1041,6 @@ $.ajax({
 
           const addNewContentContainer = () => {
             setTimeout(() => {
-              console.log('div added');
               if (!$(`${parent} .newContent`).length) {
                 let newContainer = $('<div></div>')
                   .addClass(`newContent content subRow flex`)
@@ -1319,7 +1325,9 @@ $.ajax({
       }, 5000);
     } else if (err.type === 'weather') {
       if (err.element !== null && err.element !== undefined) {
-        console.log(err.element);
+
+        // Disable all the events handler on the content div
+        $(err.element).off();
         if (!$(`${err.element} .warning`).length) {
           let warning = $('<span></span>')
             .addClass('warning')

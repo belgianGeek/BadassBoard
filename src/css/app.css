@@ -450,6 +450,7 @@ header {
 }
 .moreContent .content__container .content .forecast,
 .moreContent .content__container .content .rssContainer {
+  height: 100%;
   max-height: 100%;
 }
 .moreContent .content__container .content .addContent,
