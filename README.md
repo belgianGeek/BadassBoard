@@ -1,16 +1,19 @@
+#  ̿̿ ̿̿ ̿'̿'\̵͇̿̿\з= ( ▀ ͜͞ʖ▀) =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿
+
 # What is _BadassBoard_ ?
 
 This project intent to be an open source, self-hosted replacement for services like _start.me_.
 
 Its features includes :
 
-- RSS reader
-- Weather forecast (thanks to the _OpenWeatherMap_ API) => you'll need a token to use this thing
-- Web shorcuts to several websites (based on the DuckduckGo _Bangs_ system).
+- RSS reader ;
+- Weather forecast (thanks to the _OpenWeatherMap_ API) => you'll need a token to use this thing ;
+- Web shorcuts to several websites (based on the DuckduckGo _Bangs_ system) ;
+- Audio streaming from YouTube thanks to the _Invidio.us_ API (playlist and videos are both supported) ;
 
-All of that available through a (nice ?) and customizable UI
+All of that available through a (nice ?) and customizable UI.
 
-**NB: This is still in beta stage, so be patient and indulgent :grin:**
+**NB: This is still in beta stage, so please be patient and indulgent :grin:**
 
 # Installation
 
