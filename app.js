@@ -451,75 +451,102 @@ app.get('/', (req, res) => {
       });
 
       io.on('download', (id) => {
-        fs.stat('./youtube-dl.exe', (err, stats) => {
-          if (err) {
-            if (err.code === 'ENOENT') {
-              var info = ytdl.getInfo(id, (err, info) => {
-                if (err) throw err;
+        let options = [
+          '-x',
+          '--audio-format',
+          'mp3',
+          '-o',
+          `./tmp/%(title)s.%(ext)s`,
+          id,
+          '--youtube-skip-dash-manifest',
+          '--embed-thumbnail',
+          '--add-metadata'
+        ];
 
-                let filename = info.player_response.videoDetails.title.replace(/[\/\\%:]/, '');
-                filename = `${filename}.mp3`;
+        const manualAudioDownload = () => {
+          var info = ytdl.getInfo(id, (err, info) => {
+            if (err) throw err;
 
-                let path = `${__dirname}\\src\\${filename}`;
+            let filename = info.player_response.videoDetails.title.replace(/[\/\\%:]/, '');
+            filename = `${filename}.mp3`;
 
-                // Create a file containing the stream
-                let audioFile = fs.createWriteStream(path);
+            let path = `${__dirname}\\src\\${filename}`;
 
-                let stream = ytdl(id, {
-                    filter: 'audioonly'
-                  }, {
-                    quality: 'highestaudio'
-                  })
-                  .pipe(audioFile);
+            // Create a file containing the stream
+            let audioFile = fs.createWriteStream(path);
 
-                stream.on('close', () => {
-                  // console.log(`I finished downloading ${filename} !`);
+            let stream = ytdl(id, {
+                filter: 'audioonly'
+              }, {
+                quality: 'highestaudio'
+              })
+              .pipe(audioFile);
 
-                  downloadedFile.path = path;
-                  downloadedFile.name = filename;
+            stream.on('close', () => {
+              // console.log(`I finished downloading ${filename} !`);
 
-                  // Inform the client that the download ended
-                  io.emit('download ended', {
-                    title: info.player_response.videoDetails.title,
-                  });
-                });
-              });
-            } else {
-              console.log(`Error downloading file without Youtube-dl : ${err}`);
-            }
-          } else {
-            let download = execFile('youtube-dl.exe', [
-              '-x',
-              '--audio-format',
-              'mp3',
-              '-o',
-              `./tmp/%(title)s.%(ext)s`,
-              id,
-              '--youtube-skip-dash-manifest',
-              '--embed-thumbnail',
-              '--add-metadata'
-            ], (err, stdout) => {
-              if (err) {
-                console.log(`Error downloading file with Youtube-dl : ${err}`);
-              }
-
-              let filename = stdout
-                .match(/tmp([\\a-zA-ZùéàçÉÈÁÀÊîïôÔ0-9-_\[\]()\s.,;:=+~µ@&#!]{1,}\.mp3)/i)[1]
-                .substring(1, 100);
-
-              downloadedFile.path = `./tmp/${filename}`;
-
+              downloadedFile.path = path;
               downloadedFile.name = filename;
-            });
 
-            download.on('close', () => {
               // Inform the client that the download ended
               io.emit('download ended', {
-                title: downloadedFile.name
+                title: info.player_response.videoDetails.title,
               });
             });
-          }
-        })
+          });
+        }
+
+        const youtubeDlDownload = (youtubeDLpath) => {
+          let download = execFile(youtubeDLpath, options, (err, stdout) => {
+            if (err) {
+              console.log(`Error downloading file with Youtube-dl : ${err}`);
+            }
+
+            let filename = stdout
+              .match(/tmp([\/\\a-zA-ZùéàçÉÈÁÀÊîïôÔ0-9-_\[\]()\s.,;:=+~µ@&#!]{1,}\.mp3)/i)[1]
+              .substring(1, 100);
+
+            downloadedFile.path = `./tmp/${filename}`;
+
+            downloadedFile.name = filename;
+          });
+
+          download.on('close', () => {
+            // Inform the client that the download ended
+            io.emit('download ended', {
+              title: downloadedFile.name
+            });
+          });
+        }
+
+        if (os.platform() === 'win32') {
+          fs.stat('./youtube-dl.exe', (err, stats) => {
+            if (err) {
+              if (err.code === 'ENOENT') {
+                manualAudioDownload();
+              } else {
+                console.log(`Error downloading file without Youtube-dl : ${err}`);
+              }
+            } else {
+              youtubeDlDownload('youtube-dl.exe');
+            }
+          })
+        } else if (os.platform() === 'linux') {
+          fs.stat('/usr/local/bin/youtube-dl', (err, stats) => {
+            if (err) {
+              if (err.code === 'ENOENT') {
+                manualAudioDownload();
+              } else {
+                console.log(`Error downloading file without Youtube-dl : ${err}`);
+              }
+            } else {
+              youtubeDlDownload('youtube-dl');
+            }
+          });
+        } else {
+          console.log('Sorry, the Youtube-dl method has not been implemented for your OS yet...');
+          manualAudioDownload();
+        }
       });
 
       io.on('audio info request', (streamData) => {

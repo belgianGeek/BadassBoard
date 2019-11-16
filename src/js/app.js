@@ -878,7 +878,7 @@ $.ajax({
                   $(`${parent} .newContent .addContent`).ready(() => {
                     let iNewElt;
                     const updateClass = () => {
-                      console.log(parent, $(`${parent} .subRow`).prev());
+                      // console.log(parent, $(`${parent} .subRow`).prev());
                       // Toggle classes to match a regular pattern
                       if ($(`${parent} .newContent`).prev().attr('class') !== undefined) {
                         iNewElt = Number($(`${parent} .newContent`).prev().attr('class').substring(15, 16)) + 1;
@@ -1356,7 +1356,9 @@ $.ajax({
       if (!$(`.settings__container .uploadWarning`).length) {
         let warning = $('<b></b>')
           .text(err.msg)
-          .addClass('warning uploadWarning');
+          .addClass('warning uploadWarning')
+          .css('display', '');
+
         $('#backgroundImageUploadForm').after(warning);
       }
     }
@@ -1601,42 +1603,43 @@ $.ajax({
       // Only submit the form if one of the fields are fullfilled
       if ($('#backgroundImageUploadForm__InputFile').val() !== '' && $('#backgroundImageUploadForm__InputUrl').val() === '') {
         let file = $('#backgroundImageUploadForm__InputFile').get(0).files[0];
-        updatedSettings.backgroundImage = `./upload/${file.name}`;
-
-
-        let fd = new FormData();
-        fd.append('backgroundImageUploadInput', file, file.name);
 
         // Check if file is not too large by converting bytes to megabytes
-        console.log((file.size / 1048576) > 5);
-        if ((file.size / 1048576) > 5242880) {
+        if ((file.size / 1048576) > 5) {
+          error = true;
+
           printError({
             type: 'upload',
-            msg: 'Your file is too laaaaaaaaaaarge !'
+            msg: 'Your file is too laaaaarge ! Please select one under 5 Mb.'
           });
         } else {
-          $.ajax({
-            url: '/upload',
-            type: 'POST',
-            data: fd,
-            processData: false,
-            contentType: false,
-            statusCode: {
-              404: () => {
-                console.log('page not found !');
+          updatedSettings.backgroundImage = `./upload/${file.name}`;
+
+          let fd = new FormData();
+          fd.append('backgroundImageUploadInput', file, file.name);
+
+            $.ajax({
+              url: '/upload',
+              type: 'POST',
+              data: fd,
+              processData: false,
+              contentType: false,
+              statusCode: {
+                404: () => {
+                  console.log('page not found !');
+                },
+                200: () => {
+                  console.log('upload successfull !');
+                }
               },
-              200: () => {
-                console.log('upload successfull !');
+              success: (res) => {
+                // console.log(fd, file, `${updatedSettings.backgroundImage} uploaded successfully`);
+                $('.backgroundImage').css('backgroundImage', updatedSettings.backgroundImage);
+              },
+              error: (err) => {
+                console.log(fd, file, `Error uploading file :\n${JSON.stringify(err, null, 2)}`);
               }
-            },
-            success: (res) => {
-              console.log(fd, file, `${updatedSettings.backgroundImage} uploaded successfully`);
-              $('.backgroundImage').css('backgroundImage', updatedSettings.backgroundImage);
-            },
-            error: (err) => {
-              console.log(fd, file, `Error uploading file :\n${JSON.stringify(err, null, 2)}`);
-            }
-          });
+            });
         }
       } else {
         if ($('#backgroundImageUploadForm__InputFile').val() === '' && $('#backgroundImageUploadForm__InputUrl').val() !== '') {
@@ -1692,17 +1695,17 @@ $.ajax({
 
       // If there is no errors, hide the div
       if (!error) {
+
         $('.backgroundImage, header, #mainContainer')
           .css('filter', 'none');
 
         $('.settings__container .warning').hide();
 
         $('.settings__container').fadeOut();
-      }
-      console.log(JSON.stringify(updatedSettings, null, 2));
 
-      // Send the updated settings to the server
-      socket.emit('customization', updatedSettings);
+        // Send the updated settings to the server
+        socket.emit('customization', updatedSettings);
+      }
     });
   }
 
