@@ -53,7 +53,7 @@ const backupSettings = (settings) => {
 }
 
 const customize = (customizationData) => {
-  console.log(JSON.stringify(customizationData, null, 2));
+  // console.log(JSON.stringify(customizationData, null, 2));
 
   fs.readFile(settingsPath, 'utf-8', (err, data) => {
     if (err) throw err;
@@ -91,7 +91,7 @@ const customize = (customizationData) => {
         setTimeout(() => {
           fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
             if (err) throw err;
-            console.log(`config saved : ${settings.backgroundImage}`);
+            // console.log(`config saved : ${settings.backgroundImage}`);
 
             if (settings.backgroundImage !== null && settings.backgroundImage !== undefined) {
               io.emit('server settings updated', {
