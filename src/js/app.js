@@ -1591,8 +1591,11 @@ $.ajax({
     });
 
     $('#settings__child__cancelBtn').click(() => {
-      $('.backgroundImage, header, #mainContainer')
-        .css('filter', 'none');
+      if ($('.uploadWarning').length) {
+        $('.uploadWarning').remove();
+      }
+
+      $('.backgroundImage, header, #mainContainer').css('filter', 'none');
       $('.settings__container').fadeOut();
     });
 
@@ -1696,8 +1699,7 @@ $.ajax({
       // If there is no errors, hide the div
       if (!error) {
 
-        $('.backgroundImage, header, #mainContainer')
-          .css('filter', 'none');
+        $('.backgroundImage, header, #mainContainer').css('filter', 'none');
 
         $('.settings__container .warning').hide();
 
@@ -1705,6 +1707,10 @@ $.ajax({
 
         // Send the updated settings to the server
         socket.emit('customization', updatedSettings);
+
+        if ($('.uploadWarning').length) {
+          $('.uploadWarning').remove();
+        }
       }
     });
   }
