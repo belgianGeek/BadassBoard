@@ -113,7 +113,7 @@ const customize = (customizationData) => {
       //         io.emit('refresh app');
       //         console.log(err);
       //       } else {
-      //         console.log(`Unknown error code :\n${err}`);
+      //         console.log(`Error copying the settings file :\n${err}`);
       //       }
       //     } else {
       //       console.log(`Settings file successfully restored !`);
@@ -179,7 +179,7 @@ const readSettings = () => {
       //         io.emit('refresh app');
       //         console.log(err);
       //       } else {
-      //         console.log(`Unknown error code :\n${err}`);
+      //         console.log(`Error copying the settings file :\n${err}`);
       //       }
       //     } else {
       //       console.log(`Settings file successfully restored !`);
@@ -243,6 +243,15 @@ if (!ip.address().match(/169.254/)) {
   console.log(`Sorry Dude, I won't work properly if I don't have access to the Internet. Please fix your connection and try again.`);
 }
 
+// Clear the temp folder every 10 minutes
+setTimeout(() => {
+  fs.unlink(downloadedFile.path, (err) => {
+    if (err) {
+      console.log(`Error cleaning the temp folder :\n${err}`);
+    }
+  });
+}, 100000);
+
 app.get('/', (req, res) => {
     // console.log(req.secure);
     res.render('home.ejs');
@@ -271,7 +280,7 @@ app.get('/', (req, res) => {
         } else if (err.code === 'ENOENT') {
           fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
             if (err) {
-              console.log(err);
+              console.log(`Error creating the settings file : ${err}`);
             } else {
               readSettings();
             }
@@ -291,7 +300,7 @@ app.get('/', (req, res) => {
             settings = JSON.parse(data);
             var elements = settings.elements;
             if (settings === undefined) {
-              console.log(`File content is undefined`);
+              console.log(`The settings file content is undefined...`);
             } else {
               settings.RSS = true;
 
@@ -316,7 +325,7 @@ app.get('/', (req, res) => {
                           .get(feedData[i].url)
                           .on('response', (res) => {
                             if (res.headers['content-type'].match(/xml/gi) || res.headers['content-type'].match(/rss/gi)) {
-                              console.log(res.headers['content-type']);
+                              // console.log(res.headers['content-type']);
                               newElt.element = feedData[i].element;
                               newElt.parent = feedData[i].parent;
                               newElt.url = feedData[i].url;
@@ -346,7 +355,7 @@ app.get('/', (req, res) => {
                               }
                             } else {
                               newElt = {};
-                              console.log(1, newElt);
+                              // console.log(1, newElt);
 
                               io.emit('errorMsg', {
                                 type: 'rss verification',
@@ -420,7 +429,7 @@ app.get('/', (req, res) => {
             //         io.emit('refresh app');
             //         console.log(err);
             //       } else {
-            //         console.log(`Unknown error code :\n${err}`);
+            //         console.log(`Error copying the settings file :\n${err}`);
             //       }
             //     } else {
             //       console.log(`Settings file successfully restored !`);
@@ -433,7 +442,7 @@ app.get('/', (req, res) => {
             msg: `Sorrry, RSS feed couldn't be added. Intense reflexion.`,
             type: 'generic'
           });
-          console.log('Error adding feed : data is null or undefined');
+          console.log(`Error adding feed : feedData is ${feedData}`);
         }
       });
 
@@ -476,7 +485,7 @@ app.get('/', (req, res) => {
                 });
               });
             } else {
-              console.log(err);
+              console.log(`Error downloading file without Youtube-dl : ${err}`);
             }
           } else {
             let download = execFile('youtube-dl.exe', [
@@ -491,7 +500,7 @@ app.get('/', (req, res) => {
               '--add-metadata'
             ], (err, stdout) => {
               if (err) {
-                console.log(err);
+                console.log(`Error downloading file with Youtube-dl : ${err}`);
               }
 
               let filename = stdout
@@ -508,14 +517,6 @@ app.get('/', (req, res) => {
               io.emit('download ended', {
                 title: downloadedFile.name
               });
-
-              setTimeout(() => {
-                fs.unlink(downloadedFile.path, (err) => {
-                  if (err) {
-                    console.log(`Error cleaning the temp folder :\n${err}`);
-                  }
-                });
-              }, 100000);
             });
           }
         })
@@ -525,11 +526,12 @@ app.get('/', (req, res) => {
         let id = streamData.id;
         ytdl(id, (err, info) => {
           if (err) {
-            console.log(err);
+            console.log(`Error getting audio info with ytdl : ${err}`);
           } else {
             fs.writeFile('./streamInfo.json', JSON.stringify(info, null, 2), 'utf-8', (err) => {
               if (err) throw err;
             });
+
             io.emit('audio info retrieved', {
               title: info.player_response.videoDetails.title
             });
@@ -548,7 +550,7 @@ app.get('/', (req, res) => {
                 let eltRegex = new RegExp(j.element, 'gi');
                 let parentRegex = new RegExp(j.parent, 'gi');
                 if (feed2update.element.match(eltRegex) && feed2update.parent.match(parentRegex)) {
-                  console.log('ok');
+                  // console.log('ok');
                   feedparser.parse(j.url)
                     .then(items => {
                       // Parse rss
@@ -574,7 +576,7 @@ app.get('/', (req, res) => {
           if (err === 'socket hang up') {
             console.log('The websocket died... :(');
           } else {
-            console.log(err);
+            console.log(`Error parsing requesting playlist info on the Invidious API : ${err}`);
           }
           try {
             var result = JSON.parse(body);
@@ -612,12 +614,12 @@ app.get('/', (req, res) => {
   .post('/upload', (req, res) => {
     upload(req, res, (err) => {
       if (req.file !== undefined) {
-        console.log(req.file);
+        // console.log(req.file);
         let data = {
           backgroundImage: `${req.file.destination}/${req.file.filename}`
         };
 
-        console.log(`customize : ${data.backgroundImage}`);
+        // console.log(`customize : ${data.backgroundImage}`);
         if (err) {
           res.render('home.ejs', {
             msg: err
@@ -630,7 +632,7 @@ app.get('/', (req, res) => {
           customize(data);
         }
       } else if (err) {
-        console.log(JSON.stringify(req.file, null, 2));
+        // console.log(JSON.stringify(req.file, null, 2));
         console.log(`Error uploading file :(( :\n${err}`);
       }
     });
@@ -655,7 +657,7 @@ app.get('/', (req, res) => {
                   io.emit('refresh app');
                   console.log(err);
                 } else {
-                  console.log(`Unknown error code :\n${err}`);
+                  console.log(`Error copying the settings file :\n${err}`);
                 }
               } else {
                 console.log(`Settings file successfully restored !`);
