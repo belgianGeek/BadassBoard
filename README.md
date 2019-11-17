@@ -74,7 +74,7 @@ Like mentioned in the `package.json` file, the CSS code can be compiled with the
 
 # Libraries used
 
-A special thank to the creator of :
+A special thank to the creators of :
 
 - [Express](https://github.com/expressjs/express) and [Multer](https://github.com/expressjs/multer)
 - [Ytdl-core](https://github.com/fent/node-ytdl-core)
