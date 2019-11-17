@@ -60,6 +60,18 @@ You found a bug or just have a suggestion ? Feel free to create an issue with th
 
 If you want to improve the app, you can create a pull request or a fork as well.
 
+## Development notes
+
+Here are a few notes if you want to modify this project :
+
+To make development easier, the client-side JS code is minified using the _Minify_ package and the _minify.js_ script.
+
+The CSS code is generated with the help of the SCSS package.
+
+Please note that these packages need to be installed globally on your system to function properly. In order to do that, just type `npm i -g <package name>` or `yarn global add <package name>` in your terminal.
+
+Like mentioned in the `package.json` file, the CSS code can be compiled with the `sass` command, and the JS code can be minified by running `node minify`.
+
 # Libraries used
 
 A special thank to the creator of :
@@ -68,3 +80,7 @@ A special thank to the creator of :
 - [Ytdl-core](https://github.com/fent/node-ytdl-core)
 - [Feedparser-promised](https://github.com/alabeduarte/feedparser-promised)
 - [Request](https://github.com/request/request)
+- [IP](https://github.com/indutny/node-ip)
+- [opusscript](https://github.com/abalabahaha/opusscript)
+- [SCSS](https://yarnpkg.com/en/package/scss)
+- [Minify](https://github.com/coderaiser/minify)
