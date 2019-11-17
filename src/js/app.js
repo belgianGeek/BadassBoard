@@ -1749,7 +1749,7 @@ $.ajax({
     {
       label: '!d',
       desc: 'Download a YouTube audio stream',
-      icon: './src/css/icons/suggestions/'
+      icon: './src/css/icons/suggestions/download.png'
     },
     {
       label: '!fdroid',

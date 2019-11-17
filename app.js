@@ -4,9 +4,7 @@ const express = require('express');
 const app = express();
 const feedparser = require("feedparser-promised")
 const ip = require('ip');
-const {
-  execFile
-} = require('child_process');
+const { execFile } = require('child_process');
 const os = require('os');
 const path = require('path');
 const request = require('request');
@@ -28,17 +26,6 @@ const upload = multer({
     fileSize: 5000000
   }
 }).single('backgroundImageUploadInput'); // the name cannot be modified because it is linked to the input name in the formData object
-
-// HTTPS server config
-// const options = {
-//   key: fs.readFileSync('./certs/badassBoard.key'),
-//   cert: fs.readFileSync( './certs/badassBoard.pem' )
-// };
-//
-// const server = require('https').Server(options, app);
-// const io = require('socket.io')(server);
-
-// execFile.exec('node serverFallback.js');
 
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
@@ -245,12 +232,20 @@ if (!ip.address().match(/169.254/)) {
 
 // Clear the temp folder every 10 minutes
 setTimeout(() => {
-  fs.unlink(downloadedFile.path, (err) => {
-    if (err) {
-      console.log(`Error cleaning the temp folder :\n${err}`);
+  fs.readdir('./tmp', (err, files) => {
+    if (!err) {
+      for (const file of files) {
+        fs.unlink(`./tmp/${file}`, (err) => {
+          if (err) {
+            console.log(`Error deleting "${file}" from the temp folder :\n${err}`);
+          }
+        });
+      }
+    } else {
+      console.log(`Error cleaning the temp folder:\n${err}`);
     }
   });
-}, 100000);
+}, 60000);
 
 app.get('/', (req, res) => {
     // console.log(req.secure);
