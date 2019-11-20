@@ -288,7 +288,7 @@ header {
   padding: 0.5% 1%;
   border-radius: 30px;
   opacity: 0.7;
-  margin: 3% 0 0 0;
+  margin: 3% 0 0;
 }
 .formContainer__container .formContainer .form {
   display: inline-flex;
@@ -448,19 +448,19 @@ header {
   width: 100%;
   font-size: 1.05em;
 }
+.moreContent .content__container .content .blank,
 .moreContent .content__container .content .forecast,
-.moreContent .content__container .content .rssContainer {
+.moreContent .content__container .content .rssContainer,
+.moreContent .content__container .content .warning {
   height: 100%;
   max-height: 100%;
+  padding: 0 2%;
 }
 .moreContent .content__container .content .addContent,
 .moreContent .content__container .content .blank,
 .moreContent .content__container .content .rssContainer,
 .moreContent .content__container .content .warning {
-  padding: 0 2%;
-  height: 100%;
   margin-bottom: 2vh;
-  max-height: 100%;
 }
 .moreContent .content__container .content .forecast__header {
   display: inline-flex;

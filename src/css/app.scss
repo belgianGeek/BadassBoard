@@ -311,7 +311,6 @@ header {
   width: 100%;
   z-index: 2;
 
-
   .formContainer {
     display: inline-flex;
     width: 50%;
@@ -321,7 +320,7 @@ header {
     padding: 0.5% 1%;
     border-radius: 30px;
     opacity: 0.7;
-    margin: 3% 0 0 0;
+    margin: 3% 0 0;
 
     .form {
       display: inline-flex;
@@ -466,7 +465,6 @@ header {
   flex-wrap: wrap;
   position: relative;
   // top: 50%;
-
   .content__container {
     width: 30%;
     justify-content: space-between;
@@ -508,20 +506,20 @@ header {
         font-size: 1.05em;
       }
 
+      .blank,
       .forecast,
-      .rssContainer {
+      .rssContainer,
+      .warning {
         height: 100%;
         max-height: 100%;
+        padding: 0 2%;
       }
 
       .addContent,
       .blank,
       .rssContainer,
       .warning {
-        padding: 0 2%;
-        height: 100%;
         margin-bottom: 2vh;
-        max-height: 100%;
       }
 
       .forecast {
