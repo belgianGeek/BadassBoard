@@ -804,6 +804,7 @@ $.ajax({
 
   // Add content of other types than RSS
   const parseContent = () => {
+    let functionCounter = 0;
     socket.on('parse content', (parsedData) => {
       console.log('parsing requested');
       // console.log(JSON.stringify(parsedData, null, 2));
@@ -881,11 +882,12 @@ $.ajax({
                       // console.log(parent, $(`${parent} .subRow`).prev());
                       // Toggle classes to match a regular pattern
                       if ($(`${parent} .newContent`).prev().attr('class') !== undefined) {
-                        iNewElt = Number($(`${parent} .newContent`).prev().attr('class').substring(15, 16)) + 1;
+                        iNewElt = Number($(`${parent} .newContent`).prev().attr('id').substring(7, 9)) + 1;
+                        console.log($(`${parent} .newContent`).prev().attr('id').substring(7, 9), iNewElt);
                       }
 
                       $(`${parent} .newContent`)
-                        .removeClass('newContent')
+                        .removeClass('newContent subRow flex')
                         .attr('id', `content${iNewElt}`)
                         .addClass(`content${iNewElt}`);
                     }
@@ -1057,6 +1059,21 @@ $.ajax({
               }
 
               showSubRow();
+
+              // Fix the content divs order
+              $('.newContent').ready(() => {
+                $('.content').each(function(index) {
+
+                  // Exclude the ".newContent" div
+                  if (!$(this).hasClass('newContent')) {
+                    $(this).css('order', $(this).attr('id').substring(7, 9));
+                  } else {
+
+                    // Send the newContent div at the bottom
+                    $(this).css('order', 100);
+                  }
+                });
+              });
             }, 500);
           }
 
@@ -1621,28 +1638,28 @@ $.ajax({
           let fd = new FormData();
           fd.append('backgroundImageUploadInput', file, file.name);
 
-            $.ajax({
-              url: '/upload',
-              type: 'POST',
-              data: fd,
-              processData: false,
-              contentType: false,
-              statusCode: {
-                404: () => {
-                  console.log('page not found !');
-                },
-                200: () => {
-                  console.log('upload successfull !');
-                }
+          $.ajax({
+            url: '/upload',
+            type: 'POST',
+            data: fd,
+            processData: false,
+            contentType: false,
+            statusCode: {
+              404: () => {
+                console.log('page not found !');
               },
-              success: (res) => {
-                // console.log(fd, file, `${updatedSettings.backgroundImage} uploaded successfully`);
-                $('.backgroundImage').css('backgroundImage', updatedSettings.backgroundImage);
-              },
-              error: (err) => {
-                console.log(fd, file, `Error uploading file :\n${JSON.stringify(err, null, 2)}`);
+              200: () => {
+                console.log('upload successfull !');
               }
-            });
+            },
+            success: (res) => {
+              // console.log(fd, file, `${updatedSettings.backgroundImage} uploaded successfully`);
+              $('.backgroundImage').css('backgroundImage', updatedSettings.backgroundImage);
+            },
+            error: (err) => {
+              console.log(fd, file, `Error uploading file :\n${JSON.stringify(err, null, 2)}`);
+            }
+          });
         }
       } else {
         if ($('#backgroundImageUploadForm__InputFile').val() === '' && $('#backgroundImageUploadForm__InputUrl').val() !== '') {
@@ -1715,8 +1732,7 @@ $.ajax({
     });
   }
 
-  const suggestions = [
-    {
+  const suggestions = [{
       label: '!1337x',
       desc: '1337x.to',
       icon: './src/css/icons/suggestions/1337x.ico',
