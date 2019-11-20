@@ -29,7 +29,7 @@ $.ajax({
         dataType: '',
         statusCode: {
           200: () => {
-            $('.backgroundImage').css('backgroundImage', `url(${settings.backgroundImage})`);
+            $('.backgroundImage, .filter').css('backgroundImage', `url(${settings.backgroundImage})`);
           },
           404: () => {
             $('#msgContainer')
