@@ -100,12 +100,12 @@ header {
     justify-content: start;
     align-items: start;
     flex-direction: column;
-    position: absolute;
     width: 60%;
     height: 80%;
     background-color: rgba(0, 0, 0, 0.8);
     border-radius: 15px;
-    border: 1px solid gray;
+    position: relative;
+    box-shadow: 10px 10px 12px 2px rgba(0, 0, 0, 0.60);
 
     &__header {
       flex-direction: row;
