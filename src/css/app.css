@@ -60,10 +60,13 @@ header {
   align-items: center;
   z-index: 3;
 }
+header svg {
+  margin-left: 1.5%;
+  cursor: pointer;
+}
 
 .settingsBtn {
   margin-right: 0.5%;
-  cursor: pointer;
 }
 
 .blank__addContent__svg:hover,
@@ -94,12 +97,12 @@ header {
   justify-content: start;
   align-items: start;
   flex-direction: column;
-  position: absolute;
   width: 60%;
   height: 80%;
   background-color: rgba(0, 0, 0, 0.8);
   border-radius: 15px;
-  border: 1px solid gray;
+  position: relative;
+  box-shadow: 10px 10px 12px 2px rgba(0, 0, 0, 0.6);
 }
 .settings__container .settings__child__header {
   flex-direction: row;
@@ -257,6 +260,28 @@ header {
   align-items: center;
   justify-content: center;
   width: 100%;
+}
+.upperContainer__converter {
+  display: none;
+  width: 60%;
+  justify-content: space-around;
+  align-items: baseline;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  margin-bottom: 2%;
+  border-radius: 15px;
+  padding: 1%;
+  box-shadow: 10px 10px 12px 2px rgba(0, 0, 0, 0.6);
+}
+.upperContainer__converter * {
+  z-index: 1;
+}
+.upperContainer__converter__input, .upperContainer__converter__result {
+  color: black;
+}
+.upperContainer__converter__value1, .upperContainer__converter__value2 {
+  height: 2em;
+  width: 10%;
 }
 .upperContainer .msgContainer {
   width: auto;

@@ -15,6 +15,10 @@
   <div id="wrapper" class="wrapper flex">
     <main id="mainContainer" class="mainContainer flex">
       <header id="header" class="header">
+        <svg id="converterBtn" class="converterBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 2.1l4 4-4 4" />
+          <path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8M7 21.9l-4-4 4-4" />
+          <path d="M21 11.8v2a4 4 0 0 1-4 4H4.2" /></svg>
         <svg id="settingsBtn" class="settingsBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f8f4f4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
           <path
@@ -38,6 +42,12 @@
           </div>
           <div class="suggestions"></div>
         </div>
+        <section id="converter" class="upperContainer__converter converter flex">
+          <select class="upperContainer__converter__value1 flex"></select>
+          <input class="upperContainer__converter__input" placeholder="Enter a value here">
+          <select class="upperContainer__converter__value2 flex"></select>
+          <input class="upperContainer__converter__result">
+        </section>
         <div id="msgContainer" class="msgContainer">
           <%= typeof msg != 'undefined' ? msg : '' %>
         </div>

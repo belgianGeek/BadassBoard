@@ -1573,6 +1573,14 @@ $.ajax({
     }
   }
 
+  const showConverter = () => {
+    $('.converterBtn').on('click', function() {
+      $('.converter')
+        .fadeIn()
+        .css('display', 'flex');
+    });
+  }
+
   const showSettings = () => {
     // Create an object to store the new settings values
     let updatedSettings = {};
@@ -1732,7 +1740,8 @@ $.ajax({
     });
   }
 
-  const suggestions = [{
+  const suggestions = [
+    {
       label: '!1337x',
       desc: '1337x.to',
       icon: './src/css/icons/suggestions/1337x.ico',
@@ -1998,6 +2007,9 @@ $.ajax({
 
     // Show settings on button click
     showSettings();
+
+    // Display the units converter on button click
+    showConverter();
 
     // Add containers on startup
     parseContent();
