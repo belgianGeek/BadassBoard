@@ -29,7 +29,9 @@ $.ajax({
         dataType: '',
         statusCode: {
           200: () => {
-            $('.backgroundImage, .filter').css('backgroundImage', `url(${settings.backgroundImage})`);
+            $('head').append(`<style>.formContainer__container::before {background-image: url(${settings.backgroundImage});}</style>`);
+
+            $('.backgroundImage').css('backgroundImage', `url(${settings.backgroundImage})`);
           },
           404: () => {
             $('#msgContainer')
@@ -1578,6 +1580,10 @@ $.ajax({
       $('.converter')
         .fadeIn()
         .css('display', 'flex');
+    });
+
+    $('.upperContainer__converter__input').on('change', () => {
+
     });
   }
 
