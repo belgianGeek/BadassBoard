@@ -624,13 +624,30 @@ $.ajax({
     });
   }
 
+  const hideContent = (element2hide) => {
+    $(element2hide).click(() => {
+      if (element2hide === '.audio__remove') {
+        // Stop the audio playback
+        document.getElementById('audio__player').pause();
+
+        // Hide the whole audio container
+        $('.audio').hide();
+      } else if (element2hide === '.upperContainer__converter__remove') {
+        $('.upperContainer__converter').fadeOut();
+      }
+    });
+
+    // Adapt the height of the moreContent container
+    $('.moreContent').css('marginTop', '');
+  }
+
   const listen2Playlist = (data) => {
     $('.audio').addClass('flex');
 
     $('.player__leftSvg, .player__rightSvg').off();
 
     // Remove the player on delete button click
-    removeAudioPlayer();
+    hideContent('.audio__remove');
 
     if (data.videos[iPlaylist] === undefined) {
       printError({
@@ -793,8 +810,7 @@ $.ajax({
     }
 
     // Empty the search box and hide the suggestions
-    $("#questionBox")
-      .val('');
+    $("#questionBox").val('');
 
     $('#formContainer')
       .css({
@@ -1510,7 +1526,7 @@ $.ajax({
           };
 
           // Remove the player on delete button click
-          removeAudioPlayer();
+          hideContent('.audio__remove');
         } else if (msg.match(/[a-zA-Z0-9-_]{15,34}/)[0] !== null) {
           // Check if the keyword match a playlist pattern
 
@@ -1549,19 +1565,6 @@ $.ajax({
     }
   }
 
-  const removeAudioPlayer = () => {
-    $('.audio__remove').click(() => {
-      // Stop the audio playback
-      document.getElementById('audio__player').pause();
-
-      // Hide the whole audio container
-      $('.audio').hide();
-
-      // Adapt the height of the moreContent container
-      $('.moreContent').css('marginTop', '');
-    });
-  }
-
   const questionBoxSubmit = () => {
     if ($('#questionBox').val() !== '') {
       $('#form').submit((event) => {
@@ -1576,15 +1579,97 @@ $.ajax({
   }
 
   const showConverter = () => {
+    let result;
+
     $('.converterBtn').on('click', function() {
       $('.converter')
         .fadeIn()
         .css('display', 'flex');
     });
 
-    $('.upperContainer__converter__input').on('change', () => {
+    $('.upperContainer__converter__input, .upperContainer__converter__value1, .upperContainer__converter__value2').on('change', () => {
+      let inputUnit = $('.upperContainer__converter__value1').val();
+      let inputValue = Number($('.upperContainer__converter__input').val());
+      let resultUnit = $('.upperContainer__converter__value2').val();
 
+      const appendResult = (result) => {
+        if (result !== undefined) {
+          $('.upperContainer__converter__result').val(result);
+        } else {
+          console.log('undefined result');
+        }
+      }
+
+      const convert = () => {
+          if (inputUnit === 'Byte') {
+            if (resultUnit === 'Kilobyte') {
+              result = inputValue / Math.pow(1024, 1);
+            } else if (resultUnit === 'Megabyte') {
+              result = inputValue / Math.pow(1024, 2);
+            } else if (resultUnit === 'Gigabyte') {
+              result = inputValue / Math.pow(1024, 3);
+            } else if (resultUnit === 'Terabyte') {
+              result = inputValue / Math.pow(1024, 4);
+            } else if (resultUnit === 'Byte') {
+              result = inputValue;
+            }
+          } else if (inputUnit === 'Kilobyte') {
+            if (resultUnit === 'Byte') {
+              result = inputValue * Math.pow(10, 6);
+            } else if (resultUnit === 'Megabyte') {
+              result = inputValue / Math.pow(10, 3);
+            } else if (resultUnit === 'Gigabyte') {
+              result = inputValue / Math.pow(10, 6);
+            } else if (resultUnit === 'Terabyte') {
+              result = inputValue / Math.pow(10, 9);
+            } else if (resultUnit === 'Kilobyte') {
+              result = inputValue;
+            }
+          } else if (inputUnit === 'Megabyte') {
+            if (resultUnit === 'Kilobyte') {
+              result = inputValue * Math.pow(10, 3);
+            } else if (resultUnit === 'Byte') {
+              result = inputValue * Math.pow(10, 6);
+            } else if (resultUnit === 'Gigabyte') {
+              result = inputValue / Math.pow(10, 3);
+            } else if (resultUnit === 'Terabyte') {
+              result = inputValue / Math.pow(10, 6);
+            } else if (resultUnit === 'Megabyte') {
+              result = inputValue;
+            }
+          } else if (inputUnit === 'Gigabyte') {
+            if (resultUnit === 'Kilobyte') {
+              result = inputValue * Math.pow(10, 6);
+            } else if (resultUnit === 'Byte') {
+              result = inputValue * Math.pow(10, 9);
+            } else if (resultUnit === 'Megabyte') {
+              result = inputValue * Math.pow(10, 3);
+            } else if (resultUnit === 'Terabyte') {
+              result = inputValue / Math.pow(10, 3);
+            } else if (resultUnit === 'Gigabyte') {
+              result = inputValue;
+            }
+          } else if (inputUnit === 'Terabyte') {
+            if (resultUnit === 'Kilobyte') {
+              result = inputValue * Math.pow(10, 9);
+            } else if (resultUnit === 'Byte') {
+              result = inputValue * Math.pow(10, 12);
+            } else if (resultUnit === 'Megabyte') {
+              result = inputValue * Math.pow(10, 6);
+            } else if (resultUnit === 'Gigabyte') {
+              result = inputValue * Math.pow(10, 3);
+            } else if (resultUnit === 'Terabyte') {
+              result = inputValue;
+            }
+          }
+
+          appendResult(result);
+      }
+
+      convert();
     });
+
+    hideContent('.upperContainer__converter__remove');
   }
 
   const showSettings = () => {
