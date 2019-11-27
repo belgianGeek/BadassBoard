@@ -144,14 +144,14 @@ const readSettings = () => {
                 .then(items => {
                   elt.feed = items;
                   eltsArray.push(elt);
-                  // console.log(`bigI : ${bigI}`, `elements : ${eltsArray.length}`, `totalLength : ${totalLength}`);
+                  // console.log(`RSS : bigI : ${bigI}`, `elements : ${eltsArray.length}`, `totalLength : ${totalLength}`);
                   sendData();
                 })
                 .catch(console.error);
             } else if (subEltsValue.type === 'weather') {
               let newElt = subEltsValue;
               eltsArray.push(newElt);
-              // console.log(`bigI : ${bigI}`, `elements : ${elements.length}`, `totalLength : ${totalLength}`);
+              // console.log(`WEATHER : bigI : ${bigI}`, `elements : ${elements.length}`, `totalLength : ${totalLength}`);
               sendData();
             }
           }
@@ -284,7 +284,7 @@ app.get('/', (req, res) => {
       });
 
       io.on('add content', (feedData) => {
-        // console.log(`feedData : ${JSON.stringify(feedData, null, 2)}`);
+        console.log(`feedData : ${JSON.stringify(feedData, null, 2)}`);
         let element;
 
         if (feedData !== undefined && feedData !== null) {
@@ -315,6 +315,7 @@ app.get('/', (req, res) => {
                     // console.log(`j : ${j}\nValue : ${JSON.stringify(value.elements, null, 2)}\n${feedData[i].parent}`);
 
                     const processData = (callback) => {
+                      console.log(i);
                       if (feedData[i].type === 'rss') {
                         request
                           .get(feedData[i].url)

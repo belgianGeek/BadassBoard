@@ -822,9 +822,8 @@ $.ajax({
 
   // Add content of other types than RSS
   const parseContent = () => {
-    let functionCounter = 0;
     socket.on('parse content', (parsedData) => {
-      console.log('parsing requested');
+      // console.log('parsing requested');
       // console.log(JSON.stringify(parsedData, null, 2));
       for (const [i, value] of parsedData.entries()) {
         // console.log(i, `${value.parent} ${value.element}`);
@@ -1284,6 +1283,7 @@ $.ajax({
           if (value.type === 'rss') {
             let feed = value.feed;
 
+            // Create the RSS container if they don't exist
             if (!$(`${fullElementClassName} .rssContainer`).length) {
               buildRssContainer(feed, (feed, rssContainer) => {
                 rssContainer.appendTo(fullElementClassName);
@@ -1454,88 +1454,107 @@ $.ajax({
         // Play audio function
         if (msg.match(/[0-9A-Za-z_-]{11}/) && !msg.match(/[0-9A-Za-z_-]{15,34}/)) {
           let id = msg.match(/[0-9A-Za-z_-]{11}/)[0];
-          let url = `https://www.invidio.us/latest_version?id=${id}&itag=251&local=true`;
 
-          if (!$('.audio__player').length) {
-            let audioPlayer = $('<audio></audio>');
-            audioPlayer
-              .attr({
-                id: 'audio__player',
-                controls: 'controls',
-                autoplay: 'autoplay'
-              })
-              .addClass('audio__player')
-              .text('Your browser does not support the audio element.')
-              .appendTo('.player');
+          $.ajax({
+            url: `https://invidio.us/api/v1/videos/${id}`,
+            method: 'GET',
+            dataType: 'json',
+            statusCode: {
+              200: (res) => {
+                const findUrl = () => {
+                  for (const [i, resValue] of res.adaptiveFormats.entries()) {
+                    if (resValue.type.match(/audio/)) {
+                      return resValue.url;
+                    } else {
+                      if (i === res.adaptiveFormats.length - 1) {
+                        printError({
+                          msg: `Sorry, this stream couldn't be played. Please try another video.`
+                        });
+                      }
+                    }
+                  }
+                }
 
-            let audioSrc = $('<source>');
-            audioSrc.attr({
-                id: 'audioSrc',
-                src: url,
-                type: 'audio/mpeg'
-              })
-              .appendTo('.audio__player');
-          } else {
-            $('#audioSrc').attr('src', url);
-          }
+                let title = res.title;
+                let url = findUrl();
 
-          socket.emit('audio info request', {
-            id: id
-          });
+                if (!$('.audio__player').length) {
+                  let audioPlayer = $('<audio></audio>');
+                  audioPlayer
+                    .attr({
+                      id: 'audio__player',
+                      controls: 'controls',
+                      autoplay: 'autoplay'
+                    })
+                    .addClass('audio__player')
+                    .text('Your browser does not support the audio element.')
+                    .appendTo('.player');
 
-          // Avoid the Jquery 'load' function and show the audio player
-          document.getElementById('audio__player').load();
+                  let audioSrc = $('<source>');
+                  audioSrc.attr({
+                      id: 'audioSrc',
+                      src: url,
+                      type: 'audio/mpeg'
+                    })
+                    .appendTo('.audio__player');
+                } else {
+                  $('#audioSrc').attr('src', url);
+                }
 
-          // Adapt the #moreContent height so all the elements can fit on the page
-          // $('.moreContent').css('marginTop', 0);
+                // If the info about the track are not displayed, add them
+                if (!$('.streamInfoContainer').length) {
+                  let streamInfoContainer = $('<span></span>')
+                    .addClass('streamInfoContainer')
+                    .appendTo('.audioMsg');
 
+                  let streamTitle = $('<span></span>')
+                    .attr('id', 'streamTitle')
+                    .appendTo(streamInfoContainer);
 
-          socket.on('audio info retrieved', (streamInfo) => {
-            // console.log(JSON.stringify(streamInfo, null, 2));
-            streamInfo.title = streamInfo.title.match(/[a-zA-Z0-9 \-#/\\_=+:;.]/g).join('');
+                  let YtId = $('<span></span>')
+                    .attr('id', 'YtId')
+                    .appendTo(streamInfoContainer);
+                }
 
-            // If the info about the track are not displayed, add them
-            if (!$('.streamInfoContainer').length) {
-              let streamInfoContainer = $('<span></span>')
-                .addClass('streamInfoContainer')
-                .appendTo('.audioMsg');
+                // Avoid the Jquery 'load' function and show the audio player
+                document.getElementById('audio__player').load();
 
-              let streamTitle = $('<span></span>')
-                .attr('id', 'streamTitle')
-                .appendTo(streamInfoContainer);
+                // Hide playlist controls if they exists
+                if ($('.player__leftSvg').length || $('.player__rightSvg').length) {
+                  $('.player__leftSvg, .player__rightSvg, .playlistInfo').hide();
+                }
 
-              let YtId = $('<span></span>')
-                .attr('id', 'YtId')
-                .appendTo(streamInfoContainer);
+                // Else, just replace the old info with the new ones
+                $('#streamTitle').text(title);
+                $('#YtId').text(`(Youtube ID : ${id})`);
+
+                $('.streamInfoContainer')
+                  .css({
+                    textAlign: 'center',
+                    width: '100%'
+                  });
+
+                $('.audioMsg, .streamInfoContainer, .audio__player').show();
+                $('.audio').fadeIn(1500, () => {
+                  $('.audio').css('display', 'flex');
+                });
+
+                document.getElementById('audio__player').onended = () => {
+                  $('.audio').fadeOut(1500);
+                };
+
+                // Remove the player on delete button click
+                hideContent('.audio__remove');
+              },
+              500: (res) => {
+                printError({
+                  type: 'generic',
+                  element: $('.msgContainer'),
+                  msg: `Sorry, the audio stream failed to load due to a server error... Maybe try later.`
+                });
+              }
             }
-
-            // Hide playlist controls if they exists
-            if ($('.player__leftSvg').length || $('.player__rightSvg').length) {
-              $('.player__leftSvg, .player__rightSvg, .playlistInfo').hide();
-            }
-
-            // Else, just replace the old info with the new ones
-            $('#streamTitle').text(streamInfo.title);
-            $('#YtId').text(`(Youtube ID : ${id})`);
-
-            $('.streamInfoContainer')
-              .css({
-                textAlign: 'center',
-                width: '100%'
-              });
-
-            $('.audioMsg, .streamInfoContainer, .audio__player').show();
-            $('.audio').fadeIn(1500, () => {
-              $('.audio').css('display', 'flex');
-            });
           });
-
-          document.getElementById('audio__player').onended = () => {
-            $('.audio').fadeOut(1500);
-          };
-
-          // Remove the player on delete button click
-          hideContent('.audio__remove');
         } else if (msg.match(/[a-zA-Z0-9-_]{15,34}/)[0] !== null) {
           // Check if the keyword match a playlist pattern
 
