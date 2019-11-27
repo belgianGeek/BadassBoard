@@ -102,7 +102,7 @@ header svg {
   background-color: rgba(0, 0, 0, 0.8);
   border-radius: 15px;
   position: relative;
-  box-shadow: 10px 10px 12px 2px rgba(0, 0, 0, 0.6);
+  box-shadow: 10px 10px 12px 2px rgba(0, 0, 0, 0.5);
 }
 .settings__container .settings__child__header {
   flex-direction: row;
@@ -263,35 +263,39 @@ header svg {
 }
 .upperContainer__converter {
   display: none;
+  height: 3em;
   width: 60%;
-  justify-content: space-around;
   align-items: center;
+  flex-direction: column;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1;
   margin-bottom: 2%;
   border-radius: 15px;
   padding: 1%;
-  box-shadow: 10px 10px 12px 2px rgba(0, 0, 0, 0.6);
+  box-shadow: 10px 10px 12px 2px rgba(0, 0, 0, 0.5);
 }
-.upperContainer__converter * {
+.upperContainer__converter .converter {
+  width: 100%;
+  justify-content: space-around;
+}
+.upperContainer__converter .converter * {
   z-index: 1;
   font-size: 1em;
 }
-.upperContainer__converter__value1, .upperContainer__converter__value2 {
+.upperContainer__converter .converter__value1, .upperContainer__converter .converter__value2 {
   height: 2em;
   width: 13%;
   color: black;
 }
-.upperContainer__converter__remove {
+.upperContainer__converter .converter__remove {
   position: relative;
-  top: -100%;
-  left: 95%;
-  background-color: rgba(0, 0, 0, 0.5);
+  top: -50%;
+  left: 94%;
   border-radius: 15px;
   padding: 3px;
   cursor: pointer;
 }
-.upperContainer__converter input {
+.upperContainer__converter .converter input {
   width: 15%;
   height: 2em;
   background-color: transparent;
@@ -301,6 +305,14 @@ header svg {
   border-top: none;
   color: white;
 }
+.upperContainer__converter .converter .warning {
+  display: flex;
+  width: 100%;
+  height: 2em;
+  justify-content: center;
+  padding-top: 1%;
+  font-size: 1.1em;
+}
 .upperContainer .msgContainer {
   width: auto;
   height: auto;
@@ -308,7 +320,7 @@ header svg {
   margin-top: 1%;
   border: 1px solid white;
   border-radius: 15px;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .formContainer__container {

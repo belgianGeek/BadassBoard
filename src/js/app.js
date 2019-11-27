@@ -632,7 +632,7 @@ $.ajax({
 
         // Hide the whole audio container
         $('.audio').hide();
-      } else if (element2hide === '.upperContainer__converter__remove') {
+      } else if (element2hide === '.converter__remove') {
         $('.upperContainer__converter').fadeOut();
       }
     });
@@ -1387,6 +1387,15 @@ $.ajax({
           .text(err.msg)
           .appendTo($(`${err.element} .addContent__feed`));
       }
+    } else if (err.type === 'unit conversion') {
+      if (!$('.upperContainer__converter .warning').length) {
+        let warning = $('<b></b>')
+          .text(err.msg)
+          .addClass('warning')
+          .appendTo(err.element);
+      } else {
+        $('.upperContainer__converter .waring').css('display', 'flex');
+      }
     } else if (err.type === 'upload') {
       if (!$(`.settings__container .uploadWarning`).length) {
         let warning = $('<b></b>')
@@ -1582,25 +1591,27 @@ $.ajax({
     let result;
 
     $('.converterBtn').on('click', function() {
-      $('.converter')
+      $('.upperContainer__converter')
         .fadeIn()
         .css('display', 'flex');
     });
 
-    $('.upperContainer__converter__input, .upperContainer__converter__value1, .upperContainer__converter__value2').on('change', () => {
-      let inputUnit = $('.upperContainer__converter__value1').val();
-      let inputValue = Number($('.upperContainer__converter__input').val());
-      let resultUnit = $('.upperContainer__converter__value2').val();
+    $('.converter__input, .converter__value1, .converter__value2').on('change', () => {
+      let inputUnit = $('.converter__value1').val();
+      let inputValue = Number($('.converter__input').val());
+      let resultUnit = $('.converter__value2').val();
 
       const appendResult = (result) => {
         if (result !== undefined) {
-          $('.upperContainer__converter__result').val(result);
+          $('.converter__result').val(result);
         } else {
-          console.log('undefined result');
+          $('.converter__result').val('');
+          console.log(`Error converting unit... Result value : ${result}`);
         }
       }
 
       const convert = () => {
+        if (!isNaN(inputValue)) {
           if (inputUnit === 'Byte') {
             if (resultUnit === 'Kilobyte') {
               result = inputValue / Math.pow(1024, 1);
@@ -1663,13 +1674,24 @@ $.ajax({
             }
           }
 
-          appendResult(result);
+          $('.upperContainer__converter .warning').hide();
+
+          if (inputValue !== '') {
+            appendResult(result);
+          }
+        } else {
+          printError({
+            type: 'unit conversion',
+            element: $('.upperContainer__converter'),
+            msg: `Please enter a numeric value... 😑`
+          });
+        }
       }
 
       convert();
     });
 
-    hideContent('.upperContainer__converter__remove');
+    hideContent('.converter__remove');
   }
 
   const showSettings = () => {

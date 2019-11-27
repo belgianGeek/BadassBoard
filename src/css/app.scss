@@ -111,7 +111,7 @@ header {
     background-color: rgba(0, 0, 0, 0.8);
     border-radius: 15px;
     position: relative;
-    box-shadow: 10px 10px 12px 2px rgba(0, 0, 0, 0.60);
+    box-shadow: 10px 10px 12px 2px $contentBackground;
 
     &__header {
       flex-direction: row;
@@ -297,47 +297,61 @@ header {
 
   &__converter {
     display: none;
+    height: 3em;
     width: 60%;
-    justify-content: space-around;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.5);
+    flex-direction: column;
+    background-color: $contentBackground;
     z-index: 1;
     margin-bottom: 2%;
     border-radius: 15px;
     padding: 1%;
-    box-shadow: 10px 10px 12px 2px rgba(0, 0, 0, 0.60);
+    box-shadow: 10px 10px 12px 2px $contentBackground;
 
-    & * {
-      z-index: 1;
-      font-size: 1em;
-    }
+    .converter {
+      width: 100%;
+      justify-content: space-around;
 
-    &__value1,
-    &__value2 {
-      height: 2em;
-      width: 13%;
-      color: black;
-    }
+      & * {
+        z-index: 1;
+        font-size: 1em;
+      }
 
-    &__remove {
-      position: relative;
-      top: -100%;
-      left: 95%;
-      background-color: rgba(0, 0, 0, 0.5);
-      border-radius: 15px;
-      padding: 3px;
-      cursor: pointer;
-    }
+      &__value1,
+      &__value2 {
+        height: 2em;
+        width: 13%;
+        color: black;
+      }
 
-    & input {
-      width: 15%;
-      height: 2em;
-      background-color: transparent;
-      border-bottom: 2px solid lightblue;
-      border-left: none;
-      border-right: none;
-      border-top: none;
-      color: white;
+      &__remove {
+        position: relative;
+        top: -50%;
+        left: 94%;
+        border-radius: 15px;
+        padding: 3px;
+        cursor: pointer;
+      }
+
+      & input {
+        width: 15%;
+        height: 2em;
+        background-color: transparent;
+        border-bottom: 2px solid lightblue;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        color: white;
+      }
+
+      .warning {
+        display: flex;
+        width: 100%;
+        height: 2em;
+        justify-content: center;
+        padding-top: 1%;
+        font-size: 1.1em;
+      }
     }
   }
 
@@ -348,7 +362,7 @@ header {
     margin-top: 1%;
     border: 1px solid white;
     border-radius: 15px;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: $contentBackground;
   }
 }
 
@@ -570,7 +584,7 @@ header {
       .rssContainer,
       .warning {
         flex-direction: column;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: $contentBackground;
         border-radius: 15px;
         width: 100%;
         font-size: 1.05em;

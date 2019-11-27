@@ -41,27 +41,29 @@
           </div>
           <div class="suggestions"></div>
         </div>
-        <section id="converter" class="upperContainer__converter converter flex">
-          <img class="upperContainer__converter__remove flex" alt="Hide the converter" src="./src/css/icons/interface/cross.svg">
-          <select class="upperContainer__converter__value1 flex">
-            <option value="Choose a value">Choose a value</option>
-            <option value="Byte">Byte</option>
-            <option value="Kilobyte">Kilobyte</option>
-            <option value="Megabyte">Megabyte</option>
-            <option value="Gigabyte">Gigabyte</option>
-            <option value="Terabyte">Terabyte</option>
-          </select>
-          <input class="upperContainer__converter__input" placeholder="Enter a value here">
-          <select class="upperContainer__converter__value2 flex">
-            <option value="Choose a value">Choose a value</option>
-            <option value="Byte">Byte</option>
-            <option value="Kilobyte">Kilobyte</option>
-            <option value="Megabyte">Megabyte</option>
-            <option value="Gigabyte">Gigabyte</option>
-            <option value="Terabyte">Terabyte</option>
-          </select>
-          <input class="upperContainer__converter__result">
-        </section>
+        <span class="upperContainer__converter">
+          <section id="converter" class="converter flex">
+            <img class="converter__remove flex" alt="Hide the converter" src="./src/css/icons/interface/cross.svg">
+            <select class="converter__value1 flex">
+              <option value="Choose a value">Choose a value</option>
+              <option value="Byte">Byte</option>
+              <option value="Kilobyte">Kilobyte</option>
+              <option value="Megabyte">Megabyte</option>
+              <option value="Gigabyte">Gigabyte</option>
+              <option value="Terabyte">Terabyte</option>
+            </select>
+            <input class="converter__input" placeholder="Enter a value here">
+            <select class="converter__value2 flex">
+              <option value="Choose a value">Choose a value</option>
+              <option value="Byte">Byte</option>
+              <option value="Kilobyte">Kilobyte</option>
+              <option value="Megabyte">Megabyte</option>
+              <option value="Gigabyte">Gigabyte</option>
+              <option value="Terabyte">Terabyte</option>
+            </select>
+            <input class="converter__result">
+          </section>
+        </span>
         <div id="msgContainer" class="msgContainer">
           <%= typeof msg != 'undefined' ? msg : '' %>
         </div>
