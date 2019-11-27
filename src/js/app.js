@@ -1776,6 +1776,10 @@ $.ajax({
             success: (res) => {
               // console.log(fd, file, `${updatedSettings.backgroundImage} uploaded successfully`);
               $('.backgroundImage').css('backgroundImage', updatedSettings.backgroundImage);
+
+              // Update the <style> tag to fix the blur
+              $('head style').remove();
+              $('head').append(`<style>.formContainer__container::before {background-image: url(${updatedSettings.backgroundImage});}</style>`);
             },
             error: (err) => {
               console.log(fd, file, `Error uploading file :\n${JSON.stringify(err, null, 2)}`);
