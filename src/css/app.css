@@ -469,7 +469,7 @@ header svg {
 }
 .audio .player {
   height: min-content;
-  width: 100%;
+  width: 70%;
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
@@ -479,7 +479,7 @@ header svg {
 }
 .audioMsg {
   height: min-content;
-  width: 70%;
+  width: 50%;
   font-size: 1.4em;
 }
 .audioMsg .playlistInfo {
@@ -497,13 +497,27 @@ header svg {
   border-radius: 45%;
 }
 .audio .streamInfoContainer {
-  width: max-content;
+  width: 50%;
   margin: 0 1vh;
   display: flex;
   flex-direction: column;
+  flex: 1;
+  overflow: hidden;
 }
-.audio .streamInfoContainer #YtId {
+.audio .streamInfoContainer .streamTitle {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  min-width: 0;
+  display: inline;
+  white-space: nowrap;
+}
+.audio .streamInfoContainer .YtId {
   padding-top: 1%;
+}
+.audio .streamInfoContainer .YtId,
+.audio .streamInfoContainer .streamTitle {
+  margin: 0;
+  text-align: center;
 }
 
 .moreContent {

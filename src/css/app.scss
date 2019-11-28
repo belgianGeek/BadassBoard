@@ -529,7 +529,7 @@ header {
 
   .player {
     height: min-content;
-    width: 100%;
+    width: 70%;
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
@@ -541,7 +541,7 @@ header {
 
   &Msg {
     height: min-content;
-    width: 70%;
+    width: 50%;
     font-size: 1.4em;
 
     .playlistInfo {
@@ -556,19 +556,35 @@ header {
     position: absolute;
     top: -10px;
     left: 97%;
-    background-color: rgba(0,0,0,0.8);
+    background-color: rgba(0, 0, 0, 0.8);
     padding: 0.2%;
     border-radius: 45%;
   }
 
   .streamInfoContainer {
-    width: max-content;
+    width: 50%;
     margin: 0 1vh;
     display: flex;
     flex-direction: column;
+    flex: 1;
+    overflow: hidden;
 
-    #YtId {
+    .streamTitle {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      min-width: 0;
+      display: inline;
+      white-space: nowrap;
+    }
+
+    .YtId {
       padding-top: 1%;
+    }
+
+    .YtId,
+    .streamTitle {
+      margin: 0;
+      text-align: center;
     }
   }
 }

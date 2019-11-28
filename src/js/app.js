@@ -716,14 +716,16 @@ $.ajax({
             .appendTo('.audioMsg');
 
           // Display some info about the played track
-          let streamTitle = $('<span></span>')
+          let streamTitle = $('<p></p>')
             .attr('id', 'streamTitle')
+            .addClass('streamTitle')
             .text(data.videos[iPlaylist].title)
             .appendTo('.streamInfoContainer');
 
-          let streamId = $('<span></span>')
+          let streamId = $('<p></p>')
             .text(` (Youtube ID : ${data.videos[iPlaylist].videoId})`)
             .attr('id', 'YtId')
+            .addClass('YtId')
             .appendTo('.streamInfoContainer');
         } else {
           $('#streamTitle').text(data.videos[iPlaylist].title);
@@ -1508,12 +1510,14 @@ $.ajax({
                     .addClass('streamInfoContainer')
                     .appendTo('.audioMsg');
 
-                  let streamTitle = $('<span></span>')
+                  let streamTitle = $('<p></p>')
                     .attr('id', 'streamTitle')
+                    .addClass('streamTitle')
                     .appendTo(streamInfoContainer);
 
-                  let YtId = $('<span></span>')
+                  let YtId = $('<p></p>')
                     .attr('id', 'YtId')
+                    .addClass('YtId')
                     .appendTo(streamInfoContainer);
                 }
 
