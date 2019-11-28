@@ -1,5 +1,19 @@
 $contentBackground: rgba(0, 0, 0, 0.5);
 
+@font-face {
+  font-family: distant_galaxyregular;
+  src: url('./fonts/DISTGRG_-webfont.woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Ubuntu Regular';
+  src: url('./fonts/ubuntu/Ubuntu-R.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body,
 html {
   font-size: 1.2em;
@@ -10,8 +24,9 @@ body {
 
   * {
     font-size: 0.9em;
-    font-family: Ubuntu, sans-serif;
+    font-family: 'Ubuntu Regular', sans-serif;
     color: white;
+    letter-spacing: 0.5px;
   }
 
   .backgroundImage {
@@ -115,11 +130,14 @@ header {
 
     &__header {
       flex-direction: row;
-      width: auto;
+      width: 100%;
       margin: 1% 0 0 1%;
 
       h1 {
-        font-size: 1.2em;
+        font-size: 1.5em;
+        width: 100%;
+        text-align: center;
+        font-family: distant_galaxyregular;
       }
     }
 
@@ -494,7 +512,7 @@ header {
   border-radius: 15px;
   margin-bottom: 1vh;
   display: none;
-  position: sticky;
+  position: fixed;
   top: 85%;
   flex-direction: row;
   align-items: center;
@@ -537,6 +555,12 @@ header {
   .streamInfoContainer {
     width: max-content;
     margin: 0 1vh;
+    display: flex;
+    flex-direction: column;
+
+    #YtId {
+      padding-top: 1%;
+    }
   }
 }
 

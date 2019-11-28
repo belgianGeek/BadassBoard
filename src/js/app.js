@@ -1985,6 +1985,12 @@ $.ajax({
       url: 'https://developer.mozilla.org/en-US/search?q='
     },
     {
+      label: '!mt',
+      desc: 'Marine Traffic',
+      icon: './src/css/icons/suggestions/marinetraffic.ico',
+      url: 'https://www.marinetraffic.com/en/ais/index/search/all?keyword='
+    },
+    {
       label: '!pb',
       desc: 'Pages Blanches (BE)',
       icon: './src/css/icons/suggestions/pagesblanches.ico',
