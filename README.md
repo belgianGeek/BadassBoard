@@ -10,6 +10,7 @@ Its features includes :
 - Weather forecast (thanks to the _OpenWeatherMap_ API) => you'll need a token to use this thing ;
 - Web shorcuts to several websites (based on the DuckduckGo _Bangs_ system) ;
 - Audio streaming from YouTube thanks to the _Invidio.us_ API (playlist and videos are both supported) ;
+- IT units converter (only from bytes to terabytes for now) ;
 
 All of that available through a (nice ?) and customizable UI.
 
@@ -54,6 +55,10 @@ As mentioned above, you can download audio streams from YouTube. There is two wa
 
 _BadassBoard_ can provide you weather forecast thanks to the _OpenWeatherMap_ API. In order to use this feature, you'll have to get an API token by creating an _OpenWeatherMap_ account. More info [here](https://openweathermap.org/api).
 
+## Audio streaming
+
+As mentioned above, you can stream YouTube videos or playlists (thanks to the _Invidio.us_ API). Because _Invidio.us_ is becoming more and more popular, you might encouter some issues while using this feature. In this case, a message will inform you that your request couldn't be completed. If you're facing it, I invite you to open an issue with the more details that you can provide. But keep in mind that this might be related to _Invidio.us_ itself, as the audio streaming feature is based on it.
+
 # Contributing
 
 You found a bug or just have a suggestion ? Feel free to create an issue with the more details that you can provide (error code, context, etc.).
@@ -76,11 +81,12 @@ Like mentioned in the `package.json` file, the CSS code can be compiled with the
 
 A special thank to the creators of :
 
-- [Express](https://github.com/expressjs/express) and [Multer](https://github.com/expressjs/multer)
-- [Ytdl-core](https://github.com/fent/node-ytdl-core)
-- [Feedparser-promised](https://github.com/alabeduarte/feedparser-promised)
-- [Request](https://github.com/request/request)
-- [IP](https://github.com/indutny/node-ip)
-- [opusscript](https://github.com/abalabahaha/opusscript)
-- [SCSS](https://yarnpkg.com/en/package/scss)
-- [Minify](https://github.com/coderaiser/minify)
+- [Express](https://github.com/expressjs/express) and [Multer](https://github.com/expressjs/multer) ;
+- [Socket.io](https://socket.io) ;
+- [Ytdl-core](https://github.com/fent/node-ytdl-core) ;
+- [Feedparser-promised](https://github.com/alabeduarte/feedparser-promised) ;
+- [Request](https://github.com/request/request) ;
+- [IP](https://github.com/indutny/node-ip) ;
+- [opusscript](https://github.com/abalabahaha/opusscript) ;
+- [SCSS](https://yarnpkg.com/en/package/scss) ;
+- [Minify](https://github.com/coderaiser/minify) ;
