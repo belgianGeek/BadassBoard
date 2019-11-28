@@ -259,7 +259,7 @@ header svg {
   color: red;
   font-style: italic;
   margin-top: 1em;
-  font-size: 1.2em;
+  font-size: 1em;
 }
 
 .mainContainer {
@@ -337,6 +337,10 @@ header svg {
   border: 1px solid white;
   border-radius: 15px;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+.upperContainer .msgContainer .warning {
+  border: 1px solid red;
 }
 
 .formContainer__container {
@@ -459,16 +463,16 @@ header svg {
   align-items: center;
   z-index: 2;
 }
+.audio__leftSvg, .audio__rightSvg {
+  width: 10%;
+  cursor: pointer;
+}
 .audio .player {
   height: min-content;
   width: 100%;
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
-}
-.audio .player__leftSvg, .audio .player__rightSvg {
-  width: 10%;
-  cursor: pointer;
 }
 .audio__player {
   width: 100%;
@@ -485,6 +489,12 @@ header svg {
 .audio__remove {
   height: 2.5vh;
   cursor: pointer;
+  position: absolute;
+  top: -10px;
+  left: 97%;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 0.2%;
+  border-radius: 45%;
 }
 .audio .streamInfoContainer {
   width: max-content;

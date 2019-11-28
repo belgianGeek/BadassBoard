@@ -1,15 +1,13 @@
 $contentBackground: rgba(0, 0, 0, 0.5);
-
 @font-face {
   font-family: distant_galaxyregular;
-  src: url('./fonts/DISTGRG_-webfont.woff');
+  src: url("./fonts/DISTGRG_-webfont.woff");
   font-weight: normal;
   font-style: normal;
 }
-
 @font-face {
   font-family: 'Ubuntu Regular';
-  src: url('./fonts/ubuntu/Ubuntu-R.ttf');
+  src: url("./fonts/ubuntu/Ubuntu-R.ttf");
   font-weight: normal;
   font-style: normal;
 }
@@ -295,7 +293,7 @@ header {
   color: red;
   font-style: italic;
   margin-top: 1em;
-  font-size: 1.2em;
+  font-size: 1em;
 }
 
 .mainContainer {
@@ -381,6 +379,11 @@ header {
     border: 1px solid white;
     border-radius: 15px;
     background-color: $contentBackground;
+    z-index: 1;
+
+    .warning {
+      border: 1px solid red;
+    }
   }
 }
 
@@ -518,18 +521,18 @@ header {
   align-items: center;
   z-index: 2;
 
+  &__leftSvg,
+  &__rightSvg {
+    width: 10%;
+    cursor: pointer;
+  }
+
   .player {
     height: min-content;
     width: 100%;
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
-
-    &__leftSvg,
-    &__rightSvg {
-      width: 10%;
-      cursor: pointer;
-    }
   }
 
   &__player {
@@ -550,6 +553,12 @@ header {
   &__remove {
     height: 2.5vh;
     cursor: pointer;
+    position: absolute;
+    top: -10px;
+    left: 97%;
+    background-color: rgba(0,0,0,0.8);
+    padding: 0.2%;
+    border-radius: 45%;
   }
 
   .streamInfoContainer {

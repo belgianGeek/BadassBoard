@@ -562,10 +562,10 @@ $.ajax({
     if (data.videos[iPlaylist] !== undefined) {
       if (iPlaylist < data.videoCount) {
         if (iPlaylist === 0) {
-          $('.player__leftSvg').hide();
+          $('.audio__leftSvg').hide();
         }
 
-        $('.player__rightSvg')
+        $('.audio__rightSvg')
           .click(() => {
             iPlaylist++;
             if (iPlaylist < data.videoCount && data.videos[iPlaylist] !== undefined) {
@@ -576,17 +576,17 @@ $.ajax({
               $('.playlistInfo').text(`${iPlaylist + 1}/${data.videoCount}`);
 
               if (iPlaylist > 0) {
-                $('.player__leftSvg')
+                $('.audio__leftSvg')
                   .show();
               }
 
               if (iPlaylist === data.videoCount - 1) {
-                $('.player__rightSvg').hide();
+                $('.audio__rightSvg').hide();
               }
             }
           });
 
-        $('.player__leftSvg')
+        $('.audio__leftSvg')
           .click(() => {
             if (iPlaylist > 0) {
               iPlaylist--;
@@ -598,13 +598,13 @@ $.ajax({
             }
 
             if (iPlaylist === 0) {
-              $('.player__leftSvg').hide();
+              $('.audio__leftSvg').hide();
             } else if (iPlaylist > 0) {
-              $('.player__rightSvg').show();
+              $('.audio__rightSvg').show();
             }
           });
       } else {
-        $('.player__rightSvg').show();
+        $('.audio__rightSvg').show();
       }
     }
   }
@@ -644,7 +644,7 @@ $.ajax({
   const listen2Playlist = (data) => {
     $('.audio').addClass('flex');
 
-    $('.player__leftSvg, .player__rightSvg').off();
+    $('.audio__leftSvg, .audio__rightSvg').off();
 
     // Remove the player on delete button click
     hideContent('.audio__remove');
@@ -671,10 +671,10 @@ $.ajax({
             .text('Your browser does not support the audio element :(')
             .appendTo('.player');
 
-          let leftSvg = $('<svg class="player__leftSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>')
+          let leftSvg = $('<svg class="audio__leftSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>')
             .prependTo('.audio');
 
-          let rightSvg = $('<svg class="player__rightSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>')
+          let rightSvg = $('<svg class="audio__rightSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>')
             .appendTo('.audio');
 
           // Define the source tag
@@ -689,17 +689,17 @@ $.ajax({
           $('#audioSrc').attr('src', `https://www.invidio.us/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`);
 
           // Add playlist controls if they do not exist
-          if (!$('.player__leftSvg').length) {
-            let leftSvg = $('<svg class="player__leftSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>')
+          if (!$('.audio__leftSvg').length) {
+            let leftSvg = $('<svg class="audio__leftSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>')
               .hide()
-              .prependTo('.player');
+              .prependTo('.audio');
 
-            let rightSvg = $('<svg class="player__rightSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>')
+            let rightSvg = $('<svg class="audio__rightSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>')
               .hide()
-              .appendTo('.player');
+              .appendTo('.audio');
           }
 
-          $('.streamInfoContainer, .player, .playlistInfo, .player__leftSvg, .player__rightSvg').show();
+          $('.streamInfoContainer, .player, .playlistInfo, .audio__leftSvg, .audio__rightSvg').show();
           $('.playlistEndMsg').hide();
         }
 
@@ -750,7 +750,7 @@ $.ajax({
           if (data.videos[iPlaylist] !== undefined) {
             listen2Playlist(data);
           } else {
-            $('.player__rightSvg').hide();
+            $('.audio__rightSvg').hide();
 
             $('.player, .streamInfoContainer, .playlistInfo').hide();
 
@@ -1468,6 +1468,7 @@ $.ajax({
                     } else {
                       if (i === res.adaptiveFormats.length - 1) {
                         printError({
+                          type: 'generic',
                           msg: `Sorry, this stream couldn't be played. Please try another video.`
                         });
                       }
@@ -1520,8 +1521,8 @@ $.ajax({
                 document.getElementById('audio__player').load();
 
                 // Hide playlist controls if they exists
-                if ($('.player__leftSvg').length || $('.player__rightSvg').length) {
-                  $('.player__leftSvg, .player__rightSvg, .playlistInfo').hide();
+                if ($('.audio__leftSvg').length || $('.audio__rightSvg').length) {
+                  $('.audio__leftSvg, .audio__rightSvg, .playlistInfo').hide();
                 }
 
                 // Else, just replace the old info with the new ones
@@ -1549,8 +1550,7 @@ $.ajax({
               500: (res) => {
                 printError({
                   type: 'generic',
-                  element: $('.msgContainer'),
-                  msg: `Sorry, the audio stream failed to load due to a server error... Maybe try later.`
+                  msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
                 });
               }
             }

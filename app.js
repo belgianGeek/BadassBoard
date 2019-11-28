@@ -596,31 +596,37 @@ app.get('/', (req, res) => {
 
       io.on('parse playlist', (playlistUrl) => {
         request(playlistUrl, (err, response, body) => {
-          if (err === 'socket hang up') {
-            console.log('The websocket died... :(');
-          } else {
-            console.log(`Error parsing requesting playlist info on the Invidious API : ${err}`);
-          }
-          try {
-            var result = JSON.parse(body);
-
-            if (result.error === undefined) {
-              fs.writeFile('./tmp/playlist.json', JSON.stringify(result, null, 2), 'utf-8', (err) => {
-                if (err) throw err;
-                io.emit('playlist parsed');
-              });
-            } else if (result.error !== undefined && result.error === 'Playlist is empty') {
+          if (err) {
+            if (err === 'socket hang up') {
+              console.log('The websocket died... :(');
+            } else {
               io.emit('errorMsg', {
-                msg: 'Invalid playlist reference :((',
+                type: 'generic',
+                msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
+              });
+            }
+          } else {
+            try {
+              var result = JSON.parse(body);
+
+              if (result.error === undefined) {
+                fs.writeFile('./tmp/playlist.json', JSON.stringify(result, null, 2), 'utf-8', (err) => {
+                  if (err) throw err;
+                  io.emit('playlist parsed');
+                });
+              } else if (result.error !== undefined && result.error === 'Playlist is empty') {
+                io.emit('errorMsg', {
+                  msg: 'Invalid playlist reference :((',
+                  type: 'generic'
+                });
+              }
+            } catch (e) {
+              console.log(`Error parsing playlist : ${e}`);
+              io.emit('errorMsg', {
+                msg: 'Error parsing playlist :((',
                 type: 'generic'
               });
             }
-          } catch (e) {
-            console.log(`Error parsing playlist : ${e}`);
-            io.emit('errorMsg', {
-              msg: 'Error parsing playlist :((',
-              type: 'generic'
-            });
           }
         });
       });
