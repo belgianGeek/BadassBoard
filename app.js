@@ -2,7 +2,7 @@ const ytdl = require('ytdl-core');
 const fs = require('fs');
 const express = require('express');
 const app = express();
-const feedparser = require("feedparser-promised")
+const feedparser = require("feedparser-promised");
 const ip = require('ip');
 const { execFile } = require('child_process');
 const os = require('os');
@@ -31,7 +31,7 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const settingsPath = './settings/settings.json';
 
-server.listen(8080, ip.address());
+server.listen(8080);
 
 const backupSettings = (settings) => {
   fs.writeFile('./settings/settings.json.bak', JSON.stringify(settings, null, 2), (err) => {
@@ -212,12 +212,7 @@ let downloadedFile = {
 // Check if folders exist
 existPath('upload/');
 existPath('tmp/');
-existPath('settings/', () => {
-  // Write the current IP in a file to send it to the client
-  fs.writeFile('./settings/ip.txt', ip.address(), 'utf-8', (err) => {
-    if (err) throw err;
-  });
-});
+existPath('settings/');
 
 app.use("/src", express.static(__dirname + "/src"))
   .use("/upload", express.static(__dirname + "/upload"))
@@ -225,7 +220,7 @@ app.use("/src", express.static(__dirname + "/src"))
   .use("/tmp", express.static(__dirname + "/tmp"))
 
 if (!ip.address().match(/169.254/)) {
-  console.log(`Hey ${username} ! You can connect to the web interface here : http://${ip.address()}:8080.`);
+  console.log(`Hey ${username} ! You can connect to the web interface with your local IP (http://${ip.address()}:8080) or hostname (http://${os.hostname()}:8080).`);
 } else {
   console.log(`Sorry Dude, I won't work properly if I don't have access to the Internet. Please fix your connection and try again.`);
 }

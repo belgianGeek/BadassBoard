@@ -70,7 +70,7 @@ body {
   }
 }
 
-header {
+.header {
   display: inline-flex;
   position: absolute;
   top: 1%;
@@ -84,14 +84,14 @@ header {
     margin-left: 1.5%;
     cursor: pointer;
   }
-}
 
-.settingsBtn {
-  margin-right: 0.5%;
+  &__settingsBtn {
+    margin-right: 0.5%;
+  }
 }
 
 .blank__addContent__svg:hover,
-.settingsBtn:hover {
+.header__settingsBtn:hover {
   animation-name: turnRound;
   animation-duration: 1s;
   animation-iteration-count: 1;
@@ -852,6 +852,7 @@ header {
     .linksContainer {
       min-width: 0;
       flex: 1;
+      overflow-y: hidden;
 
       a:visited {
         color: grey;

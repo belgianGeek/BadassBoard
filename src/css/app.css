@@ -63,7 +63,7 @@ body .backgroundImage {
   opacity: 0.9;
 }
 
-header {
+.header {
   display: inline-flex;
   position: absolute;
   top: 1%;
@@ -73,17 +73,16 @@ header {
   align-items: center;
   z-index: 3;
 }
-header svg {
+.header svg {
   margin-left: 1.5%;
   cursor: pointer;
 }
-
-.settingsBtn {
+.header__settingsBtn {
   margin-right: 0.5%;
 }
 
 .blank__addContent__svg:hover,
-.settingsBtn:hover {
+.header__settingsBtn:hover {
   animation-name: turnRound;
   animation-duration: 1s;
   animation-iteration-count: 1;
