@@ -442,6 +442,7 @@ app.get('/', (req, res) => {
       });
 
       io.on('download', (id) => {
+        let downloadLog;
         let options = [
           '-x',
           '--audio-format',
@@ -489,20 +490,21 @@ app.get('/', (req, res) => {
 
         const youtubeDlDownload = (youtubeDLpath) => {
           let download = execFile(youtubeDLpath, options, (err, stdout) => {
+            downloadLog = stdout;
             if (err) {
               console.log(`Error downloading file with Youtube-dl : ${err}`);
             }
+          });
 
-            let filename = stdout
+          download.on('close', () => {
+            let filename = downloadLog
               .match(/(.\/tmp\/\w.+\.mp3)/i)[1]
               .substring(1, 100);
 
             downloadedFile.path = `.${filename}`;
 
             downloadedFile.name = filename;
-          });
 
-          download.on('close', () => {
             // Inform the client that the download ended
             io.emit('download ended', {
               title: downloadedFile.name
