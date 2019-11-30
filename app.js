@@ -494,10 +494,10 @@ app.get('/', (req, res) => {
             }
 
             let filename = stdout
-              .match(/tmp([\/\\a-zA-ZùéàçÉÈÁÀÊîïôÔ0-9-_\[\]()\s.,;:=+~µ@&#!]{1,}\.mp3)/i)[1]
+              .match(/(.\/tmp\/\w.+\.mp3)/i)[1]
               .substring(1, 100);
 
-            downloadedFile.path = `./tmp/${filename}`;
+            downloadedFile.path = `.${filename}`;
 
             downloadedFile.name = filename;
           });

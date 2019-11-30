@@ -1483,7 +1483,7 @@ let contentHeight;
               $('#msgContainer').fadeOut(1500);
             }, 2000);
 
-            window.open(`http://${ip}:8080/download`);
+            window.open(`${window.location.href}download`);
           });
         } else {
           printError({
@@ -1998,12 +1998,6 @@ let contentHeight;
       url: 'https://invidio.us/search?q='
     },
     {
-      label: '!jquery',
-      desc: 'Jquery API',
-      icon: './src/css/icons/suggestions/jquery.ico',
-      url: 'https://api.jquery.com/?ns0=1&s='
-    },
-    {
       label: '!jq',
       desc: 'Jquery API',
       icon: './src/css/icons/suggestions/jquery.ico',
@@ -2020,6 +2014,12 @@ let contentHeight;
       desc: 'LinkedIn',
       icon: './src/css/icons/suggestions/linkedin.ico',
       url: 'https://www.linkedin.com/search/results/all/?keywords='
+    },
+    {
+      label: '!ln',
+      desc: 'Les Numériques',
+      icon: '',
+      url: 'https://www.lesnumeriques.com/recherche?q='
     },
     {
       label: '!mdn',
