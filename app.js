@@ -4,7 +4,9 @@ const express = require('express');
 const app = express();
 const feedparser = require("feedparser-promised");
 const ip = require('ip');
-const { execFile } = require('child_process');
+const {
+  execFile
+} = require('child_process');
 const os = require('os');
 const path = require('path');
 const request = require('request');
@@ -488,25 +490,28 @@ app.get('/', (req, res) => {
         }
 
         const youtubeDlDownload = (youtubeDLpath) => {
-		  let downloadLog;
+          let downloadLog;
           let download = execFile(youtubeDLpath, options, (err, stdout) => {
             if (err) {
               console.log(`Error downloading file with Youtube-dl : ${err}`);
             } else {
-			  downloadLog = stdout;
-			  console.log(downloadLog);
-			}
+              downloadLog = stdout;
+            }
           });
-		  
-		  download.on('close', () => {
-			  
-			filename = downloadLog
-			  .match(/((.|)(\/|\\|)tmp(\/|\\)\w.+\.mp3)/i)[1]
-			  .substring(1, 100);
+
+          download.on('close', () => {
+
+            filename = downloadLog
+              .match(/((.|)(\/|\\|)tmp(\/|\\)\w.+\.mp3)/i)[1]
+              .substring(1, 100);
 
             console.log(filename);
 
-            downloadedFile.path = `${__dirname}\\${filename}`;
+            if (os.platform() === 'Win32') {
+              downloadedFile.path = `${__dirname}\\${filename}`;
+            } else if (os.platform() === 'linux') {
+              downloadedFile.path = `${__dirname}${filename}`;
+            }
 
             downloadedFile.name = filename;
 
