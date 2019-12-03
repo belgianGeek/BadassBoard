@@ -505,8 +505,6 @@ app.get('/', (req, res) => {
               .match(/((.|)(\/|\\|)tmp(\/|\\)\w.+\.mp3)/i)[1]
               .substring(1, 100);
 
-            console.log(filename);
-
             if (os.platform() === 'Win32') {
               downloadedFile.path = `${__dirname}\\${filename}`;
             } else if (os.platform() === 'linux') {
