@@ -225,8 +225,8 @@ if (!ip.address().match(/169.254/)) {
   console.log(`Sorry Dude, I won't work properly if I don't have access to the Internet. Please fix your connection and try again.`);
 }
 
-// Clear the temp folder every 10 minutes
-setTimeout(() => {
+// Clear the temp folder every 15 minutes
+setInterval(() => {
   fs.readdir('./tmp', (err, files) => {
     if (!err) {
       for (const file of files) {
@@ -240,7 +240,7 @@ setTimeout(() => {
       console.log(`Error cleaning the temp folder:\n${err}`);
     }
   });
-}, 60000);
+}, 900000);
 
 app.get('/', (req, res) => {
     // console.log(req.secure);
@@ -442,7 +442,6 @@ app.get('/', (req, res) => {
       });
 
       io.on('download', (id) => {
-        let downloadLog;
         let options = [
           '-x',
           '--audio-format',
@@ -489,19 +488,25 @@ app.get('/', (req, res) => {
         }
 
         const youtubeDlDownload = (youtubeDLpath) => {
+		  let downloadLog;
           let download = execFile(youtubeDLpath, options, (err, stdout) => {
-            downloadLog = stdout;
             if (err) {
               console.log(`Error downloading file with Youtube-dl : ${err}`);
-            }
+            } else {
+			  downloadLog = stdout;
+			  console.log(downloadLog);
+			}
           });
+		  
+		  download.on('close', () => {
+			  
+			filename = downloadLog
+			  .match(/((.|)(\/|\\|)tmp(\/|\\)\w.+\.mp3)/i)[1]
+			  .substring(1, 100);
 
-          download.on('close', () => {
-            let filename = downloadLog
-              .match(/(.\/tmp\/\w.+\.mp3)/i)[1]
-              .substring(1, 100);
+            console.log(filename);
 
-            downloadedFile.path = `.${filename}`;
+            downloadedFile.path = `${__dirname}\\${filename}`;
 
             downloadedFile.name = filename;
 
