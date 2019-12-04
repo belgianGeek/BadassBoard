@@ -167,6 +167,7 @@ body {
 
     .backgroundImageUploadForm,
     .owmToken,
+    .searchEngineSelection,
     .toggleRss {
       flex-direction: row;
       align-items: baseline;
@@ -176,6 +177,7 @@ body {
       }
     }
 
+    .searchEngineSelection,
     .toggleRss {
       justify-content: space-between;
       margin: 2em 0 0 1em;
@@ -281,6 +283,13 @@ body {
         border-left: none;
         border-right: none;
         border-bottom: 1px solid lightblue;
+      }
+    }
+
+    .searchEngineSelection {
+      &__select {
+        color: black;
+        font-size: 1em;
       }
     }
   }

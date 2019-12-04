@@ -150,23 +150,28 @@ body .backgroundImage {
 }
 .settings__container .settings__child .backgroundImageUploadForm,
 .settings__container .settings__child .owmToken,
+.settings__container .settings__child .searchEngineSelection,
 .settings__container .settings__child .toggleRss {
   flex-direction: row;
   align-items: baseline;
 }
 .settings__container .settings__child .backgroundImageUploadForm *,
 .settings__container .settings__child .owmToken *,
+.settings__container .settings__child .searchEngineSelection *,
 .settings__container .settings__child .toggleRss * {
   font-size: 1.05em;
 }
+.settings__container .settings__child .searchEngineSelection,
 .settings__container .settings__child .toggleRss {
   justify-content: space-between;
   margin: 2em 0 0 1em;
   width: 90%;
 }
+.settings__container .settings__child .searchEngineSelection__Comment,
 .settings__container .settings__child .toggleRss__Comment {
   width: 100%;
 }
+.settings__container .settings__child .searchEngineSelection__Switch,
 .settings__container .settings__child .toggleRss__Switch {
   position: absolute;
   display: inline-block;
@@ -174,6 +179,7 @@ body .backgroundImage {
   height: 100%;
   left: 86%;
 }
+.settings__container .settings__child .searchEngineSelection__Slider,
 .settings__container .settings__child .toggleRss__Slider {
   position: absolute;
   top: 0;
@@ -187,6 +193,7 @@ body .backgroundImage {
   width: 3em;
   cursor: pointer;
 }
+.settings__container .settings__child .searchEngineSelection__Slider:before,
 .settings__container .settings__child .toggleRss__Slider:before {
   position: absolute;
   content: "";
@@ -197,21 +204,27 @@ body .backgroundImage {
   transition: 0.4s;
   border-radius: 50%;
 }
+.settings__container .settings__child .searchEngineSelection__Slider.checked:before,
 .settings__container .settings__child .toggleRss__Slider.checked:before {
   left: 4px;
 }
+.settings__container .settings__child .searchEngineSelection__Slider.unchecked:before,
 .settings__container .settings__child .toggleRss__Slider.unchecked:before {
   left: 4px;
 }
+.settings__container .settings__child .searchEngineSelection__Input,
 .settings__container .settings__child .toggleRss__Input {
   display: none;
 }
+.settings__container .settings__child .searchEngineSelection__Input:checked + .toggleRss__Slider,
 .settings__container .settings__child .toggleRss__Input:checked + .toggleRss__Slider {
   background-color: #20df3d;
 }
+.settings__container .settings__child .searchEngineSelection__Input:focus + .toggleRss__Slider,
 .settings__container .settings__child .toggleRss__Input:focus + .toggleRss__Slider {
   box-shadow: 0 0 1px #20df3d;
 }
+.settings__container .settings__child .searchEngineSelection__Input:checked + .toggleRss__Slider:before,
 .settings__container .settings__child .toggleRss__Input:checked + .toggleRss__Slider:before {
   transform: translateX(26px);
 }
@@ -249,6 +262,10 @@ body .backgroundImage {
   border-left: none;
   border-right: none;
   border-bottom: 1px solid lightblue;
+}
+.settings__container .settings__child .searchEngineSelection__select {
+  color: black;
+  font-size: 1em;
 }
 
 .warning {
@@ -738,6 +755,7 @@ body .backgroundImage {
 .moreContent .content__container .linksContainer {
   min-width: 0;
   flex: 1;
+  overflow-y: hidden;
 }
 .moreContent .content__container .linksContainer a:visited {
   color: grey;

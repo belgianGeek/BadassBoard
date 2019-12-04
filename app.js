@@ -35,12 +35,6 @@ const settingsPath = './settings/settings.json';
 
 server.listen(8080);
 
-const backupSettings = (settings) => {
-  fs.writeFile('./settings/settings.json.bak', JSON.stringify(settings, null, 2), (err) => {
-    if (err) throw err;
-  });
-}
-
 const customize = (customizationData) => {
   // console.log(JSON.stringify(customizationData, null, 2));
 
@@ -48,7 +42,6 @@ const customize = (customizationData) => {
     if (err) throw err;
     let settings;
     if (data !== undefined) {
-      // try {
       settings = JSON.parse(data);
 
       const processNewSettings = (callback) => {
@@ -87,28 +80,9 @@ const customize = (customizationData) => {
                 backgroundImage: settings.backgroundImage
               });
             }
-
-            // Backup the new config
-            backupSettings(settings);
           });
         }, 1000)
       });
-      // } catch (err) {
-      //   // If parsing fail, restore the backup
-      //   console.log(`Error parsing settings !`);
-      //   fs.copyFile('./settings/settings.json.bak', settingsPath, (err) => {
-      //     if (err) {
-      //       if (err.code === 'EBUSY') {
-      //         io.emit('refresh app');
-      //         console.log(err);
-      //       } else {
-      //         console.log(`Error copying the settings file :\n${err}`);
-      //       }
-      //     } else {
-      //       console.log(`Settings file successfully restored !`);
-      //     }
-      //   });
-      // }
     } else {
       console.log(`File content is undefined !`);
     }
@@ -120,7 +94,6 @@ const readSettings = () => {
     if (err) throw err;
     let settings;
     if (data !== undefined) {
-      // try {
       settings = JSON.parse(data);
       let elements = settings.elements;
       var eltsArray = [];
@@ -159,22 +132,6 @@ const readSettings = () => {
           }
         }
       }
-      // } catch (err) {
-      //   // If parsing fail, restore the backup
-      //   console.log(`Error parsing settings !`);
-      //   fs.copyFile('./settings/settings.json.bak', './settings/settings.json', (err) => {
-      //     if (err) {
-      //       if (err.code === 'EBUSY') {
-      //         io.emit('refresh app');
-      //         console.log(err);
-      //       } else {
-      //         console.log(`Error copying the settings file :\n${err}`);
-      //       }
-      //     } else {
-      //       console.log(`Settings file successfully restored !`);
-      //     }
-      //   });
-      // }
     } else {
       console.log(`File content is undefined !`);
     }
@@ -288,7 +245,6 @@ app.get('/', (req, res) => {
           fs.readFile(settingsPath, 'utf-8', (err, data) => {
             if (err) throw err;
             let settings;
-            // try {
             settings = JSON.parse(data);
             var elements = settings.elements;
             if (settings === undefined) {
@@ -403,9 +359,6 @@ app.get('/', (req, res) => {
 
                           // Reset the addings counter
                           iAddElt = 0;
-
-                          // Backup the new config
-                          backupSettings();
                         });
                       }
                     });
@@ -413,22 +366,6 @@ app.get('/', (req, res) => {
                 }
               }
             }
-            // } catch (err) {
-            //   // If parsing fail, restore the backup
-            //   console.log(`Error parsing settings !`);
-            //   fs.copyFile('./settings/settings.json.bak', settingsPath, (err) => {
-            //     if (err) {
-            //       if (err.code === 'EBUSY') {
-            //         io.emit('refresh app');
-            //         console.log(err);
-            //       } else {
-            //         console.log(`Error copying the settings file :\n${err}`);
-            //       }
-            //     } else {
-            //       console.log(`Settings file successfully restored !`);
-            //     }
-            //   });
-            // }
           });
         } else if (feedData === undefined || feedData === null) {
           io.emit('errorMsg', {
@@ -683,20 +620,8 @@ app.get('/', (req, res) => {
           try {
             settings = JSON.parse(data);
           } catch (err) {
-            // If parsing fail, restore the backup
+            // If parsing fail, throw an error
             console.log(`Error parsing settings !\n${err}`);
-            fs.copyFile('./settings/settings.json.bak', './settings/settings.json', (err) => {
-              if (err) {
-                if (err.code === 'EBUSY') {
-                  io.emit('refresh app');
-                  console.log(err);
-                } else {
-                  console.log(`Error copying the settings file :\n${err}`);
-                }
-              } else {
-                console.log(`Settings file successfully restored !`);
-              }
-            });
           }
         } else {
           console.log(`File content is undefined !`);
