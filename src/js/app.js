@@ -1762,6 +1762,7 @@ const showSettings = () => {
   // Create an object to store the new settings values
   let updatedSettings = {};
   let checkboxState = $('.toggleRss__Input').prop('checked');
+  let defaultSearchEngine = $('.searchEngineSelection__select').val();
 
   if (!checkboxState) {
     $('.toggleRss__Slider').addClass('unchecked');
@@ -1799,6 +1800,33 @@ const showSettings = () => {
 
     $('.backgroundImage, header, #mainContainer').css('filter', 'none');
     $('.settings__container').fadeOut();
+  });
+
+  // Watch for search engine changes
+  $('.searchEngineSelection__select').on('change', () => {
+    let searchEngineValue = $('.searchEngineSelection__select').val();
+    updatedSettings.searchEngine = {};
+
+    updatedSettings.searchEngine.label = searchEngineValue;
+
+    if (searchEngineValue === 'Bing') {
+      updatedSettings.searchEngine.url = 'https://www.bing.com/search?q=';
+    } else if (searchEngineValue === 'DuckDuckGo') {
+      updatedSettings.searchEngine.url = 'https://duckduckgo.com/?q=';
+    } else if (searchEngineValue === 'Ecosia') {
+      updatedSettings.searchEngine.url = 'https://www.ecosia.org/search?q=';
+    } else if (searchEngineValue === 'Google') {
+      updatedSettings.searchEngine.url = 'https://www.google.com/search?q=test';
+    } else if (searchEngineValue === 'Qwant') {
+      updatedSettings.searchEngine.url = 'https://www.qwant.com/?q=';
+    }
+    // Only update the search engine if not equal to the previous value
+    if (defaultSearchEngine === searchEngineValue) {
+      console.log('Same search engine :(');
+      error = true;
+    } else {
+      console.log(JSON.stringify(updatedSettings.searchEngine, null, 2));
+    }
   });
 
   $('#settings__child__saveBtn').click(() => {
@@ -1921,7 +1949,8 @@ const showSettings = () => {
   });
 }
 
-const suggestions = [{
+const suggestions = [
+  {
     label: '!1337x',
     desc: '1337x.to',
     icon: './src/css/icons/suggestions/1337x.ico',
