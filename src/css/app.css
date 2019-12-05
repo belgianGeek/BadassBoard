@@ -52,6 +52,7 @@ body .backgroundImage {
 }
 .wrapper .rssTooltip {
   position: absolute;
+  z-index: 1;
 }
 .wrapper .rssTooltip .article__desc {
   padding: 1%;
@@ -480,7 +481,6 @@ body .backgroundImage {
   z-index: 2;
 }
 .audio__leftSvg, .audio__rightSvg {
-  width: 10%;
   cursor: pointer;
 }
 .audio .player {

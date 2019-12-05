@@ -57,6 +57,7 @@ body {
 
   .rssTooltip {
     position: absolute;
+    z-index: 1;
 
     .article__desc {
       padding: 1%;
@@ -532,7 +533,6 @@ body {
 
   &__leftSvg,
   &__rightSvg {
-    width: 10%;
     cursor: pointer;
   }
 
