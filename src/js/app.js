@@ -501,9 +501,8 @@ const checkForUpdates = () => {
     dataType: 'json',
     statusCode: {
       200: (res) => {
-        for (const [i, value] of res.entries()) {
-          console.log(value.tag_name, i, currentVersion);
-          if (value.tag_name !== currentVersion) {
+          console.log(res[0].tag_name, currentVersion);
+          if (res[0].tag_name !== currentVersion) {
             let updateIcon = $('<svg class="header__updateBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 8l-5-5-5 5M12 4.2v10.3"/></svg>')
               .prependTo($('header'))
               .click(() => {
@@ -517,15 +516,12 @@ const checkForUpdates = () => {
             setTimeout(() => {
               $('.msgContainer').fadeOut(2000);
             }, 5000);
-          } else if (value.tag_name === currentVersion) {
-            document.ready(() => {
-              $('.header__updateBtn').remove();
-              $('.msgContainer')
-                .text('')
-                .hide();
-            });
+          } else if (res[0].tag_name === currentVersion) {
+            $('.header__updateBtn').remove();
+            $('.msgContainer')
+              .text('')
+              .hide();
           }
-        }
       },
       404: () => {
         console.log('Couldn\'t check for updates, page not found...');
@@ -1925,8 +1921,7 @@ const showSettings = () => {
   });
 }
 
-const suggestions = [
-  {
+const suggestions = [{
     label: '!1337x',
     desc: '1337x.to',
     icon: './src/css/icons/suggestions/1337x.ico',
