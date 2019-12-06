@@ -843,6 +843,8 @@ const openUrl = (msg) => {
       if (suggestions[i].url !== undefined && suggestions[i] !== null) {
         if (suggestions[i].label === '!iv') {
           window.open(`${suggestions[i].url}${keywords}&local=true`);
+        } else if (suggestions[i].label === '!mmnl') {
+          window.open(`${suggestions[i].url}${keywords}&searchProfile=onlineshop&channel=mmnlnl`)
         } else if (suggestions[i].label === '!pb') {
           window.open(`${suggestions[i].url}${keywords}/-/`);
         } else {
@@ -1986,6 +1988,12 @@ const suggestions = [
     icon: './src/css/icons/suggestions/download.png'
   },
   {
+    label: '!fb',
+    desc: 'Facebook',
+    icon: './src/css/icons/suggestions/fb.ico',
+    url: 'https://www.facebook.com/search/top/?q='
+  },
+  {
     label: '!fdroid',
     desc: 'F-Droid',
     icon: './src/css/icons/suggestions/fdroid.png',
@@ -2048,7 +2056,7 @@ const suggestions = [
   {
     label: '!ln',
     desc: 'Les Numériques',
-    icon: '',
+    icon: './src/css/icons/suggestions/ln.ico',
     url: 'https://www.lesnumeriques.com/recherche?q='
   },
   {
@@ -2056,6 +2064,18 @@ const suggestions = [
     desc: 'Mozilla Developer network',
     icon: './src/css/icons/suggestions/mdn.png',
     url: 'https://developer.mozilla.org/en-US/search?q='
+  },
+  {
+    label: '!mmfr',
+    desc: 'Media Markt (BE FR)',
+    icon: './src/css/icons/suggestions/mm.png',
+    url: 'https://www.mediamarkt.be/fr/search.html?query='
+  },
+  {
+    label: '!mmnl',
+    desc: 'Media Markt (BE NL)',
+    icon: './src/css/icons/suggestions/mm.png',
+    url: 'https://www.mediamarkt.nl/nl/search.html?query='
   },
   {
     label: '!mt',

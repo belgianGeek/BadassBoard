@@ -816,10 +816,14 @@ body .backgroundImage {
 
 /* Responsive design */
 @media (max-width: 720px) {
-  .formContainer {
-    width: 60%;
+  header .header__converterBtn {
+    display: none;
   }
-  .formContainer .questionBox {
+
+  .formContainer__container .formContainer {
+    width: 70%;
+  }
+  .formContainer__container .formContainer .questionBox {
     width: 80%;
     height: 2em;
     border: none;
@@ -827,7 +831,7 @@ body .backgroundImage {
     overflow-x: hidden;
     text-overflow: ellipsis;
   }
-  .formContainer .formSubmit {
+  .formContainer__container .formContainer .formSubmit {
     width: 30px;
     height: 30px;
   }
@@ -868,6 +872,9 @@ body .backgroundImage {
   .moreContent .content__container .content .forecast .linksContainer .article,
 .moreContent .content__container .content .rssContainer .linksContainer .article {
     padding-left: 0.6em;
+  }
+  .moreContent .content__container .newContent {
+    display: none;
   }
 }
 

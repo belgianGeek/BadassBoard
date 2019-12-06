@@ -934,8 +934,14 @@ body {
 }
 /* Responsive design */
 @media (max-width: 720px) {
-  .formContainer {
-    width: 60%;
+  header {
+    .header__converterBtn {
+      display: none;
+    }
+  }
+
+  .formContainer__container .formContainer {
+    width: 70%;
 
     .questionBox {
       width: 80%;
@@ -995,6 +1001,10 @@ body {
             }
           }
         }
+      }
+
+      .newContent {
+        display: none;
       }
     }
   }
