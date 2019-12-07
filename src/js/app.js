@@ -12,6 +12,9 @@ let owmToken = '';
 
 let contentHeight;
 
+// Store the default search engine
+let searchEngine = {};
+
 //Websocket connection
 const socket = io();
 
@@ -44,6 +47,14 @@ $.ajax({
   if (settings.owmToken !== undefined) {
     owmToken = settings.owmToken;
     $('.owmToken__Comment').text(`Your OpenWeatherMap token is ${owmToken}. You can update it here !`);
+  }
+
+  if (settings.searchEngine !== undefined) {
+    searchEngine.label = settings.searchEngine.label;
+    searchEngine.url = settings.searchEngine.url;
+
+    // Update the default search engine parameter
+    $('.searchEngineSelection__select').val(settings.searchEngine.label);
   }
 });
 
@@ -1631,8 +1642,8 @@ const processInput = (msg) => {
   } else {
     if (msg !== null && msg !== undefined && msg !== '') {
       // DuckDuckGo search
-      let keywords = args.join('+');
-      window.open(`https://duckduckgo.com/?q=${keywords}`);
+      let keywords = args.join(' ');
+      window.open(`${searchEngine.url}${keywords}`);
 
       // Empty the search box
       $("#questionBox").val('');
@@ -1764,7 +1775,6 @@ const showSettings = () => {
   // Create an object to store the new settings values
   let updatedSettings = {};
   let checkboxState = $('.toggleRss__Input').prop('checked');
-  let defaultSearchEngine = $('.searchEngineSelection__select').val();
 
   if (!checkboxState) {
     $('.toggleRss__Slider').addClass('unchecked');
@@ -1812,18 +1822,18 @@ const showSettings = () => {
     updatedSettings.searchEngine.label = searchEngineValue;
 
     if (searchEngineValue === 'Bing') {
-      updatedSettings.searchEngine.url = 'https://www.bing.com/search?q=';
+      updatedSettings.searchEngine.url = searchEngine.url = 'https://www.bing.com/search?q=';
     } else if (searchEngineValue === 'DuckDuckGo') {
-      updatedSettings.searchEngine.url = 'https://duckduckgo.com/?q=';
+      updatedSettings.searchEngine.url = searchEngine.url = 'https://duckduckgo.com/?q=';
     } else if (searchEngineValue === 'Ecosia') {
-      updatedSettings.searchEngine.url = 'https://www.ecosia.org/search?q=';
+      updatedSettings.searchEngine.url = searchEngine.url = 'https://www.ecosia.org/search?q=';
     } else if (searchEngineValue === 'Google') {
-      updatedSettings.searchEngine.url = 'https://www.google.com/search?q=test';
+      updatedSettings.searchEngine.url = searchEngine.url = 'https://www.google.com/search?q=test';
     } else if (searchEngineValue === 'Qwant') {
-      updatedSettings.searchEngine.url = 'https://www.qwant.com/?q=';
+      updatedSettings.searchEngine.url = searchEngine.url = 'https://www.qwant.com/?q=';
     }
     // Only update the search engine if not equal to the previous value
-    if (defaultSearchEngine === searchEngineValue) {
+    if (searchEngine.label === searchEngineValue) {
       console.log('Same search engine :(');
       error = true;
     } else {

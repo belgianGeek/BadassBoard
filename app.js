@@ -225,7 +225,11 @@ app.get('/', (req, res) => {
           {
             "elements": []
           }
-        ]
+        ],
+        "searchEngine": {
+          "label": "DuckDuckGo",
+          "url": "https://duckduckgo.com/?q="
+        }
       }
 
       // Read the settings file or create it if it doesn't exist
