@@ -66,7 +66,7 @@ const customize = (customizationData) => {
           settings.owmToken = customizationData.owmToken;
         }
 
-        console.log(JSON.stringify(customizationData, null, 2));
+        // console.log(JSON.stringify(customizationData, null, 2));
 
         if (customizationData.searchEngine !== null && customizationData.searchEngine !== undefined) {
           settings.searchEngine = customizationData.searchEngine;

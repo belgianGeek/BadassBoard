@@ -600,13 +600,13 @@ body {
 
 .moreContent {
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: flex-start;
   width: 100%;
   font-size: 1.1em;
   flex-wrap: wrap;
   position: relative;
-  // top: 50%;
+
   .content__container {
     width: 30%;
     justify-content: space-between;
@@ -654,7 +654,7 @@ body {
       .warning {
         height: 100%;
         max-height: 100%;
-        padding: 0 2%;
+        padding: 0 1% 0 2%;
       }
 
       .addContent,
@@ -665,6 +665,8 @@ body {
       }
 
       .forecast {
+        margin-right: -3%;
+
         &__header {
           display: inline-flex;
           align-items: center;
@@ -900,7 +902,7 @@ body {
     }
 
     .subRow {
-      margin-top: 7%;
+      margin-top: 2.5vh;
     }
   }
 }

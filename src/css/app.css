@@ -538,7 +538,7 @@ body .backgroundImage {
 
 .moreContent {
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: flex-start;
   width: 100%;
   font-size: 1.1em;
@@ -587,13 +587,16 @@ body .backgroundImage {
 .moreContent .content__container .content .warning {
   height: 100%;
   max-height: 100%;
-  padding: 0 2%;
+  padding: 0 1% 0 2%;
 }
 .moreContent .content__container .content .addContent,
 .moreContent .content__container .content .blank,
 .moreContent .content__container .content .rssContainer,
 .moreContent .content__container .content .warning {
   margin-bottom: 2vh;
+}
+.moreContent .content__container .content .forecast {
+  margin-right: -3%;
 }
 .moreContent .content__container .content .forecast__header {
   display: inline-flex;
@@ -786,7 +789,7 @@ body .backgroundImage {
   visibility: hidden;
 }
 .moreContent .content__container .subRow {
-  margin-top: 7%;
+  margin-top: 2.5vh;
 }
 
 .footer {

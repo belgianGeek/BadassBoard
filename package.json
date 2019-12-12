@@ -1,6 +1,6 @@
 {
   "name": "BadassBoard",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "app.js",
   "author": "Maxime Vanderwegen",
   "license": "AGPL-3.0-or-later",
@@ -18,9 +18,12 @@
     "multer": "^1.4.1",
     "opusscript": "^0.0.6",
     "request": "^2.88.0",
-    "scss": "^0.2.4",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
     "ytdl-core": "^0.29.2"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "scss": "^0.2.4"
   }
 }

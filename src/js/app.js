@@ -55,6 +55,15 @@ $.ajax({
 
     // Update the default search engine parameter
     $('.searchEngineSelection__select').val(settings.searchEngine.label);
+  } else {
+    // Define the default search engine if it doesn't exist
+    searchEngine.label = 'DuckDuckGo';
+    searchEngine.url = 'https://duckduckgo.com/?q=';
+
+    $('.searchEngineSelection__select').val(searchEngine.label);
+
+    // Send the search engine to the server
+    socket.emit('customization', searchEngine);
   }
 });
 
@@ -1831,13 +1840,6 @@ const showSettings = () => {
       updatedSettings.searchEngine.url = searchEngine.url = 'https://www.google.com/search?q=test';
     } else if (searchEngineValue === 'Qwant') {
       updatedSettings.searchEngine.url = searchEngine.url = 'https://www.qwant.com/?q=';
-    }
-    // Only update the search engine if not equal to the previous value
-    if (searchEngine.label === searchEngineValue) {
-      console.log('Same search engine :(');
-      error = true;
-    } else {
-      console.log(JSON.stringify(updatedSettings.searchEngine, null, 2));
     }
   });
 
