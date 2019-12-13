@@ -813,19 +813,24 @@ const listen2Playlist = (data) => {
         if (data.videos[iPlaylist] !== undefined) {
           listen2Playlist(data);
         } else {
-          $('.audio__rightSvg').hide();
+          $('.audio__leftSvg, .audio__remove').hide();
 
           $('.player, .streamInfoContainer, .playlistInfo').hide();
 
           if (!$('.endOfPlaylist').length) {
             let endOfPlaylist = $('<span></span>')
               .text('There is no track left in here... 😭')
-              .addClass('playlistEndMsg')
+              .addClass('audioMsg__playlistEnd')
               .prependTo('.audioMsg');
           }
 
+          $('.audio').css('width', '50%');
+
           $('.audioMsg')
-            .css('justify-content', 'center');
+            .css({
+              justifyContent: 'center',
+              width: '100%'
+            });
 
           fade($('.audio'));
         }
