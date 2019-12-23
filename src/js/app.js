@@ -46,7 +46,7 @@ $.ajax({
 
   if (settings.owmToken !== undefined) {
     owmToken = settings.owmToken;
-    $('.owmToken__Comment').text(`Your OpenWeatherMap token is ${owmToken}. You can update it here !`);
+    $('.owmToken__input').val(settings.owmToken);
   }
 
   if (settings.searchEngine !== undefined) {
@@ -72,6 +72,8 @@ const addContent = (parent, element) => {
   let svg = `${parent} ${element} .blank`;
   contentHeight = $('.content').height();
 
+  $(element, svg).off();
+
   setTimeout(() => {
     if (!$(`${element} .rssContainer`).length && !$(`${element} .forecast`).length) {
       $(element)
@@ -86,157 +88,157 @@ const addContent = (parent, element) => {
             .removeClass('visible');
         });
     }
-  }, 1000);
 
-  // Show the "addContent" form on svg click
-  $(svg).click(() => {
-    $(element).css('padding', '0');
+    // Show the "addContent" form on svg click
+    $(svg).click(() => {
+      $(element).css('padding', '0');
 
-    $(`${parent} ${element} .addContent`).addClass('flex');
-    $(svg).hide();
-    $(element)
-      .mouseenter(() => {
-        // Only show the 'blank' div if the addContent div is hidden
-        if ($(`${parent} ${element} .addContent`).is(':visible')) {
-          $(svg).hide();
-        }
-      });
-
-    $(`${parent} ${element} .addContent`).ready(() => {
-      // Add RSS on form "addContent" submit
-
-      // Handle option selection
-      $(`${parent} ${element} .addContent__select`).on('change', () => {
-
-        $(`${parent} ${element} .addContent__btnContainer`).css('display', 'inline-flex');
-
-        // If the feed option is selected, handle the adding
-        if ($(`${parent} ${element} .addContent__select`).val() === 'Add a feed') {
-
-          $(`${parent} ${element} .addContent`).removeClass('menu');
-
-          $(`${parent} ${element} .addContent__select`).addClass('select');
-
-          $(`${parent} ${element} .addContent__feed`)
-            .css('display', '')
-            .addClass('flex');
-
-          // Hide uneccesary elements
-          if ($(`${parent} ${element} .addContent__weather:visible`).length) {
-            $(`${parent} ${element} .addContent__weather`).hide();
+      $(`${parent} ${element} .addContent`).addClass('flex');
+      $(svg).hide();
+      $(element)
+        .mouseenter(() => {
+          // Only show the 'blank' div if the addContent div is hidden
+          if ($(`${parent} ${element} .addContent`).is(':visible')) {
+            $(svg).hide();
           }
+        });
 
-          // Add RSS feed on form submit
-          const submitForm = () => {
-            $(`${parent} ${element} .addContent__submitBtn`)
-              .click(() => {
-                // Call a server-side function to parse the feed if the url isn't null or undefined
-                if ($(`${parent} ${element} .addContent__feed__input`).val() !== null && $(`${parent} ${element} .addContent__feed__input`).val() !== undefined && $(`${parent} ${element} .addContent__feed__input`).val().match(/^http/i)) {
-                  // Ask the server to parse the feed
-                  socket.emit('add content', [{
-                    element: element,
-                    parent: parent,
-                    url: $(`${parent} ${element} .addContent__feed__input`).val(),
-                    type: 'rss',
-                    new: false
-                  }]);
+      $(`${parent} ${element} .addContent`).ready(() => {
+        // Add RSS on form "addContent" submit
 
-                  // Add content to the page
-                  parseContent();
+        // Handle option selection
+        $(`${parent} ${element} .addContent__select`).on('change', () => {
 
-                  $(`${parent} ${element} .addContent`).hide();
-                } else {
-                  printError({
-                    type: 'rss',
-                    msg: `Hey, this value is invalid !`,
-                    element: `${parent} ${element} .addContent__feed`
-                  });
+          $(`${parent} ${element} .addContent__btnContainer`).css('display', 'inline-flex');
 
-                  submitForm();
-                }
-              });
-          }
+          // If the feed option is selected, handle the adding
+          if ($(`${parent} ${element} .addContent__select`).val() === 'Add a feed') {
 
-          submitForm();
-        } else if ($(`${parent} ${element} .addContent__select`).val() === 'Weather forecast') {
+            $(`${parent} ${element} .addContent`).removeClass('menu');
 
-          $(`${parent} ${element} .addContent`).removeClass('menu');
+            $(`${parent} ${element} .addContent__select`).addClass('select');
 
-          $(`${parent} ${element} .addContent__select`).addClass('select');
+            $(`${parent} ${element} .addContent__feed`)
+              .css('display', '')
+              .addClass('flex');
 
-          if ($(`${parent} ${element} .addContent__feed:visible`).length) {
-            $(`${parent} ${element} .addContent__feed`).hide();
-          }
+            // Hide uneccesary elements
+            if ($(`${parent} ${element} .addContent__weather:visible`).length) {
+              $(`${parent} ${element} .addContent__weather`).hide();
+            }
 
-          $(`${parent} ${element} .addContent__weather`)
-            .css({
-              justifyContent: 'center',
-              alignItems: 'center',
-              display: ''
-            })
-            .addClass('flex');
+            // Add RSS feed on form submit
+            const submitForm = () => {
+              $(`${parent} ${element} .addContent__submitBtn`)
+                .click(() => {
+                  // Call a server-side function to parse the feed if the url isn't null or undefined
+                  if ($(`${parent} ${element} .addContent__feed__input`).val() !== null && $(`${parent} ${element} .addContent__feed__input`).val() !== undefined && $(`${parent} ${element} .addContent__feed__input`).val().match(/^http/i)) {
+                    // Ask the server to parse the feed
+                    socket.emit('add content', [{
+                      element: element,
+                      parent: parent,
+                      url: $(`${parent} ${element} .addContent__feed__input`).val(),
+                      type: 'rss',
+                      new: false
+                    }]);
 
-          // Search for weather forecast on form submit
-          const submitForm = () => {
-            $(`${parent} ${element} .addContent__submitBtn`)
-              .click(() => {
-                $.ajax({
-                  url: `https://api.openweathermap.org/data/2.5/find?q=${$(`${parent} ${element} .addContent__weather__input`).val()}&units=metric&lang=en&appid=${owmToken}`,
-                  method: 'POST',
-                  dataType: 'json',
-                  statusCode: {
-                    401: () => {
-                      printError({
-                        type: 'weather',
-                        msg: 'Sorry dude, your OpenWeatherMap token is invalid 😢. Please modify it in the settings.',
-                        element: `${parent} ${element}`
-                      });
+                    // Add content to the page
+                    parseContent();
 
-                      submitForm();
-                    },
-                    200: (forecast => {
-                      let count = forecast.count;
+                    $(`${parent} ${element} .addContent`).hide();
+                  } else {
+                    printError({
+                      type: 'rss',
+                      msg: `Hey, this value is invalid !`,
+                      element: `${parent} ${element} .addContent__feed`
+                    });
 
-                      if (count === 1) {
-                        // Add content to the page
-                        parseContent();
-
-                        // Send the changes to the server side
-                        socket.emit('add content', [{
-                          element: element,
-                          parent: parent,
-                          location: $(`${parent} ${element} .addContent__weather__input`).val(),
-                          type: 'weather',
-                          new: false
-                        }]);
-                      } else {
-                        printError({
-                          type: 'weather',
-                          msg: 'Sorry homie, it seems this location doesn\'t exist...',
-                          element: `${parent} ${element}`
-                        });
-                      }
-                    })
+                    submitForm();
                   }
                 });
-              });
+            }
+
+            submitForm();
+          } else if ($(`${parent} ${element} .addContent__select`).val() === 'Weather forecast') {
+
+            $(`${parent} ${element} .addContent`).removeClass('menu');
+
+            $(`${parent} ${element} .addContent__select`).addClass('select');
+
+            if ($(`${parent} ${element} .addContent__feed:visible`).length) {
+              $(`${parent} ${element} .addContent__feed`).hide();
+            }
+
+            $(`${parent} ${element} .addContent__weather`)
+              .css({
+                justifyContent: 'center',
+                alignItems: 'center',
+                display: ''
+              })
+              .addClass('flex');
+
+            // Search for weather forecast on form submit
+            const submitForm = () => {
+              $(`${parent} ${element} .addContent__submitBtn`)
+                .click(() => {
+                  $.ajax({
+                    url: `https://api.openweathermap.org/data/2.5/find?q=${$(`${parent} ${element} .addContent__weather__input`).val()}&units=metric&lang=en&appid=${owmToken}`,
+                    method: 'POST',
+                    dataType: 'json',
+                    statusCode: {
+                      401: () => {
+                        printError({
+                          type: 'weather',
+                          msg: 'Sorry dude, your OpenWeatherMap token is invalid 😢. Please modify it in the settings.',
+                          element: `${parent} ${element}`
+                        });
+
+                        submitForm();
+                      },
+                      200: (forecast => {
+                        let count = forecast.count;
+
+                        if (count === 1) {
+                          // Add content to the page
+                          parseContent();
+
+                          // Send the changes to the server side
+                          socket.emit('add content', [{
+                            element: element,
+                            parent: parent,
+                            location: $(`${parent} ${element} .addContent__weather__input`).val(),
+                            type: 'weather',
+                            new: false
+                          }]);
+                        } else {
+                          printError({
+                            type: 'weather',
+                            msg: 'Sorry homie, it seems this location doesn\'t exist...',
+                            element: `${parent} ${element}`
+                          });
+                        }
+                      })
+                    }
+                  });
+                });
+            }
+
+            submitForm();
+          } else {
+            $(`${parent} ${element} .addContent`).addClass('menu');
+            $(`${parent} ${element} .addContent__select`).removeClass('select');
+            $(`${parent} ${element} .addContent__feed, ${parent} ${element} .addContent__weather, ${parent} ${element} .addContent__btnContainer`).hide();
           }
+        });
 
-          submitForm();
-        } else {
-          $(`${parent} ${element} .addContent`).addClass('menu');
-          $(`${parent} ${element} .addContent__select`).removeClass('select');
-          $(`${parent} ${element} .addContent__feed, ${parent} ${element} .addContent__weather, ${parent} ${element} .addContent__btnContainer`).hide();
-        }
-      });
-
-      // Cancel new content adding
-      $(`${parent} ${element} .addContent__cancelBtn`).click(() => {
-        $(`${parent} ${element} .addContent`).hide();
-        $(svg).show();
+        // Cancel new content adding
+        $(`${parent} ${element} .addContent__cancelBtn`).click(() => {
+          $(`${parent} ${element} .addContent`).hide();
+          $(svg).show();
+        });
       });
     });
-  });
+  }, 3000);
 }
 
 const addContentOptions = (element) => {
@@ -1947,7 +1949,7 @@ const showSettings = () => {
       }
     }
 
-    $('.owmToken__Comment').text(`Your OpenWeatherMap token is ${updatedSettings.owmToken}. You can update it here !`);
+    $('.owmToken__input').val(updatedSettings.owmToken);
 
     // If there is no errors, hide the div
     if (!error) {
@@ -2245,10 +2247,12 @@ const updateWeatherIcon = (previsions) => {
   }
 }
 
-$('.content3__container .content3').ready(() => {
+$(document).ready(() => {
   $('.credits').hide();
 
-  checkRSSstatus($('#toggleRss__Input').prop('checked'));
+  socket.on('RSS status retrieved', rssStatus => {
+    checkRSSstatus(rssStatus);
+  });
 
   if (!$('.subRow').length) {
     $('footer').css({
@@ -2314,10 +2318,6 @@ $('.content3__container .content3').ready(() => {
 
   // Get current mouse position
   getMousePosition();
-
-  socket.on('RSS status retrieved', rssStatus => {
-    checkRSSstatus(rssStatus);
-  });
 
   // Dynamically show the footer
   $('#footer').mouseenter(() => {

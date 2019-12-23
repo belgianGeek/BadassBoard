@@ -178,6 +178,10 @@ body {
       }
     }
 
+    .owmToken__Comment {
+      margin-right: 1.5em;
+    }
+
     .searchEngineSelection,
     .toggleRss {
       justify-content: space-between;
@@ -606,6 +610,7 @@ body {
   font-size: 1.1em;
   flex-wrap: wrap;
   position: relative;
+  padding-bottom: 2em;
 
   .content__container {
     width: 30%;

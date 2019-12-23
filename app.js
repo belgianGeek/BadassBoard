@@ -128,7 +128,15 @@ const readSettings = () => {
                   // console.log(`RSS : bigI : ${bigI}`, `elements : ${eltsArray.length}`, `totalLength : ${totalLength}`);
                   sendData();
                 })
-                .catch(console.error);
+                .catch((err) => {
+                  if (err == 'Error: Not a feed') {
+                    io.emit('errorMsg', {
+                      type: 'rss verification',
+                      element: `${subEltsValue.parent} ${subEltsValue.element}`,
+                      msg: `${subEltsValue.url} is not a valid RSS feed`
+                    });
+                  }
+                });
             } else if (subEltsValue.type === 'weather') {
               let newElt = subEltsValue;
               eltsArray.push(newElt);
@@ -248,7 +256,7 @@ app.get('/', (req, res) => {
       });
 
       io.on('add content', (feedData) => {
-        console.log(`feedData : ${JSON.stringify(feedData, null, 2)}`);
+        // console.log(`feedData : ${JSON.stringify(feedData, null, 2)}`);
         let element;
 
         if (feedData !== undefined && feedData !== null) {
@@ -515,7 +523,7 @@ app.get('/', (req, res) => {
       });
 
       io.on('update feed', (feed2update) => {
-        // console.log(JSON.stringify(feed2update, null, 2));
+        console.log(JSON.stringify(feed2update, null, 2));
         fs.readFile(settingsPath, 'utf-8', (err, data) => {
           try {
             let settings = JSON.parse(data);
@@ -525,7 +533,7 @@ app.get('/', (req, res) => {
                 let eltRegex = new RegExp(j.element, 'gi');
                 let parentRegex = new RegExp(j.parent, 'gi');
                 if (feed2update.element.match(eltRegex) && feed2update.parent.match(parentRegex)) {
-                  // console.log('ok');
+                  console.log('ok');
                   feedparser.parse(j.url)
                     .then(items => {
                       // Parse rss

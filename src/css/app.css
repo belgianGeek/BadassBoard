@@ -162,6 +162,9 @@ body .backgroundImage {
 .settings__container .settings__child .toggleRss * {
   font-size: 1.05em;
 }
+.settings__container .settings__child .owmToken__Comment {
+  margin-right: 1.5em;
+}
 .settings__container .settings__child .searchEngineSelection,
 .settings__container .settings__child .toggleRss {
   justify-content: space-between;
@@ -544,6 +547,7 @@ body .backgroundImage {
   font-size: 1.1em;
   flex-wrap: wrap;
   position: relative;
+  padding-bottom: 2em;
 }
 .moreContent .content__container {
   width: 30%;
