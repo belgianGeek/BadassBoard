@@ -2007,12 +2007,6 @@ const suggestions = [
     icon: './src/css/icons/suggestions/download.png'
   },
   {
-    label: '!fb',
-    desc: 'Facebook',
-    icon: './src/css/icons/suggestions/fb.ico',
-    url: 'https://www.facebook.com/search/top/?q='
-  },
-  {
     label: '!fdroid',
     desc: 'F-Droid',
     icon: './src/css/icons/suggestions/fdroid.png',
@@ -2075,7 +2069,7 @@ const suggestions = [
   {
     label: '!ln',
     desc: 'Les Numériques',
-    icon: './src/css/icons/suggestions/ln.ico',
+    icon: './src/css/icons/suggestions/ln.png',
     url: 'https://www.lesnumeriques.com/recherche?q='
   },
   {
@@ -2163,15 +2157,9 @@ const suggestions = [
   },
   {
     label: '!torrent',
-    desc: 'Torrent9.cz',
-    icon: './src/css/icons/suggestions/torrent9.ico',
-    url: 'https://www.torrent9.cz/recherche/'
-  },
-  {
-    label: '!translate',
-    desc: 'Google translate',
-    icon: './src/css/icons/suggestions/gt.ico',
-    url: 'https://translate.google.com/#view=home&op=translate&sl=auto&tl=en&text='
+    desc: 'Oxtorrent.com',
+    icon: './src/css/icons/suggestions/torrent.ico',
+    url: 'https://www.oxtorrent.com/recherche/'
   },
   {
     label: '!uc',

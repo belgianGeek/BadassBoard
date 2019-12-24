@@ -234,6 +234,7 @@ app.get('/', (req, res) => {
             "elements": []
           }
         ],
+        "owmToken": "9b013a34970de2ddd85f46ea9185dbc5",
         "searchEngine": {
           "label": "DuckDuckGo",
           "url": "https://duckduckgo.com/?q="

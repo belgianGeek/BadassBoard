@@ -111,7 +111,7 @@ body .backgroundImage {
   align-items: start;
   flex-direction: column;
   width: 60%;
-  height: 80%;
+  height: 85%;
   background-color: rgba(0, 0, 0, 0.8);
   border-radius: 15px;
   position: relative;
@@ -127,6 +127,14 @@ body .backgroundImage {
   width: 100%;
   text-align: center;
   font-family: distant_galaxyregular;
+  margin-bottom: 0;
+}
+.settings__container .settings__child__heading {
+  font-family: distant_galaxyregular;
+  margin: 2em 0 0 1em;
+}
+.settings__container .settings__child__heading2 {
+  font-size: 1.3em;
 }
 .settings__container .settings__child .settings__BtnContainer {
   position: absolute;

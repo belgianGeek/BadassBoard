@@ -95,6 +95,15 @@
         <span id="settings__child__header" class="settings__child__header flex">
           <h1>BadassBoard settings</h1>
         </span>
+        <h2 class="settings__child__heading2 settings__child__heading">General</h2>
+        <span id="toggleRss" class="toggleRss flex">
+          <span id="toggleRss__Comment" class="toggleRss__Comment">Show the content containers on startup ?</span>
+          <label id="toggleRss__Switch" class="toggleRss__Switch">
+            <input id="toggleRss__Input" class="toggleRss__Input" type="checkbox" name="toggleRssInput" value="">
+            <span id="toggleRss__Slider" class="toggleRss__Slider"></span>
+          </label>
+        </span>
+        <h2 class="settings__child__heading2 settings__child__heading">Search</h2>
         <span class="searchEngineSelection flex">
           <span class="searchEngineSelection__Comment flex">Which search engine do you want to use ?</span>
           <select class="searchEngineSelection__select flex">
@@ -105,29 +114,18 @@
             <option value="Qwant">Qwant</option>
           </select>
         </span>
-        <span id="toggleRss" class="toggleRss flex">
-          <span id="toggleRss__Comment" class="toggleRss__Comment">Show the content containers on startup ?</span>
-          <label id="toggleRss__Switch" class="toggleRss__Switch">
-            <input id="toggleRss__Input" class="toggleRss__Input" type="checkbox" name="toggleRssInput" value="">
-            <span id="toggleRss__Slider" class="toggleRss__Slider"></span>
-          </label>
-        </span>
+        <h2 class="settings__child__heading2 settings__child__heading">Customization</h2>
         <form id="backgroundImageUploadForm" class="backgroundImageUploadForm flex" action="/" enctype="multipart/form-data" method="post">
           <label for="backgroundImageUploadForm__label">This background is 🤮 !</label>
           <button id="backgroundImageUploadForm__Btn" class="backgroundImageUploadForm__Btn" type="button" name="backgroundImageUploadBtn">Let's upload a BADASS picture !</button>
           <input id="backgroundImageUploadForm__InputFile" class="backgroundImageUploadForm__InputFile" type="file" name="backgroundImageUploadInput" accept="image/png, image/jpg">
           <input id="backgroundImageUploadForm__InputUrl" class="backgroundImageUploadForm__InputUrl" type="text" name="backgroundImageUrl" value="" placeholder='I prefer pasting an URL'>
         </form>
+        <h2 class="settings__child__heading2 settings__child__heading">Weather forecast</h2>
         <span id="owmToken" class="owmToken flex">
-          <span id='owmToken__Comment' class="owmToken__Comment">So you want to use weather forecast feature ? Please enter your OpenWeatherMap API token</span>
+          <span id='owmToken__Comment' class="owmToken__Comment">So you want to use weather forecast feature ? You can update your OpenWeatherMap API token here :</span>
           <input id="owmToken__input" class="owmToken__input" type="text" name="owmToken__input" value="" placeholder="OpenWeatherMap API token">
         </span>
-        <!-- <span id="changeColorsContainer" class="changeColorsContainer">
-          <span id="textColorContainer" class="textColorContainer">
-            <label for="textColorInput"></label>
-            <input type="color" name="textColorInput" value="">
-          </span>
-        </span> -->
         <span id="settings__BtnContainer" class="settings__BtnContainer">
           <button id="settings__child__cancelBtn" class="settings__child__cancelBtn" type="button" name="cancelSettings">Cancel</button>
           <button id="settings__child__saveBtn" class="settings__child__saveBtn" type="submit" name="saveSettings">Save settings</button>

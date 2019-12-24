@@ -121,7 +121,7 @@ body {
     align-items: start;
     flex-direction: column;
     width: 60%;
-    height: 80%;
+    height: 85%;
     background-color: rgba(0, 0, 0, 0.8);
     border-radius: 15px;
     position: relative;
@@ -137,7 +137,18 @@ body {
         width: 100%;
         text-align: center;
         font-family: distant_galaxyregular;
+        margin-bottom: 0;
       }
+    }
+
+    &__heading {
+      font-family: distant_galaxyregular;
+      margin: 2em 0 0 1em;
+
+    }
+
+    &__heading2 {
+      font-size: 1.3em;
     }
 
     .settings__BtnContainer {
