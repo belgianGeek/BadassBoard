@@ -216,7 +216,6 @@ setInterval(() => {
 }, 900000);
 
 app.get('/', (req, res) => {
-    // console.log(req.secure);
     res.render('home.ejs');
 
     // Open only one socket connection, to avoid memory leaks

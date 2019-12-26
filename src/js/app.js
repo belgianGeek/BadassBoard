@@ -424,7 +424,7 @@ const autocomplete = (search) => {
     $('.suggestions').text('');
     $('.formContainer')
       .css({
-        borderRadius: '30px',
+        borderRadius: '2em',
         padding: '0.5% 1%'
       });
 
@@ -434,7 +434,7 @@ const autocomplete = (search) => {
   if (matches !== [] && search.length >= 2 && search.startsWith('!')) {
     $('.formContainer')
       .css({
-        borderRadius: '30px 30px 0 0',
+        borderRadius: '2em 2em 0 0',
         paddingBottom: 0
       });
 
@@ -885,7 +885,7 @@ const openUrl = (msg) => {
 
   $('#formContainer')
     .css({
-      borderRadius: '30px'
+      borderRadius: '2em'
     });
 
   $('.suggestion').hide();
@@ -1970,7 +1970,8 @@ const showSettings = () => {
   });
 }
 
-const suggestions = [{
+const suggestions = [
+  {
     label: '!1337x',
     desc: '1337x.to',
     icon: './src/css/icons/suggestions/1337x.ico',
