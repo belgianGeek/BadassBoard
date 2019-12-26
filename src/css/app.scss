@@ -144,7 +144,6 @@ body {
     &__heading {
       font-family: distant_galaxyregular;
       margin: 2em 0 0 1em;
-
     }
 
     &__heading2 {
@@ -952,7 +951,10 @@ body {
 }
 /* Responsive design */
 @media (max-width: 720px) {
-  header {
+  .header {
+    width: auto;
+    left: 88%;
+
     .header__converterBtn {
       display: none;
     }
@@ -1023,6 +1025,40 @@ body {
 
       .newContent {
         display: none;
+      }
+    }
+  }
+
+  .settings__container {
+    .settings__child {
+      overflow-y: auto;
+      width: 90%;
+
+      .backgroundImageUploadForm,
+      .owmToken,
+      .searchEngineSelection,
+      .toggleRss {
+        flex-direction: column;
+      }
+
+      .backgroundImageUploadForm__Btn,
+      .backgroundImageUploadForm__InputUrl,
+      .owmToken__input,
+      .searchEngineSelection__select {
+        margin-top: 1.5em;
+      }
+
+      .settings__BtnContainer {
+        position: relative;
+        top: 5%;
+        left: 0;
+        justify-content: space-evenly;
+      }
+
+      &__cancelBtn,
+      &__saveBtn {
+        margin-bottom: 1em;
+        margin-right: 0;
       }
     }
   }

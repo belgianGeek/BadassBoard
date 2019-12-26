@@ -831,7 +831,11 @@ body .backgroundImage {
 
 /* Responsive design */
 @media (max-width: 720px) {
-  header .header__converterBtn {
+  .header {
+    width: auto;
+    left: 88%;
+  }
+  .header .header__converterBtn {
     display: none;
   }
 
@@ -890,6 +894,33 @@ body .backgroundImage {
   }
   .moreContent .content__container .newContent {
     display: none;
+  }
+
+  .settings__container .settings__child {
+    overflow-y: auto;
+    width: 90%;
+  }
+  .settings__container .settings__child .backgroundImageUploadForm,
+.settings__container .settings__child .owmToken,
+.settings__container .settings__child .searchEngineSelection,
+.settings__container .settings__child .toggleRss {
+    flex-direction: column;
+  }
+  .settings__container .settings__child .backgroundImageUploadForm__Btn,
+.settings__container .settings__child .backgroundImageUploadForm__InputUrl,
+.settings__container .settings__child .owmToken__input,
+.settings__container .settings__child .searchEngineSelection__select {
+    margin-top: 1.5em;
+  }
+  .settings__container .settings__child .settings__BtnContainer {
+    position: relative;
+    top: 5%;
+    left: 0;
+    justify-content: space-evenly;
+  }
+  .settings__container .settings__child__cancelBtn, .settings__container .settings__child__saveBtn {
+    margin-bottom: 1em;
+    margin-right: 0;
   }
 }
 
