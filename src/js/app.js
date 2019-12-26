@@ -1683,7 +1683,7 @@ const questionBoxSubmit = () => {
 const showConverter = () => {
   let result;
 
-  $('.converterBtn').on('click', function() {
+  $('.header__converterBtn').on('click', function() {
     $('.upperContainer__converter')
       .fadeIn()
       .css('display', 'flex');
