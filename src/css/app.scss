@@ -11,6 +11,20 @@ $contentBackground: rgba(0, 0, 0, 0.5);
   font-weight: normal;
   font-style: normal;
 }
+@mixin align($justify: start, $align: start) {
+  justify-content: $justify;
+  align-items: $align;
+}
+@mixin flex-direction($direction: column) {
+  flex-direction: $direction;
+}
+@mixin background-image {
+  background-image: url("./wallpaper.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
 
 body,
 html {
@@ -33,11 +47,6 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    background-image: url("./wallpaper.jpg");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-    background-attachment: fixed;
   }
 }
 
@@ -48,7 +57,7 @@ body {
 .wrapper {
   padding: 0;
   margin: 0;
-  flex-direction: column;
+  @include flex-direction;
 
   ::placeholder {
     color: lightgray;
@@ -77,8 +86,7 @@ body {
   top: 1%;
   left: 0;
   width: 100%;
-  justify-content: flex-end;
-  align-items: center;
+  @include align(flex-end, center);
   z-index: 3;
 
   svg {
@@ -111,15 +119,13 @@ body {
   display: none;
   width: 100%;
   height: 100%;
-  justify-content: center;
-  align-items: center;
+  @include align(center, center);
   position: absolute;
   font-size: 1em;
 
   .settings__child {
-    justify-content: start;
-    align-items: start;
-    flex-direction: column;
+    @include align;
+    @include flex-direction;
     width: 60%;
     height: 85%;
     background-color: rgba(0, 0, 0, 0.8);
@@ -128,7 +134,7 @@ body {
     box-shadow: 10px 10px 12px 2px $contentBackground;
 
     &__header {
-      flex-direction: row;
+      @include flex-direction(row);
       width: 100%;
       margin: 1% 0 0 1%;
 
@@ -180,7 +186,7 @@ body {
     .owmToken,
     .searchEngineSelection,
     .toggleRss {
-      flex-direction: row;
+      @include flex-direction(row);
       align-items: baseline;
 
       & * {
@@ -323,16 +329,14 @@ body {
 .mainContainer {
   width: 100%;
   height: 100%;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  @include align(center, center);
+  @include flex-direction;
 }
 
 .upperContainer {
   display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  @include align(center, center);
+  @include flex-direction;
   width: 100%;
 
   &__converter {
@@ -340,7 +344,7 @@ body {
     height: 3em;
     width: 60%;
     align-items: center;
-    flex-direction: column;
+    @include flex-direction;
     background-color: $contentBackground;
     z-index: 1;
     margin-bottom: 2%;
@@ -414,9 +418,8 @@ body {
 .formContainer__container {
   display: flex;
   height: 20%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  @include align(center, center);
+  @include flex-direction;
   position: sticky;
   top: 0;
   width: 100%;
@@ -431,11 +434,7 @@ body {
     height: 100%;
     width: 100%;
     content: '';
-    background-image: url("./wallpaper.jpg");
-    background-position: center;
-    background-attachment: fixed;
-    background-size: cover;
-    background-repeat: no-repeat;
+    @include background-image;
     filter: blur(5px);
     z-index: -1;
   }
@@ -443,8 +442,7 @@ body {
   .formContainer {
     display: inline-flex;
     width: 50%;
-    align-items: baseline;
-    justify-content: center;
+    @include align(center, baseline);
     background-color: white;
     padding: 0.5% 1%;
     border-radius: 2em;
@@ -513,7 +511,7 @@ body {
       padding: 0.5% 0 0.5% 1%;
       align-items: center;
       width: 99%;
-      flex-direction: row;
+      @include flex-direction(row);
       cursor: pointer;
 
       &__icon {
@@ -541,7 +539,7 @@ body {
   display: none;
   position: fixed;
   top: 85%;
-  flex-direction: row;
+  @include flex-direction(row);
   align-items: center;
   z-index: 2;
 
@@ -553,9 +551,8 @@ body {
   .player {
     height: min-content;
     width: 50%;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-evenly;
+    @include align(space-evenly, center);
+    @include flex-direction(row);
   }
 
   &__player {
@@ -588,7 +585,7 @@ body {
     width: 50%;
     margin: 0 1vh;
     display: flex;
-    flex-direction: column;
+    @include flex-direction;
     flex: 1;
     overflow: hidden;
 
@@ -613,9 +610,8 @@ body {
 }
 
 .moreContent {
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: flex-start;
+  @include align(space-evenly, flex-start);
+  @include flex-direction(row);
   width: 100%;
   font-size: 1.1em;
   flex-wrap: wrap;
@@ -625,7 +621,7 @@ body {
   .content__container {
     width: 30%;
     justify-content: space-between;
-    flex-direction: column;
+    @include flex-direction;
     font-size: 1em;
 
     .content {
@@ -635,8 +631,7 @@ body {
 
       .blank {
         display: none;
-        justify-content: center;
-        align-items: center;
+        @include align(center, center);
       }
 
       .flex {
@@ -656,7 +651,7 @@ body {
       .forecast,
       .rssContainer,
       .warning {
-        flex-direction: column;
+        @include flex-direction;
         background-color: $contentBackground;
         border-radius: 15px;
         width: 100%;
@@ -695,9 +690,8 @@ body {
 
           .contentOptions {
             display: none;
-            flex-direction: row;
-            align-items: baseline;
-            justify-content: space-between;
+            @include align(space-between, baseline);
+            @include flex-direction(row);
             width: 17%;
             margin-top: 1%;
 
@@ -715,7 +709,7 @@ body {
         }
 
         &__content {
-          flex-direction: row;
+          @include flex-direction(row);
           width: 100%;
           height: 100%;
           font-size: 1.1em;
@@ -724,7 +718,7 @@ body {
             margin: 0 2%;
             height: 100%;
             width: 50%;
-            flex-direction: column;
+            @include flex-direction;
 
             * {
               display: flex;
@@ -754,8 +748,7 @@ body {
 
         &__weatherIcon,
         .icon {
-          align-items: flex-start;
-          justify-content: end;
+          @include align(end, flex-start);
           width: 50%;
 
           &__icon {
@@ -772,9 +765,8 @@ body {
 
       .contentOptions {
         display: none;
-        flex-direction: row;
-        align-items: baseline;
-        justify-content: space-between;
+        @include align(space-between, baseline);
+        @include flex-direction(row);
         width: 17%;
         margin-top: 1%;
 
@@ -801,9 +793,8 @@ body {
     .addContent {
       display: none;
       width: 100%;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
+      @include align(flex-start, center);
+      @include flex-direction;
 
       label {
         margin: 2% 0;
@@ -823,9 +814,8 @@ body {
         display: none;
         width: 100%;
         height: 100%;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
+        @include align(center, center);
+        @include flex-direction;
       }
 
       &__btnContainer {
@@ -885,7 +875,7 @@ body {
       }
 
       .article {
-        flex-direction: column;
+        @include flex-direction;
         margin-top: 0.5em;
 
         .link {
@@ -924,9 +914,8 @@ body {
 
 .footer {
   width: 100%;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  @include align(center, center);
+  @include flex-direction;
   background: none;
   padding-bottom: 1em;
   position: relative;
@@ -937,9 +926,8 @@ body {
   }
 
   .credits {
-    align-items: baseline;
-    justify-content: center;
-    flex-direction: row;
+    @include align(center, baseline);
+    @include flex-direction(row);
     width: 100%;
 
     & * {
@@ -990,7 +978,7 @@ body {
   }
 
   .moreContent {
-    flex-direction: row;
+    @include flex-direction(row);
     justify-content: flex-start;
     margin-top: 15%;
     overflow-y: auto;
@@ -1007,8 +995,7 @@ body {
       .content {
         height: auto;
         width: 100%;
-        align-items: end;
-        justify-content: flex-start;
+        @include align(flex-start, end);
         margin-top: 1.5em;
 
         .forecast,
@@ -1038,7 +1025,7 @@ body {
       .owmToken,
       .searchEngineSelection,
       .toggleRss {
-        flex-direction: column;
+        @include flex-direction;
       }
 
       .backgroundImageUploadForm__Btn,

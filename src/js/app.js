@@ -297,6 +297,7 @@ const addContentOptions = (element) => {
           });
 
           socket.on('feed updated', (parsedData) => {
+            console.log('update successfull');
             let parsedElt = `${parsedData.parent} ${parsedData.element}`;
             let feed = parsedData.feed;
 

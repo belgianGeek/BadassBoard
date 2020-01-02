@@ -523,7 +523,7 @@ app.get('/', (req, res) => {
       });
 
       io.on('update feed', (feed2update) => {
-        console.log(JSON.stringify(feed2update, null, 2));
+        // console.log(JSON.stringify(feed2update, null, 2));
         fs.readFile(settingsPath, 'utf-8', (err, data) => {
           try {
             let settings = JSON.parse(data);
@@ -533,7 +533,7 @@ app.get('/', (req, res) => {
                 let eltRegex = new RegExp(j.element, 'gi');
                 let parentRegex = new RegExp(j.parent, 'gi');
                 if (feed2update.element.match(eltRegex) && feed2update.parent.match(parentRegex)) {
-                  console.log('ok');
+                  // console.log('ok');
                   feedparser.parse(j.url)
                     .then(items => {
                       // Parse rss
