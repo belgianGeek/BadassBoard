@@ -55,6 +55,7 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
+    @include background-image;
   }
 }
 
@@ -663,7 +664,6 @@ body {
         padding: 0 1% 0 2%;
       }
 
-      .addContent,
       .blank,
       .rssContainer,
       .warning {
