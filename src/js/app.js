@@ -36,9 +36,9 @@ $.ajax({
           $('.backgroundImage').css('backgroundImage', `url(${settings.backgroundImage})`);
         },
         404: () => {
-          $('#msgContainer')
+          $('.msgContainer')
             .text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
-            .fade('#msgContainer');
+            .fade('.msgContainer');
         }
       }
     });
@@ -474,7 +474,7 @@ const autocomplete = (search) => {
         }
 
         if (nodevalue) {
-          $('#questionBox')
+          $('.questionBox')
             .val(`${nodevalue} `)
             .focus();
         }
@@ -561,7 +561,7 @@ const checkForUpdates = () => {
 const checkRSSstatus = (rssStatus) => {
   if (rssStatus) {
     $('.toggleRss__Input').prop('checked', true);
-    $('#toggleRss__Slider').removeClass('unchecked');
+    $('.toggleRss__Slider').removeClass('unchecked');
 
     addContent('.content1__container', '.content1');
     addContent('.content2__container', '.content2');
@@ -579,7 +579,7 @@ const checkRSSstatus = (rssStatus) => {
     $('.toggleRss__Input').prop('checked', false);
 
     // If RSS feeds are disabled, hide the moreContent div
-    if (!$('#toggleRss__Input').prop('checked')) {
+    if (!$('.toggleRss__Input').prop('checked')) {
       $('.moreContent').hide();
 
       $('.formContainer__container').css({
@@ -719,7 +719,7 @@ const listen2Playlist = (data) => {
     });
   } else {
     if (iPlaylist < data.videoCount && !data.videos[iPlaylist].title.match(/deleted video/gi) && data.videos[iPlaylist] !== undefined) {
-      // Adapt the #moreContent height so all the elements can fit on the page
+      // Adapt the .moreContent height so all the elements can fit on the page
       $('.moreContent').css('marginTop', 0);
 
       // Define the audio player
@@ -882,9 +882,9 @@ const openUrl = (msg) => {
   }
 
   // Empty the search box and hide the suggestions
-  $("#questionBox").val('');
+  $(".questionBox").val('');
 
-  $('#formContainer')
+  $('.formContainer')
     .css({
       borderRadius: '2em'
     });
@@ -1475,7 +1475,7 @@ const printError = (err) => {
         .addClass('warning uploadWarning')
         .css('display', '');
 
-      $('#backgroundImageUploadForm').after(warning);
+      $('.backgroundImageUploadForm').after(warning);
     }
   }
 }
@@ -1503,15 +1503,15 @@ const processInput = (msg) => {
         socket.on('audio info retrieved', (audioInfo) => {
           if (audioInfo.title !== undefined && audioInfo.title !== null) {
             let title = `Your download for ${audioInfo.title} started !`;
-            $('#msgContainer').text(title);
-            $('#msgContainer').show();
+            $('.msgContainer').text(title);
+            $('.msgContainer').show();
           }
         });
 
         socket.on('download ended', (data) => {
-          $('#msgContainer').text(`Your download for ${data.title} ended !`);
+          $('.msgContainer').text(`Your download for ${data.title} ended !`);
           setTimeout(() => {
-            $('#msgContainer').fadeOut(1500);
+            $('.msgContainer').fadeOut(1500);
           }, 2000);
 
           window.open(`${window.location.href}download`);
@@ -1684,18 +1684,18 @@ const processInput = (msg) => {
       window.open(`${searchEngine.url}${keywords}`);
 
       // Empty the search box
-      $("#questionBox").val('');
+      $(".questionBox").val('');
     }
   }
 }
 
 const questionBoxSubmit = () => {
-  if ($('#questionBox').val() !== '') {
-    $('#form').submit((event) => {
+  if ($('.questionBox').val() !== '') {
+    $('.form').submit((event) => {
       // Reset the playlist counter
       iPlaylist = 0;
 
-      let msg = $("#questionBox").val();
+      let msg = $(".questionBox").val();
       event.preventDefault();
       processInput(msg);
     });
@@ -1816,7 +1816,7 @@ const showSettings = () => {
       $('.uploadWarning').remove();
     }
 
-    $('.backgroundImage, header, #mainContainer').css('filter', 'none');
+    $('.backgroundImage, header, .mainContainer').css('filter', 'none');
     $('.settings__container').fadeOut();
   }
 
@@ -1830,8 +1830,8 @@ const showSettings = () => {
     $('.toggleRss__Slider').removeClass('unchecked');
   }
 
-  $('#settingsBtn').click(() => {
-    $('.backgroundImage, header, #mainContainer')
+  $('.header__settingsBtn').click(() => {
+    $('.backgroundImage, header, .mainContainer')
       .css('filter', 'blur(4px)');
     $('.settings__container')
       .fadeIn()
@@ -1839,11 +1839,11 @@ const showSettings = () => {
   });
 
   // Simulate click on the input to upload a file and enable the rss feed feature on startup
-  $('#backgroundImageUploadForm__Btn').click(() => {
-    $('#backgroundImageUploadForm__InputFile').click();
+  $('.backgroundImageUploadForm__Btn').click(() => {
+    $('.backgroundImageUploadForm__InputFile').click();
   });
 
-  $('#toggleRss__Switch').click(() => {
+  $('.toggleRss__Switch').click(() => {
     updatedSettings.RSS = $('.toggleRss__Input').prop('checked');
     // Adapt the design of the slider if the input is checked
     if (!$('.toggleRss__Input').prop('checked')) {
@@ -1853,7 +1853,7 @@ const showSettings = () => {
     }
   });
 
-  $('#settings__child__cancelBtn').click(() => {
+  $('.settings__child__cancelBtn').click(() => {
     hideSettings();
   });
 
@@ -1877,13 +1877,13 @@ const showSettings = () => {
     }
   });
 
-  $('#settings__child__saveBtn').click(() => {
+  $('.settings__child__saveBtn').click(() => {
     // Is there error = true, cancel the settings div hiding
     let error = false;
 
     // Only submit the form if one of the fields are fullfilled
-    if ($('#backgroundImageUploadForm__InputFile').val() !== '' && $('#backgroundImageUploadForm__InputUrl').val() === '') {
-      let file = $('#backgroundImageUploadForm__InputFile').get(0).files[0];
+    if ($('.backgroundImageUploadForm__InputFile').val() !== '' && $('.backgroundImageUploadForm__InputUrl').val() === '') {
+      let file = $('.backgroundImageUploadForm__InputFile').get(0).files[0];
 
       // Check if file is not too large by converting bytes to megabytes
       if ((file.size / 1048576) > 5) {
@@ -1927,10 +1927,10 @@ const showSettings = () => {
         });
       }
     } else {
-      if ($('#backgroundImageUploadForm__InputFile').val() === '' && $('#backgroundImageUploadForm__InputUrl').val() !== '') {
-        if ($('#backgroundImageUploadForm__InputUrl').val().match(/^(http|https):\/\/(www.|)[a-zA-Z0-9\/]{1,}\.\w.+/i)) {
-          if ($('#backgroundImageUploadForm__InputUrl').val().length < 200) {
-            updatedSettings.backgroundImage = $('#backgroundImageUploadForm__InputUrl').val();
+      if ($('.backgroundImageUploadForm__InputFile').val() === '' && $('.backgroundImageUploadForm__InputUrl').val() !== '') {
+        if ($('.backgroundImageUploadForm__InputUrl').val().match(/^(http|https):\/\/(www.|)[a-zA-Z0-9\/]{1,}\.\w.+/i)) {
+          if ($('.backgroundImageUploadForm__InputUrl').val().length < 200) {
+            updatedSettings.backgroundImage = $('.backgroundImageUploadForm__InputUrl').val();
             $('.backgroundImage').css('backgroundImage', updatedSettings.backgroundImage);
           } else {
             error = true;
@@ -1940,7 +1940,7 @@ const showSettings = () => {
             });
           }
         }
-      } else if ($('#backgroundImageUploadForm__InputFile').val() !== '' && $('#backgroundImageUploadForm__InputUrl').val() !== '') {
+      } else if ($('.backgroundImageUploadForm__InputFile').val() !== '' && $('.backgroundImageUploadForm__InputUrl').val() !== '') {
         error = true;
         printError({
           type: 'upload',
@@ -1961,9 +1961,9 @@ const showSettings = () => {
 
       if (checkboxState !== $('.toggleRss__Input').prop('checked')) {}
 
-      if ($('#backgroundImageUploadForm__InputFile').val() === '' && $('#backgroundImageUploadForm__InputUrl').val() === '' && $('.owmToken__input').val() === '') {
+      if ($('.backgroundImageUploadForm__InputFile').val() === '' && $('.backgroundImageUploadForm__InputUrl').val() === '' && $('.owmToken__input').val() === '') {
         // If none of the fields are fullfilled, just hide the settings menu
-        $('.backgroundImage, header, #mainContainer')
+        $('.backgroundImage, header, .mainContainer')
           .css('filter', 'none');
 
         $('.settings__container').fadeOut();
@@ -2300,46 +2300,46 @@ $(document).ready(() => {
     if (data !== null && data !== undefined) {
       $('.backgroundImage').css('background-image', `url(${data.backgroundImage})`);
 
-      $('.backgroundImage, header, #mainContainer').css('filter', 'none');
+      $('.backgroundImage, header, .mainContainer').css('filter', 'none');
 
-      $('#settings').fadeOut();
+      $('.settings').fadeOut();
     }
   });
 
   // Autocomplete
-  $('#questionBox').on('input', () => {
-    autocomplete($('#questionBox').val());
+  $('.questionBox').on('input', () => {
+    autocomplete($('.questionBox').val());
   });
 
-  $('#form').keypress((event) => {
+  $('.form').keypress((event) => {
     if (event.keyCode === 13) {
       questionBoxSubmit();
-      $('#formContainer').css({
+      $('.formContainer').css({
         padding: '0.5% 1%'
       });
     }
   })
 
   //Submit form on svg icon click
-  $('#formSubmit').click(() => {
+  $('.formSubmit').click(() => {
     questionBoxSubmit();
   });
 
   // If the msgContainer is empty, hide it
-  if (!$('#msgContainer').text().match(/\w.+/)) {
-    $('#msgContainer').hide();
+  if (!$('.msgContainer').text().match(/\w.+/)) {
+    $('.msgContainer').hide();
   } else {
-    fade('#msgContainer');
+    fade('.msgContainer');
   }
 
   // Get current mouse position
   getMousePosition();
 
   // Dynamically show the footer
-  $('#footer').mouseenter(() => {
-    $('#credits')
+  $('.footer').mouseenter(() => {
+    $('.credits')
       .fadeIn();
   }).mouseleave(() => {
-    $('#credits').fadeOut();
+    $('.credits').fadeOut();
   });
 });

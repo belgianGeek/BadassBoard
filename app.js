@@ -286,7 +286,7 @@ app.get('/', (req, res) => {
                     // console.log(`j : ${j}\nValue : ${JSON.stringify(value.elements, null, 2)}\n${feedData[i].parent}`);
 
                     const processData = (callback) => {
-                      console.log(i);
+                      // console.log(i);
                       if (feedData[i].type === 'rss') {
                         request
                           .get(feedData[i].url)

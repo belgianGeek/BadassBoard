@@ -11,27 +11,31 @@
 
 <body>
   <div class="backgroundImage"></div>
-  <div id="wrapper" class="wrapper flex">
-    <main id="mainContainer" class="mainContainer flex">
-      <header id="header" class="header">
-        <svg id="converterBtn" class="header__converterBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <div class="wrapper flex">
+    <main class="mainContainer flex">
+      <header class="header">
+        <svg class="header__searchBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f8f4f4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <svg class="header__converterBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M17 2.1l4 4-4 4" />
           <path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8M7 21.9l-4-4 4-4" />
           <path d="M21 11.8v2a4 4 0 0 1-4 4H4.2" /></svg>
-        <svg id="settingsBtn" class="header__settingsBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f8f4f4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="header__settingsBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f8f4f4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
           <path
             d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
           </path>
         </svg>
       </header>
-      <div id="upperContainer" class="upperContainer">
+      <div class="upperContainer">
         <div class="formContainer__container">
-          <div id="formContainer" class="formContainer">
-            <form id="form" class="form" method="get">
-              <input id="questionBox" class="questionBox" type="text" name="question" placeholder="What are you searching for ?">
+          <div class="formContainer">
+            <form class="form" method="get">
+              <input class="questionBox" type="text" name="question" placeholder="What are you searching for ?">
               <button type="submit" name="questionBox__submitBtn">
-                <svg id="formSubmit" class="formSubmit" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="lightgrey" stroke-width="3" stroke-linecap="round" stroke-linejoin="arcs">
+                <svg class="formSubmit" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="lightgrey" stroke-width="3" stroke-linecap="round" stroke-linejoin="arcs">
                   <circle cx="11" cy="11" r="8"></circle>
                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
@@ -41,7 +45,7 @@
           <div class="suggestions"></div>
         </div>
         <span class="upperContainer__converter">
-          <section id="converter" class="converter flex">
+          <section class="converter flex">
             <img class="converter__remove flex" alt="Hide the converter" src="./src/css/icons/interface/cross.svg">
             <select class="converter__value1 flex">
               <option value="Choose a value">Choose a value</option>
@@ -63,15 +67,15 @@
             <input class="converter__result">
           </section>
         </span>
-        <div id="msgContainer" class="msgContainer">
+        <div class="msgContainer">
           <%= typeof msg != 'undefined' ? msg : '' %>
         </div>
-        <div id='audio' class="audio">
+        <div class="audio">
           <img class="audio__remove removeContentBtn flex" alt="Remove the audio player" src="./src/css/icons/interface/cross.svg">
-          <div id="audioMsg" class="audioMsg flex"></div>
+          <div class="audioMsg flex"></div>
           <div class="player flex"></div>
         </div>
-        <div id="moreContent" class="moreContent flex">
+        <div class="moreContent flex">
           <div class="content__container content1__container flex" id="content1__container">
             <div class="content content1 flex" id="content1">
               <%- include('addFeedForm'); %>
@@ -91,16 +95,16 @@
       </div>
     </main>
     <div class="settings__container">
-      <div id="settings__child" class="settings__child flex">
-        <span id="settings__child__header" class="settings__child__header flex">
+      <div class="settings__child flex">
+        <span class="settings__child__header flex">
           <h1>BadassBoard settings</h1>
         </span>
         <h2 class="settings__child__heading2 settings__child__heading">General</h2>
-        <span id="toggleRss" class="toggleRss flex">
-          <span id="toggleRss__Comment" class="toggleRss__Comment">Show the content containers on startup ?</span>
-          <label id="toggleRss__Switch" class="toggleRss__Switch">
-            <input id="toggleRss__Input" class="toggleRss__Input" type="checkbox" name="toggleRssInput" value="">
-            <span id="toggleRss__Slider" class="toggleRss__Slider"></span>
+        <span class="toggleRss flex">
+          <span class="toggleRss__Comment">Show the content containers on startup ?</span>
+          <label class="toggleRss__Switch">
+            <input class="toggleRss__Input" type="checkbox" name="toggleRssInput" value="">
+            <span class="toggleRss__Slider"></span>
           </label>
         </span>
         <h2 class="settings__child__heading2 settings__child__heading">Search</h2>
@@ -115,27 +119,27 @@
           </select>
         </span>
         <h2 class="settings__child__heading2 settings__child__heading">Customization</h2>
-        <form id="backgroundImageUploadForm" class="backgroundImageUploadForm flex" action="/" enctype="multipart/form-data" method="post">
+        <form class="backgroundImageUploadForm flex" action="/" enctype="multipart/form-data" method="post">
           <label for="backgroundImageUploadForm__label">This background is 🤮 !</label>
-          <button id="backgroundImageUploadForm__Btn" class="backgroundImageUploadForm__Btn" type="button" name="backgroundImageUploadBtn">Let's upload a BADASS picture !</button>
-          <input id="backgroundImageUploadForm__InputFile" class="backgroundImageUploadForm__InputFile" type="file" name="backgroundImageUploadInput" accept="image/png, image/jpg">
-          <input id="backgroundImageUploadForm__InputUrl" class="backgroundImageUploadForm__InputUrl" type="text" name="backgroundImageUrl" value="" placeholder='I prefer pasting an URL'>
+          <button class="backgroundImageUploadForm__Btn" type="button" name="backgroundImageUploadBtn">Let's upload a BADASS picture !</button>
+          <input class="backgroundImageUploadForm__InputFile" type="file" name="backgroundImageUploadInput" accept="image/png, image/jpg">
+          <input class="backgroundImageUploadForm__InputUrl" type="text" name="backgroundImageUrl" value="" placeholder='I prefer pasting an URL'>
         </form>
         <h2 class="settings__child__heading2 settings__child__heading">Awesome features corner 😇</h2>
-        <span id="owmToken" class="owmToken flex">
-          <span id='owmToken__Comment' class="owmToken__Comment">So you want to use weather forecast feature ? You can update your OpenWeatherMap API token here :</span>
-          <input id="owmToken__input" class="owmToken__input" type="text" name="owmToken__input" value="" placeholder="OpenWeatherMap API token">
+        <span class="owmToken flex">
+          <span class="owmToken__Comment">So you want to use weather forecast feature ? You can update your OpenWeatherMap API token here :</span>
+          <input class="owmToken__input" type="text" name="owmToken__input" value="" placeholder="OpenWeatherMap API token">
         </span>
-        <span id="settings__BtnContainer" class="settings__BtnContainer">
-          <button id="settings__child__cancelBtn" class="settings__child__cancelBtn" type="button" name="cancelSettings">Cancel</button>
-          <button id="settings__child__saveBtn" class="settings__child__saveBtn" type="submit" name="saveSettings">Save settings</button>
+        <span class="settings__BtnContainer">
+          <button class="settings__child__cancelBtn" type="button" name="cancelSettings">Cancel</button>
+          <button class="settings__child__saveBtn" type="submit" name="saveSettings">Save settings</button>
         </span>
       </div>
     </div>
     <div class="rssTooltip flex"></div>
-    <footer id="footer" class="footer flex">
-      <span id="icon" class="icon">̿̿ ̿̿ ̿̿ ̿'̿'\̵͇̿̿\з= ( ▀ ͜͞ʖ▀) =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿</span>
-      <span id="credits" class="credits flex">
+    <footer class="footer flex">
+      <span class="icon">̿̿ ̿̿ ̿̿ ̿'̿'\̵͇̿̿\з= ( ▀ ͜͞ʖ▀) =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿</span>
+      <span class="credits flex">
         <p>BadassBoard, proudly handmade in Belgium 🍺</p>
       </span>
     </footer>
