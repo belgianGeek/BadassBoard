@@ -18,6 +18,9 @@ let searchEngine = {};
 //Websocket connection
 const socket = io();
 
+// Store the style added to the head tag
+let headStyle = '';
+
 // Get the background image from the settings and add it to the page
 $.ajax({
   url: './settings/settings.json',
@@ -31,7 +34,8 @@ $.ajax({
       dataType: '',
       statusCode: {
         200: () => {
-          $('head').append(`<style>.formContainer__container::before {background-image: url(${settings.backgroundImage});}</style>`);
+          headStyle = `<style>.formContainer__container::before {background-image: url(${settings.backgroundImage});}</style>`;
+          $('head').append(headStyle);
 
           $('.backgroundImage').css('backgroundImage', `url(${settings.backgroundImage})`);
         },
@@ -41,6 +45,13 @@ $.ajax({
             .fade('.msgContainer');
         }
       }
+    })
+    .fail(() => {
+      // CORS error handling
+      headStyle = `<style>.formContainer__container::before {background-image: url(${settings.backgroundImage});}</style>`;
+      $('head').append(headStyle);
+
+      $('.backgroundImage').css('backgroundImage', `url(${settings.backgroundImage})`);
     });
   }
 
@@ -75,7 +86,7 @@ const addContent = (parent, element) => {
   $(element, svg).off();
 
   setTimeout(() => {
-    if (!$(`${element} .rssContainer`).length && !$(`${element} .forecast`).length) {
+    if (!$(`${element} section`).length) {
       $(element)
         .mouseenter(() => {
           $(svg)
@@ -930,206 +941,6 @@ const parseContent = () => {
       let newAddContent = $(`.addContent`).clone()[0];
 
       buildElement(parent, fullElementClassName, iElement, () => {
-        const showSubRow = () => {
-          let svg = $(`${parent} .newContent .blank`);
-          svg.addClass('flex');
-
-          $(`${parent} .newContent`)
-            .mouseenter(() => {
-              $(svg).css({
-                  visibility: 'visible',
-                  display: ''
-                })
-                .addClass('flex');
-
-              $(svg).click(() => {
-                $(fullElementClassName)
-                  .css('padding', '0');
-
-                $(svg)
-                  .off()
-                  .hide();
-
-                $(`${parent} .newContent .addContent`)
-                  .css('display', '')
-                  .addClass('flex');
-
-                $(`${parent} .newContent`)
-                  .mouseenter(() => {
-                    // Only show the 'blank' div if the addContent div is hidden
-                    if ($(`${parent} .newContent .addContent`).is(':visible')) {
-                      // console.log(`${parent} .newContent .addContent`);
-                      $(svg).css({
-                        display: 'none'
-                      });
-                    }
-                  });
-
-                $(`${parent} .newContent .addContent`).ready(() => {
-                  let iNewElt;
-                  const updateClass = () => {
-                    // console.log(parent, $(`${parent} .subRow`).prev());
-                    // Toggle classes to match a regular pattern
-                    if ($(`${parent} .newContent`).prev().attr('class') !== undefined) {
-                      iNewElt = Number($(`${parent} .newContent`).prev().attr('id').substring(7, 9)) + 1;
-                      console.log($(`${parent} .newContent`).prev().attr('id').substring(7, 9), iNewElt);
-                    }
-
-                    $(`${parent} .newContent`)
-                      .removeClass('newContent subRow flex')
-                      .attr('id', `content${iNewElt}`)
-                      .addClass(`content${iNewElt}`);
-                  }
-
-                  // Handle option selection
-                  $(`${parent} .newContent .addContent__select`).on('change', () => {
-
-                    $(`${parent} .newContent .addContent__btnContainer`).css('display', 'inline-flex');
-
-                    // If the feed option is selected, handle the adding
-                    if ($(`${parent} .newContent .addContent__select`).val() === 'Add a feed') {
-
-                      $(`${parent} .newContent .addContent`).removeClass('menu');
-
-                      $(`${parent} .newContent .addContent__select`).addClass('select');
-
-                      if ($(`${parent} .newContent .addContent__weather:visible`).length) {
-                        $(`${parent} .newContent .addContent__weather`).hide();
-                      }
-
-                      $(`${parent} .newContent .addContent__feed`).addClass('flex');
-
-                      // Add RSS feed on form submit
-                      const submitForm = (btnClass) => {
-                        $(`${btnClass} .addContent__submitBtn`)
-                          .click(() => {
-                            updateClass();
-
-                            // Call a server-side function to parse the feed if the url isn't null or undefined
-                            if ($(`${parent} .content${iNewElt} .addContent__feed__input`).val() !== null && $(`${parent} .content${iNewElt} .addContent__feed__input`).val() !== undefined && $(`${parent} .content${iNewElt} .addContent__feed__input`).val().match(/^http/i)) {
-                              console.log('add content');
-                              // Ask the server to parse the feed
-                              socket.emit('add content', [{
-                                element: `.content${iNewElt}`,
-                                parent: parent,
-                                url: $(`${parent} .content${iNewElt} .addContent__feed__input`).val(),
-                                type: 'rss',
-                                new: true
-                              }]);
-
-                              $(`${parent} .content${iNewElt} .addContent`).hide();
-
-                              // Add content to the page
-                              parseContent();
-                            } else {
-                              printError({
-                                type: 'rss',
-                                msg: `Hey, this value is invalid !`,
-                                element: `${parent} .content${iNewElt} .addContent__feed`
-                              });
-
-                              submitForm(`${parent} .content${iNewElt}`);
-                            }
-                          });
-                      }
-
-                      submitForm(`${parent} .newContent`);
-                    } else if ($(`${parent} .newContent .addContent__select`).val() === 'Weather forecast') {
-
-                      $(`${parent} .newContent .addContent`).removeClass('menu');
-
-                      $(`${parent} .newContent .addContent__select`).addClass('select');
-
-                      if ($(`${parent} .newContent .addContent__feed:visible`).length) {
-                        $(`${parent} .newContent .addContent__feed`).hide();
-                      }
-
-                      $(`${parent} .newContent .addContent__weather`)
-                        .css({
-                          justifyContent: 'center',
-                          alignItems: 'center'
-                        })
-                        .addClass('flex');
-
-                      // Search for weather forecast on form submit
-                      const submitForm = (btnClass) => {
-                        // Avoid ES6 here because it breaks $(this)
-                        $(btnClass).click(function() {
-                          updateClass();
-
-                          let parent = `.${$(this).parents('.content__container').attr('id')}`;
-                          let element = `.${$(this).parents('.content').attr('id')}`;
-
-                          $.ajax({
-                            url: `https://api.openweathermap.org/data/2.5/find?q=${$(`${parent} .content${iNewElt} .addContent__weather__input`).val()}&units=metric&lang=en&appid=${owmToken}`,
-                            method: 'POST',
-                            dataType: 'json',
-                            statusCode: {
-                              400: () => {
-                                printError({
-                                  type: 'weather',
-                                  msg: 'Something is wrong with your request... Please contact the dev to fix it.',
-                                  element: `${parent} ${element}`
-                                });
-                              },
-                              401: () => {
-                                printError({
-                                  type: 'weather',
-                                  msg: 'Sorry dude, your OpenWeatherMap token is invalid 😢. Please modify it in the settings.',
-                                  element: `${parent} ${element}`
-                                });
-
-                                submitForm(`${parent} .content${iNewElt} .addContent__submitBtn`);
-                              },
-                              200: (forecast => {
-
-                                // Add content to the page
-                                parseContent();
-
-                                $(`${parent} ${element} .addContent`).hide();
-                                // console.log(`${parent} .content${iNewElt}`);
-
-                                // Send the changes to the server side
-                                socket.emit('add content', [{
-                                  element: element,
-                                  parent: parent,
-                                  location: $(`${parent} ${element} .addContent__weather__input`).val(),
-                                  type: 'weather',
-                                  new: true
-                                }]);
-                              })
-                            }
-                          })
-                        });
-                      }
-
-                      submitForm(`${parent} .newContent .addContent__submitBtn`);
-                    } else {
-                      $(`${parent} .newContent .addContent`).addClass('menu');
-                      $(`${parent} .newContent .addContent__select`).removeClass('select');
-                      $(`${parent} .newContent .addContent__feed, ${parent} .newContent .addContent__weather, ${parent} .newContent .addContent__btnContainer`).hide();
-                    }
-                  });
-
-                  // Cancel new content adding
-                  $(`${parent} .newContent .addContent__cancelBtn`).click(function() {
-                    $(this).parent('.addContent').hide();
-                    $(this).parent('.blank')
-                      .css({
-                        visibility: 'visible',
-                        display: 'flex'
-                      })
-                  });
-                });
-              });
-            })
-            .mouseleave(() => {
-              $(svg).css({
-                visibility: 'hidden'
-              });
-            });
-        };
-
         const addNewContentContainer = () => {
           setTimeout(() => {
             if (!$(`${parent} .newContent`).length) {
@@ -1147,7 +958,201 @@ const parseContent = () => {
               });
             }
 
-            showSubRow();
+            let svg = $(`${parent} .newContent .blank`);
+            svg.addClass('flex');
+
+            $(`${parent} .newContent`)
+              .mouseenter(() => {
+                $(svg).css({
+                    visibility: 'visible',
+                    display: ''
+                  })
+                  .addClass('flex');
+
+                $(svg).click(() => {
+                  $(fullElementClassName)
+                    .css('padding', '0');
+
+                  $(`${parent} .newContent .addContent`)
+                    .css('display', '')
+                    .addClass('flex');
+
+                  $(svg)
+                    .off()
+                    .hide();
+
+                  $(`${parent} .newContent`)
+                    .mouseenter(() => {
+                      // Only show the 'blank' div if the addContent div is hidden
+                      if ($(`${parent} .newContent .addContent`).is(':visible')) {
+                        // console.log(`${parent} .newContent .addContent`);
+                        $(svg).hide();
+                      }
+                    });
+
+                  $(`${parent} .newContent .addContent`).ready(() => {
+                    let iNewElt;
+                    const updateClass = () => {
+                      // console.log(parent, $(`${parent} .subRow`).prev());
+                      // Toggle classes to match a regular pattern
+                      if ($(`${parent} .newContent`).prev().attr('class') !== undefined) {
+                        iNewElt = Number($(`${parent} .newContent`).prev().attr('id').substring(7, 9)) + 1;
+                        console.log($(`${parent} .newContent`).prev().attr('id').substring(7, 9), iNewElt);
+                      }
+
+                      $(`${parent} .newContent`)
+                        .removeClass('newContent subRow flex')
+                        .attr('id', `content${iNewElt}`)
+                        .addClass(`content${iNewElt}`);
+                    }
+
+                    // Handle option selection
+                    $(`${parent} .newContent .addContent__select`).on('change', () => {
+
+                      $(`${parent} .newContent .addContent__btnContainer`).css('display', 'inline-flex');
+
+                      // If the feed option is selected, handle the adding
+                      if ($(`${parent} .newContent .addContent__select`).val() === 'Add a feed') {
+
+                        $(`${parent} .newContent .addContent`).removeClass('menu');
+
+                        $(`${parent} .newContent .addContent__select`).addClass('select');
+
+                        if ($(`${parent} .newContent .addContent__weather:visible`).length) {
+                          $(`${parent} .newContent .addContent__weather`).hide();
+                        }
+
+                        $(`${parent} .newContent .addContent__feed`).addClass('flex');
+
+                        // Add RSS feed on form submit
+                        const submitForm = (btnClass) => {
+                          $(`${btnClass} .addContent__submitBtn`)
+                            .click(() => {
+                              updateClass();
+
+                              // Call a server-side function to parse the feed if the url isn't null or undefined
+                              if ($(`${parent} .content${iNewElt} .addContent__feed__input`).val() !== null && $(`${parent} .content${iNewElt} .addContent__feed__input`).val() !== undefined && $(`${parent} .content${iNewElt} .addContent__feed__input`).val().match(/^http/i)) {
+
+                                // Ask the server to parse the feed
+                                socket.emit('add content', [{
+                                  element: `.content${iNewElt}`,
+                                  parent: parent,
+                                  url: $(`${parent} .content${iNewElt} .addContent__feed__input`).val(),
+                                  type: 'rss',
+                                  new: true
+                                }]);
+
+                                $(`${parent} .content${iNewElt} .addContent`).hide();
+
+                                // Add content to the page
+                                parseContent();
+                              } else {
+                                printError({
+                                  type: 'rss',
+                                  msg: `Hey, this value is invalid !`,
+                                  element: `${parent} .content${iNewElt} .addContent__feed`
+                                });
+
+                                submitForm(`${parent} .content${iNewElt}`);
+                              }
+                            });
+                        }
+
+                        submitForm(`${parent} .newContent`);
+                      } else if ($(`${parent} .newContent .addContent__select`).val() === 'Weather forecast') {
+
+                        $(`${parent} .newContent .addContent`).removeClass('menu');
+
+                        $(`${parent} .newContent .addContent__select`).addClass('select');
+
+                        if ($(`${parent} .newContent .addContent__feed:visible`).length) {
+                          $(`${parent} .newContent .addContent__feed`).hide();
+                        }
+
+                        $(`${parent} .newContent .addContent__weather`)
+                          .css({
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                          })
+                          .addClass('flex');
+
+                        // Search for weather forecast on form submit
+                        const submitForm = (btnClass) => {
+                          // Avoid ES6 here because it breaks $(this)
+                          $(btnClass).click(function() {
+                            updateClass();
+
+                            let parent = `.${$(this).parents('.content__container').attr('id')}`;
+                            let element = `.${$(this).parents('.content').attr('id')}`;
+
+                            $.ajax({
+                              url: `https://api.openweathermap.org/data/2.5/find?q=${$(`${parent} .content${iNewElt} .addContent__weather__input`).val()}&units=metric&lang=en&appid=${owmToken}`,
+                              method: 'POST',
+                              dataType: 'json',
+                              statusCode: {
+                                400: () => {
+                                  printError({
+                                    type: 'weather',
+                                    msg: 'Something is wrong with your request... Please contact the dev to fix it.',
+                                    element: `${parent} ${element}`
+                                  });
+                                },
+                                401: () => {
+                                  printError({
+                                    type: 'weather',
+                                    msg: 'Sorry dude, your OpenWeatherMap token is invalid 😢. Please modify it in the settings.',
+                                    element: `${parent} ${element}`
+                                  });
+
+                                  submitForm(`${parent} .content${iNewElt} .addContent__submitBtn`);
+                                },
+                                200: (forecast => {
+
+                                  // Add content to the page
+                                  parseContent();
+
+                                  $(`${parent} ${element} .addContent`).hide();
+                                  // console.log(`${parent} .content${iNewElt}`);
+
+                                  // Send the changes to the server side
+                                  socket.emit('add content', [{
+                                    element: element,
+                                    parent: parent,
+                                    location: $(`${parent} ${element} .addContent__weather__input`).val(),
+                                    type: 'weather',
+                                    new: true
+                                  }]);
+                                })
+                              }
+                            })
+                          });
+                        }
+
+                        submitForm(`${parent} .newContent .addContent__submitBtn`);
+                      } else {
+                        $(`${parent} .newContent .addContent`).addClass('menu');
+                        $(`${parent} .newContent .addContent__select`).removeClass('select');
+                        $(`${parent} .newContent .addContent__feed, ${parent} .newContent .addContent__weather, ${parent} .newContent .addContent__btnContainer`).hide();
+                      }
+                    });
+
+                    // Cancel new content adding
+                    $(`${parent} .newContent .addContent__cancelBtn`).click(function() {
+                      $(this).parent('.addContent').hide();
+                      $(this).parent('.blank')
+                        .css({
+                          visibility: 'visible',
+                          display: 'flex'
+                        })
+                    });
+                  });
+                });
+              })
+              .mouseleave(() => {
+                $(svg).css({
+                  visibility: 'hidden'
+                });
+              });
 
             // Fix the content divs order
             $('.newContent').ready(() => {
@@ -1928,10 +1933,22 @@ const showSettings = () => {
       }
     } else {
       if ($('.backgroundImageUploadForm__InputFile').val() === '' && $('.backgroundImageUploadForm__InputUrl').val() !== '') {
-        if ($('.backgroundImageUploadForm__InputUrl').val().match(/^(http|https):\/\/(www.|)[a-zA-Z0-9\/]{1,}\.\w.+/i)) {
+        if ($('.backgroundImageUploadForm__InputUrl').val().match(/^(http|https):\/\/(www.|)[a-zA-Z0-9-\.\/]{1,}\.\w.+/i)) {
           if ($('.backgroundImageUploadForm__InputUrl').val().length < 200) {
             updatedSettings.backgroundImage = $('.backgroundImageUploadForm__InputUrl').val();
             $('.backgroundImage').css('backgroundImage', updatedSettings.backgroundImage);
+
+            // Update the formContainer::before background-image
+            if ($('head style').length) {
+              for (var i = 0; i < $('head style').length; i++) {
+                if ($('head style')[i].textContent === headStyle) {
+                  $('head style')[i].remove();
+                  $('head').append(`<style>.formContainer__container::before {background-image: url(${updatedSettings.backgroundImage}); !important}</style>`);
+                }
+              }
+            } else {
+              $('head').append(`<style>.formContainer__container::before {background-image: url(${updatedSettings.backgroundImage}); !important}</style>`);
+            }
           } else {
             error = true;
             printError({
@@ -1939,6 +1956,12 @@ const showSettings = () => {
               msg: 'Your URL is too large ! Please shorten it !'
             });
           }
+        } else {
+          error = true;
+          printError({
+            type: 'upload',
+            msg: 'Your URL is not supported... Please try another one or open an issue on Github'
+          });
         }
       } else if ($('.backgroundImageUploadForm__InputFile').val() !== '' && $('.backgroundImageUploadForm__InputUrl').val() !== '') {
         error = true;
@@ -1993,8 +2016,7 @@ const showSettings = () => {
   });
 }
 
-const suggestions = [
-  {
+const suggestions = [{
     label: '!1337x',
     desc: '1337x.to',
     icon: './src/css/icons/suggestions/1337x.ico',

@@ -222,7 +222,7 @@ app.get('/', (req, res) => {
     io.once('connection', (io) => {
       // Settings object to be written in the settings file if it doesn't exist
       let settings = {
-        "RSS": false,
+        "RSS": true,
         "elements": [{
             "elements": []
           },
