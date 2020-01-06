@@ -1920,7 +1920,7 @@ const showSettings = () => {
           },
           success: (res) => {
             // console.log(fd, file, `${updatedSettings.backgroundImage} uploaded successfully`);
-            $('.backgroundImage').css('backgroundImage', updatedSettings.backgroundImage);
+            $('.backgroundImage').css('backgroundImage', `url(${updatedSettings.backgroundImage})`);
 
             // Update the <style> tag to fix the blur
             $('head style').remove();
@@ -1936,16 +1936,17 @@ const showSettings = () => {
         if ($('.backgroundImageUploadForm__InputUrl').val().match(/^(http|https):\/\/(www.|)[a-zA-Z0-9-\.\/]{1,}\.\w.+/i)) {
           if ($('.backgroundImageUploadForm__InputUrl').val().length < 200) {
             updatedSettings.backgroundImage = $('.backgroundImageUploadForm__InputUrl').val();
-            $('.backgroundImage').css('backgroundImage', updatedSettings.backgroundImage);
+            $('.backgroundImage').css('backgroundImage', `url(${updatedSettings.backgroundImage})`);
 
             // Update the formContainer::before background-image
             if ($('head style').length) {
               for (var i = 0; i < $('head style').length; i++) {
                 if ($('head style')[i].textContent === headStyle) {
                   $('head style')[i].remove();
-                  $('head').append(`<style>.formContainer__container::before {background-image: url(${updatedSettings.backgroundImage}); !important}</style>`);
                 }
               }
+
+              $('head').append(`<style>.formContainer__container::before {background-image: url(${updatedSettings.backgroundImage}); !important}</style>`);
             } else {
               $('head').append(`<style>.formContainer__container::before {background-image: url(${updatedSettings.backgroundImage}); !important}</style>`);
             }
