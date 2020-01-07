@@ -23,7 +23,7 @@
     "ytdl-core": "^0.29.2"
   },
   "devDependencies": {
-    "gulp": "^4.0.2",
-    "scss": "^0.2.4"
+    "scss": "^0.2.4",
+    "minify": "^5.0.0",
   }
 }
