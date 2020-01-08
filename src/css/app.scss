@@ -647,7 +647,8 @@ body {
       .blank,
       .forecast,
       .rssContainer,
-      .warning {
+      .warning,
+      .youtubeSearchContainer {
         @include flex-direction;
         background-color: $contentBackground;
         border-radius: 15px;
@@ -658,7 +659,8 @@ body {
       .blank,
       .forecast,
       .rssContainer,
-      .warning {
+      .warning,
+      .youtubeSearchContainer {
         height: 100%;
         max-height: 100%;
         padding: 0 1% 0 2%;
@@ -753,6 +755,18 @@ body {
           }
         }
       }
+
+      .youtubeSearchContainer {
+        &__content {
+          height: 85%;
+          width: 100%;
+          @include align(center, flex-start);
+        }
+
+        &__header {
+          width: 100%;
+        }
+      }
     }
 
     .rssContainer__header {
@@ -779,7 +793,8 @@ body {
       }
     }
 
-    .feedTitle {
+    .feedTitle,
+    .youtubeSearchContainer__header p {
       display: block;
       width: 90%;
       text-align: center;

@@ -4,7 +4,7 @@ const parseContent = () => {
 
     // console.log(JSON.stringify(parsedData, null, 2));
     for (const [i, value] of parsedData.entries()) {
-      // console.log(i, `${value.parent} ${value.element}`);
+
       const buildElement = (parent, element, iElement, callback) => {
         if (!$(element).length) {
           let container = $('<div></div>')
@@ -347,6 +347,27 @@ const parseContent = () => {
               addNewContentContainer();
             });
           }
+        }
+
+        if (value.type === 'youtube search') {
+
+          if (!$('.youtubeSearchContainer').length) {
+            let youtubeSearchContainer = $('<section></section>')
+              .addClass('youtubeSearchContainer')
+              .appendTo(fullElementClassName);
+
+            let headerText = $('<p></p>').text('Instant Youtube search');
+
+            let youtubeSearchHeader = $('<div></div>')
+              .addClass('youtubeSearchContainer__header flex')
+              .appendTo(`${fullElementClassName} .youtubeSearchContainer`)
+              .append(headerText);
+
+            let youtubeSearchContent = $('<div></div>')
+              .addClass('youtubeSearchContainer__content flex')
+              .appendTo(`${fullElementClassName} .youtubeSearchContainer`);
+          }
+
         }
 
         // Add a margin to the dynamicaly created divs

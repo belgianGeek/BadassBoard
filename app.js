@@ -137,9 +137,8 @@ const readSettings = () => {
                     });
                   }
                 });
-            } else if (subEltsValue.type === 'weather') {
-              let newElt = subEltsValue;
-              eltsArray.push(newElt);
+            } else if (subEltsValue.type === 'weather' || subEltsValue.type === 'youtube search') {
+              eltsArray.push(subEltsValue);
               // console.log(`WEATHER : bigI : ${bigI}`, `elements : ${elements.length}`, `totalLength : ${totalLength}`);
               sendData();
             }
@@ -351,11 +350,11 @@ app.get('/', (req, res) => {
                         newElt.parent = feedData[i].parent;
                         newElt.type = feedData[i].type;
 
-                        io.emit('parse content', {
+                        io.emit('parse content', [{
                           type: 'youtube search',
                           element: feedData[i].element,
                           parent: feedData[i].parent,
-                        });
+                        }]);
 
                         callback();
                       }

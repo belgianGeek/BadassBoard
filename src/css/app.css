@@ -586,7 +586,8 @@ body .backgroundImage {
 .moreContent .content__container .content .blank,
 .moreContent .content__container .content .forecast,
 .moreContent .content__container .content .rssContainer,
-.moreContent .content__container .content .warning {
+.moreContent .content__container .content .warning,
+.moreContent .content__container .content .youtubeSearchContainer {
   flex-direction: column;
   background-color: rgba(0, 0, 0, 0.5);
   border-radius: 15px;
@@ -596,7 +597,8 @@ body .backgroundImage {
 .moreContent .content__container .content .blank,
 .moreContent .content__container .content .forecast,
 .moreContent .content__container .content .rssContainer,
-.moreContent .content__container .content .warning {
+.moreContent .content__container .content .warning,
+.moreContent .content__container .content .youtubeSearchContainer {
   height: 100%;
   max-height: 100%;
   padding: 0 1% 0 2%;
@@ -677,6 +679,15 @@ body .backgroundImage {
   font-size: 3.5em;
   margin-right: 5%;
 }
+.moreContent .content__container .content .youtubeSearchContainer__content {
+  height: 85%;
+  width: 100%;
+  justify-content: center;
+  align-items: flex-start;
+}
+.moreContent .content__container .content .youtubeSearchContainer__header {
+  width: 100%;
+}
 .moreContent .content__container .rssContainer__header {
   display: inline-flex;
   align-items: center;
@@ -698,7 +709,8 @@ body .backgroundImage {
   border: 1px solid red;
   border-radius: 45%;
 }
-.moreContent .content__container .feedTitle {
+.moreContent .content__container .feedTitle,
+.moreContent .content__container .youtubeSearchContainer__header p {
   display: block;
   width: 90%;
   text-align: center;
