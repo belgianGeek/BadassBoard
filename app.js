@@ -346,6 +346,18 @@ app.get('/', (req, res) => {
                         }]);
 
                         callback();
+                      } else if (feedData[i].type === 'youtube search') {
+                        newElt.element = feedData[i].element;
+                        newElt.parent = feedData[i].parent;
+                        newElt.type = feedData[i].type;
+
+                        io.emit('parse content', {
+                          type: 'youtube search',
+                          element: feedData[i].element,
+                          parent: feedData[i].parent,
+                        });
+
+                        callback();
                       }
                     }
 

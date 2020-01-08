@@ -3,6 +3,21 @@ const handleOptionSelection = (parent, child) => {
   let elementsObject = {};
 
   let iNewElt;
+
+  const hideSiblings = (selector) => {
+
+    // Check if the element exist and if arguments are not null/undefined
+    if (selector !== undefined) {
+      $(`${parent} ${child} .addContent`).children().not(`${selector}, ${selector}__input, select, option, label, .addContent__btnContainer, .addContent__submitBtn, .addContent__cancelBtn`).hide();
+    } else if (selector === undefined) {
+      $(`${parent} ${child} .addContent__feed`)
+        .css('display', 'flex')
+        .addClass('invisible');
+
+      $(`${parent} ${child} .addContent`).children().not(`.addContent__feed, select, option, label, .addContent__btnContainer, .addContent__submitBtn, .addContent__cancelBtn`).hide();
+    }
+  }
+
   const updateClass = () => {
     // Toggle classes to match a regular pattern
     if ($(`${parent} ${child}`).prev().attr('class') !== undefined) {
@@ -28,13 +43,12 @@ const handleOptionSelection = (parent, child) => {
       $(`${parent} ${child} .addContent__select`).addClass('select');
 
       $(`${parent} ${child} .addContent__feed`)
+        .removeClass('invisible')
         .addClass('flex')
         .css('display', '');
 
       // Hide uneccesary elements
-      if ($(`${parent} ${child} .addContent__weather:visible`).length) {
-        $(`${parent} ${child} .addContent__weather`).hide();
-      }
+      hideSiblings(`.addContent__feed`);
 
       // Add RSS feed on form submit
       const submitForm = (btnClass) => {
@@ -48,16 +62,14 @@ const handleOptionSelection = (parent, child) => {
                 element: `.content${iNewElt}`,
                 parent: parent,
                 url: $(`${parent} .content${iNewElt} .addContent__feed__input`).val(),
-                type: 'rss',
-                new: true
+                type: 'rss'
               }
             } else {
               elementsObject = {
                 element: child,
                 parent: parent,
                 url: $(`${parent} ${child} .addContent__feed__input`).val(),
-                type: 'rss',
-                new: true
+                type: 'rss'
               }
             }
 
@@ -90,17 +102,11 @@ const handleOptionSelection = (parent, child) => {
 
       $(`${parent} ${child} .addContent__select`).addClass('select');
 
-      if ($(`${parent} ${child} .addContent__feed:visible`).length) {
-        $(`${parent} ${child} .addContent__feed`).hide();
-      }
-
       $(`${parent} ${child} .addContent__weather`)
-        .css({
-          justifyContent: 'center',
-          alignItems: 'center',
-          display: ''
-        })
+        .css('display', '')
         .addClass('flex');
+
+      hideSiblings(`.addContent__weather`);
 
       // Search for weather forecast on form submit
       const submitForm = (submitBtnClass, addContentParentClass) => {
@@ -149,8 +155,7 @@ const handleOptionSelection = (parent, child) => {
                       element: child,
                       parent: parent,
                       location: $(`${parent} ${element} .addContent__weather__input`).val(),
-                      type: 'weather',
-                      new: true
+                      type: 'weather'
                     }]);
                   } else {
                     printError({
@@ -170,8 +175,7 @@ const handleOptionSelection = (parent, child) => {
                     element: element,
                     parent: parent,
                     location: $(`${parent} ${element} .addContent__weather__input`).val(),
-                    type: 'weather',
-                    new: true
+                    type: 'weather'
                   }]);
                 }
               })
@@ -181,6 +185,46 @@ const handleOptionSelection = (parent, child) => {
       }
 
       submitForm(`${parent} ${child} .addContent__submitBtn`, child);
+    } else if ($(`${parent} ${child} .addContent__select`).val() === 'Youtube search box') {
+      $(`${parent} ${child} .addContent`).removeClass('menu');
+
+      $(`${parent} ${child} .addContent__select`).addClass('select');
+
+      $(`${parent} ${child} .addContent__youtube`)
+        .css('display', '')
+        .addClass('flex');
+
+      hideSiblings('.addContent__youtube');
+
+      $(`${parent} ${child} .addContent__submitBtn`).click(function() {
+        if (child === '.newContent') {
+          updateClass();
+          addContentParentClass = `${parent} .${$(this).parents('.content').attr('id')}`;
+        }
+
+        let element = `.${$(this).parents('.content').attr('id')}`;
+
+        if (child !== '.newContent') {
+          // Send the changes to the server side
+          socket.emit('add content', [{
+            element: child,
+            parent: parent,
+            type: 'youtube search'
+          }]);
+        } else {
+          // Send the changes to the server side
+          socket.emit('add content', [{
+            element: element,
+            parent: parent,
+            type: 'youtube search'
+          }]);
+        }
+
+        // Add content to the page
+        parseContent();
+
+        $(`${parent} ${element} .addContent`).hide();
+      });
     } else {
       $(`${parent} ${child} .addContent`).addClass('menu');
       $(`${parent} ${child} .addContent__select`).removeClass('select');

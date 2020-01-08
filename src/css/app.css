@@ -721,7 +721,7 @@ body .backgroundImage {
 .moreContent .content__container .addContent .select {
   padding: 1%;
 }
-.moreContent .content__container .addContent__feed, .moreContent .content__container .addContent__weather {
+.moreContent .content__container .addContent__feed, .moreContent .content__container .addContent__weather, .moreContent .content__container .addContent__youtube {
   display: none;
   width: 100%;
   height: 100%;
@@ -729,12 +729,18 @@ body .backgroundImage {
   align-items: center;
   flex-direction: column;
 }
+.moreContent .content__container .addContent__youtube__msg {
+  font-style: italic;
+  margin: 1.5% 0;
+  text-align: center;
+}
 .moreContent .content__container .addContent__btnContainer {
   width: 100%;
   display: none;
   height: max-content;
   justify-content: end;
   margin-bottom: 2vh;
+  margin-right: 4vh;
 }
 .moreContent .content__container .addContent__feed__input, .moreContent .content__container .addContent__weather__input {
   background-color: transparent;

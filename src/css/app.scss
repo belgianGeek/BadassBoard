@@ -806,12 +806,21 @@ body {
       }
 
       &__feed,
-      &__weather {
+      &__weather,
+      &__youtube {
         display: none;
         width: 100%;
         height: 100%;
         @include align(center, center);
         @include flex-direction;
+      }
+
+      &__youtube {
+        &__msg {
+          font-style: italic;
+          margin: 1.5% 0;
+          text-align: center;
+        }
       }
 
       &__btnContainer {
@@ -820,6 +829,7 @@ body {
         height: max-content;
         justify-content: end;
         margin-bottom: 2vh;
+        margin-right: 4vh;
       }
 
       &__feed__input,

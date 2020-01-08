@@ -24,6 +24,6 @@
   },
   "devDependencies": {
     "scss": "^0.2.4",
-    "minify": "^5.0.0",
+    "minify": "^5.0.0"
   }
 }
