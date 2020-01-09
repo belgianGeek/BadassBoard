@@ -57,10 +57,10 @@ body .backgroundImage {
 .wrapper .rssTooltip .article__desc {
   padding: 1%;
   position: relative;
-  background-color: gray;
+  background-color: rgba(0, 0, 0, 0.7);
   width: 30%;
   height: auto;
-  border-radius: 5%;
+  border-radius: 1em;
   opacity: 0.9;
 }
 
@@ -415,7 +415,6 @@ body .backgroundImage {
   width: 100%;
   align-items: center;
   font-size: 1.2em;
-  /* Error placeholder style*/
 }
 .formContainer__container .formContainer .form .questionBox {
   width: 100%;
@@ -425,16 +424,9 @@ body .backgroundImage {
   color: black;
 }
 .formContainer__container .formContainer .form ::placeholder {
-  color: black;
-  font-size: 1.2em;
+  color: lightgray;
   font-style: italic;
-}
-.formContainer__container .formContainer .form .placeholder::placeholder {
-  color: red;
-  font-weight: bold;
-  text-align: center;
-  font-style: normal;
-  font-size: 1.5em;
+  font-size: 1.2em;
 }
 .formContainer__container .formContainer .form button {
   border: none;
@@ -682,8 +674,57 @@ body .backgroundImage {
 .moreContent .content__container .content .youtubeSearchContainer__content {
   height: 85%;
   width: 100%;
-  justify-content: center;
-  align-items: flex-start;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+}
+.moreContent .content__container .content .youtubeSearchContainer__content__input {
+  background-color: transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: 1px solid lightblue;
+}
+.moreContent .content__container .content .youtubeSearchContainer__content__input ::placeholder {
+  color: lightgray;
+  font-style: italic;
+}
+.moreContent .content__container .content .youtubeSearchContainer__content__results {
+  flex-direction: column;
+  visibility: hidden;
+  height: 100%;
+  width: 100%;
+  margin-top: 1em;
+  font-size: 1em;
+  overflow: auto;
+}
+.moreContent .content__container .content .youtubeSearchContainer__content__results__result {
+  margin-bottom: 1.5em;
+}
+.moreContent .content__container .content .youtubeSearchContainer__content__results__result__thumbnailContainer {
+  width: 25%;
+}
+.moreContent .content__container .content .youtubeSearchContainer__content__results__result__thumbnailContainer img {
+  max-height: 100%;
+  max-width: 100%;
+}
+.moreContent .content__container .content .youtubeSearchContainer__content__results__result__content {
+  flex-direction: column;
+  width: 75%;
+  padding-left: 1em;
+  font-size: 1.1em;
+}
+.moreContent .content__container .content .youtubeSearchContainer__content__results__result__content a {
+  text-overflow: ellipsis;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.moreContent .content__container .content .youtubeSearchContainer__content__results__result__content p {
+  margin: 0.6em 0 0;
+}
+.moreContent .content__container .content .youtubeSearchContainer__content__results__result__content p u {
+  text-decoration-style: dashed;
 }
 .moreContent .content__container .content .youtubeSearchContainer__header {
   width: 100%;

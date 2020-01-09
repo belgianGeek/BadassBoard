@@ -33,6 +33,10 @@ $greenChecked: #20df3d;
   border-top: none;
   border-bottom: 1px solid lightblue;
 }
+@mixin placeholder($color: lightgray) {
+  color: lightgray;
+  font-style: italic;
+}
 
 body,
 html {
@@ -69,8 +73,7 @@ body {
   @include flex-direction;
 
   ::placeholder {
-    color: lightgray;
-    font-style: italic;
+    @include placeholder();
   }
 
   .rssTooltip {
@@ -80,10 +83,10 @@ body {
     .article__desc {
       padding: 1%;
       position: relative;
-      background-color: gray;
+      background-color: opacify($contentBackground, 0.2);
       width: 30%;
       height: auto;
-      border-radius: 5%;
+      border-radius: 1em;
       opacity: 0.9;
     }
   }
@@ -461,17 +464,8 @@ body {
       }
 
       ::placeholder {
-        color: black;
+        @include placeholder(black);
         font-size: 1.2em;
-        font-style: italic;
-      }
-      /* Error placeholder style*/
-      .placeholder::placeholder {
-        color: red;
-        font-weight: bold;
-        text-align: center;
-        font-style: normal;
-        font-size: 1.5em;
       }
 
       button {
@@ -760,7 +754,61 @@ body {
         &__content {
           height: 85%;
           width: 100%;
-          @include align(center, flex-start);
+          @include align(flex-start, center);
+          @include flex-direction();
+
+          &__input {
+            @include input-style();
+
+            ::placeholder {
+              @include placeholder();
+            }
+          }
+
+          &__results {
+            @include flex-direction();
+            visibility: hidden;
+            height: 100%;
+            width: 100%;
+            margin-top: 1em;
+            font-size: 1em;
+            overflow: auto;
+
+            &__result {
+              margin-bottom: 1.5em;
+
+              &__thumbnailContainer {
+                width: 25%;
+
+                img {
+                  max-height: 100%;
+                  max-width: 100%;
+                }
+              }
+
+              &__content {
+                @include flex-direction();
+                width: 75%;
+                padding-left: 1em;
+                font-size: 1.1em;
+
+                a {
+                  text-overflow: ellipsis;
+                  min-width: 0;
+                  overflow: hidden;
+                  white-space: nowrap;
+                }
+
+                p {
+                  margin: 0.6em 0 0;
+
+                  u {
+                    text-decoration-style: dashed;
+                  }
+                }
+              }
+            }
+          }
         }
 
         &__header {

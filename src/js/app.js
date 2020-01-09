@@ -133,7 +133,7 @@ $(document).ready(() => {
         padding: '0.5% 1%'
       });
     }
-  })
+  });
 
   //Submit form on svg icon click
   $('.formSubmit').click(() => {
