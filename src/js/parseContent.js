@@ -394,6 +394,34 @@ const parseContent = () => {
                       let resultContent = '';
                       let thumbnail = '';
 
+                      const processResults = () => {
+                        let result = $('<span></span>')
+                          .addClass(`youtubeSearchContainer__content__results__result youtube__result${i} flex`)
+                          .append(resultContent)
+                          .appendTo('.youtubeSearchContainer__content__results');
+
+                        let thumbnailContainer = $('<div></div>')
+                          .addClass('youtubeSearchContainer__content__results__result__thumbnailContainer')
+                          .prependTo(result);
+
+                        if (res[i].type !== 'channel' && res[i].type !== 'playlist') {
+                          thumbnail = $('<img>')
+                            .attr('alt', `${res[i].title} thumbnail`)
+                            .attr('src', res[i].videoThumbnails[0].url)
+                            .prependTo(thumbnailContainer);
+                        } else if (res[i].type === 'channel') {
+                          thumbnail = $('<img>')
+                            .attr('alt', `${res[i].author} channel thumbnail`)
+                            .attr('src', res[i].authorThumbnails[0].url)
+                            .prependTo(thumbnailContainer);
+                        } else if (res[i].type === 'playlist') {
+                          thumbnail = $('<img>')
+                            .attr('alt', `${res[i].title} thumbnail`)
+                            .attr('src', res[i].playlistThumbnail)
+                            .prependTo(thumbnailContainer);
+                        }
+                      }
+
                       if (res[i].type === 'video') {
                         title = $(`<a></a>`)
                           .attr('href', `https://invidio.us/watch?v=${res[i].videoId}`)
@@ -429,26 +457,10 @@ const parseContent = () => {
                       }
 
                       if (!$(`.youtube__result${i}`).length) {
-                        let result = $('<span></span>')
-                          .addClass(`youtubeSearchContainer__content__results__result youtube__result${i} flex`)
-                          .append(resultContent)
-                          .appendTo('.youtubeSearchContainer__content__results');
-
-                        let thumbnailContainer = $('<div></div>')
-                          .addClass('youtubeSearchContainer__content__results__result__thumbnailContainer')
-                          .prependTo(result);
-
-                        if (res[i].type !== 'channel') {
-                          thumbnail = $('<img>')
-                            .attr('alt', `${res[i].title} thumbnail`)
-                            .attr('src', res[i].videoThumbnails[0].url)
-                            .prependTo(thumbnailContainer);
-                        } else {
-                          thumbnail = $('<img>')
-                            .attr('alt', `${res[i].author} channel thumbnail`)
-                            .attr('src', res[i].authorThumbnails[0].url)
-                            .prependTo(thumbnailContainer);
-                        }
+                        processResults();
+                      } else if ($('.youtubeSearchContainer__content__results').length) {
+                        $('.youtubeSearchContainer__content__results').empty();
+                        processResults();
                       }
 
                       if (i === 1) {

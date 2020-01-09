@@ -34,7 +34,7 @@ $greenChecked: #20df3d;
   border-bottom: 1px solid lightblue;
 }
 @mixin placeholder($color: lightgray) {
-  color: lightgray;
+  color: $color;
   font-style: italic;
 }
 
@@ -978,6 +978,7 @@ body {
 }
 
 .footer {
+  height: 5vh;
   width: 100%;
   @include align(center, center);
   @include flex-direction;
@@ -994,6 +995,7 @@ body {
     @include align(center, baseline);
     @include flex-direction(row);
     width: 100%;
+    margin: 0 0 3vh 0;
 
     & * {
       font-size: 1.2em;

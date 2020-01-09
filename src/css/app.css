@@ -424,7 +424,7 @@ body .backgroundImage {
   color: black;
 }
 .formContainer__container .formContainer .form ::placeholder {
-  color: lightgray;
+  color: black;
   font-style: italic;
   font-size: 1.2em;
 }
@@ -863,6 +863,7 @@ body .backgroundImage {
 }
 
 .footer {
+  height: 5vh;
   width: 100%;
   justify-content: center;
   align-items: center;
@@ -880,6 +881,7 @@ body .backgroundImage {
   align-items: baseline;
   flex-direction: row;
   width: 100%;
+  margin: 0 0 3vh 0;
 }
 .footer .credits * {
   font-size: 1.2em;
