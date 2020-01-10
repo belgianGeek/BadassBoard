@@ -32,10 +32,15 @@ $greenChecked: #20df3d;
   border-right: none;
   border-top: none;
   border-bottom: 1px solid lightblue;
+  max-width: 100%;
 }
 @mixin placeholder($color: lightgray) {
   color: $color;
   font-style: italic;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 body,
@@ -175,6 +180,7 @@ body {
       left: 0;
       display: inline-flex;
       justify-content: end;
+      -webkit-justify-content: flex-end;
     }
 
     &__cancelBtn,
@@ -312,7 +318,8 @@ body {
     }
 
     .searchEngineSelection {
-      &__select {
+      &__select,
+      &__select option {
         color: black;
         font-size: 1em;
       }
@@ -537,10 +544,12 @@ body {
   &__leftSvg,
   &__rightSvg {
     cursor: pointer;
+    min-width: 2em;
   }
 
   .player {
     height: min-content;
+    min-width: 50%;
     width: 50%;
     @include align(space-evenly, center);
     @include flex-direction(row);
@@ -554,6 +563,7 @@ body {
     height: min-content;
     width: 50%;
     font-size: 1.4em;
+    min-width: 50%;
 
     .playlistInfo {
       width: min-content;
@@ -620,6 +630,26 @@ body {
       width: 100%;
       font-size: 1.2em;
 
+      .contentOptions {
+        display: none;
+        @include align(space-between, baseline);
+        @include flex-direction(row);
+        width: 17%;
+        margin-top: 1%;
+
+        &__clearResultsbtn,
+        .removeContentBtn,
+        .updateContentBtn {
+          padding: 5%;
+          cursor: pointer;
+        }
+
+        .removeContentBtn {
+          border: 1px solid red;
+          border-radius: 45%;
+        }
+      }
+
       .blank {
         display: none;
         @include align(center, center);
@@ -646,6 +676,7 @@ body {
         @include flex-direction;
         background-color: $contentBackground;
         border-radius: 15px;
+        height: 100%;
         width: 100%;
         font-size: 1.05em;
       }
@@ -678,25 +709,6 @@ body {
             width: 100%;
             margin: 2% 0;
             text-align: center;
-          }
-
-          .contentOptions {
-            display: none;
-            @include align(space-between, baseline);
-            @include flex-direction(row);
-            width: 17%;
-            margin-top: 1%;
-
-            .removeContentBtn,
-            .updateContentBtn {
-              padding: 5%;
-              cursor: pointer;
-            }
-
-            .removeContentBtn {
-              border: 1px solid red;
-              border-radius: 45%;
-            }
           }
         }
 
@@ -820,25 +832,6 @@ body {
     .rssContainer__header {
       display: inline-flex;
       align-items: center;
-
-      .contentOptions {
-        display: none;
-        @include align(space-between, baseline);
-        @include flex-direction(row);
-        width: 17%;
-        margin-top: 1%;
-
-        .removeContentBtn,
-        .updateContentBtn {
-          padding: 5%;
-          cursor: pointer;
-        }
-
-        .removeContentBtn {
-          border: 1px solid red;
-          border-radius: 45%;
-        }
-      }
     }
 
     .feedTitle,
@@ -857,9 +850,11 @@ body {
 
       label {
         margin: 2% 0;
+        text-align: center;
       }
 
-      &__select {
+      &__select,
+      &__select option {
         color: black;
         height: 2.1em;
       }
@@ -891,6 +886,7 @@ body {
         display: none;
         height: max-content;
         justify-content: end;
+        -webkit-justify-content: flex-end;
         margin-bottom: 2vh;
         margin-right: 4vh;
       }
@@ -995,7 +991,7 @@ body {
     @include align(center, baseline);
     @include flex-direction(row);
     width: 100%;
-    margin: 0 0 3vh 0;
+    margin: 0 0 3vh;
 
     & * {
       font-size: 1.2em;

@@ -49,6 +49,10 @@ body .backgroundImage {
 .wrapper ::placeholder {
   color: lightgray;
   font-style: italic;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .wrapper .rssTooltip {
   position: absolute;
@@ -143,6 +147,7 @@ body .backgroundImage {
   left: 0;
   display: inline-flex;
   justify-content: end;
+  -webkit-justify-content: flex-end;
 }
 .settings__container .settings__child__cancelBtn, .settings__container .settings__child__saveBtn {
   border: none;
@@ -262,6 +267,7 @@ body .backgroundImage {
   border-right: none;
   border-top: none;
   border-bottom: 1px solid lightblue;
+  max-width: 100%;
 }
 .settings__container .settings__child .owmToken {
   justify-content: space-between;
@@ -274,8 +280,9 @@ body .backgroundImage {
   border-right: none;
   border-top: none;
   border-bottom: 1px solid lightblue;
+  max-width: 100%;
 }
-.settings__container .settings__child .searchEngineSelection__select {
+.settings__container .settings__child .searchEngineSelection__select, .settings__container .settings__child .searchEngineSelection__select option {
   color: black;
   font-size: 1em;
 }
@@ -347,6 +354,7 @@ body .backgroundImage {
   border-right: none;
   border-top: none;
   border-bottom: 1px solid lightblue;
+  max-width: 100%;
   color: white;
 }
 .upperContainer__converter .converter .warning {
@@ -426,6 +434,10 @@ body .backgroundImage {
 .formContainer__container .formContainer .form ::placeholder {
   color: black;
   font-style: italic;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 1.2em;
 }
 .formContainer__container .formContainer .form button {
@@ -485,9 +497,11 @@ body .backgroundImage {
 }
 .audio__leftSvg, .audio__rightSvg {
   cursor: pointer;
+  min-width: 2em;
 }
 .audio .player {
   height: min-content;
+  min-width: 50%;
   width: 50%;
   justify-content: space-evenly;
   align-items: center;
@@ -500,6 +514,7 @@ body .backgroundImage {
   height: min-content;
   width: 50%;
   font-size: 1.4em;
+  min-width: 50%;
 }
 .audioMsg .playlistInfo {
   width: min-content;
@@ -560,6 +575,24 @@ body .backgroundImage {
   width: 100%;
   font-size: 1.2em;
 }
+.moreContent .content__container .content .contentOptions {
+  display: none;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-direction: row;
+  width: 17%;
+  margin-top: 1%;
+}
+.moreContent .content__container .content .contentOptions__clearResultsbtn,
+.moreContent .content__container .content .contentOptions .removeContentBtn,
+.moreContent .content__container .content .contentOptions .updateContentBtn {
+  padding: 5%;
+  cursor: pointer;
+}
+.moreContent .content__container .content .contentOptions .removeContentBtn {
+  border: 1px solid red;
+  border-radius: 45%;
+}
 .moreContent .content__container .content .blank {
   display: none;
   justify-content: center;
@@ -583,6 +616,7 @@ body .backgroundImage {
   flex-direction: column;
   background-color: rgba(0, 0, 0, 0.5);
   border-radius: 15px;
+  height: 100%;
   width: 100%;
   font-size: 1.05em;
 }
@@ -612,23 +646,6 @@ body .backgroundImage {
   width: 100%;
   margin: 2% 0;
   text-align: center;
-}
-.moreContent .content__container .content .forecast__header .contentOptions {
-  display: none;
-  justify-content: space-between;
-  align-items: baseline;
-  flex-direction: row;
-  width: 17%;
-  margin-top: 1%;
-}
-.moreContent .content__container .content .forecast__header .contentOptions .removeContentBtn,
-.moreContent .content__container .content .forecast__header .contentOptions .updateContentBtn {
-  padding: 5%;
-  cursor: pointer;
-}
-.moreContent .content__container .content .forecast__header .contentOptions .removeContentBtn {
-  border: 1px solid red;
-  border-radius: 45%;
 }
 .moreContent .content__container .content .forecast__content {
   flex-direction: row;
@@ -684,10 +701,15 @@ body .backgroundImage {
   border-right: none;
   border-top: none;
   border-bottom: 1px solid lightblue;
+  max-width: 100%;
 }
 .moreContent .content__container .content .youtubeSearchContainer__content__input ::placeholder {
   color: lightgray;
   font-style: italic;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .moreContent .content__container .content .youtubeSearchContainer__content__results {
   flex-direction: column;
@@ -733,23 +755,6 @@ body .backgroundImage {
   display: inline-flex;
   align-items: center;
 }
-.moreContent .content__container .rssContainer__header .contentOptions {
-  display: none;
-  justify-content: space-between;
-  align-items: baseline;
-  flex-direction: row;
-  width: 17%;
-  margin-top: 1%;
-}
-.moreContent .content__container .rssContainer__header .contentOptions .removeContentBtn,
-.moreContent .content__container .rssContainer__header .contentOptions .updateContentBtn {
-  padding: 5%;
-  cursor: pointer;
-}
-.moreContent .content__container .rssContainer__header .contentOptions .removeContentBtn {
-  border: 1px solid red;
-  border-radius: 45%;
-}
 .moreContent .content__container .feedTitle,
 .moreContent .content__container .youtubeSearchContainer__header p {
   display: block;
@@ -766,8 +771,9 @@ body .backgroundImage {
 }
 .moreContent .content__container .addContent label {
   margin: 2% 0;
+  text-align: center;
 }
-.moreContent .content__container .addContent__select {
+.moreContent .content__container .addContent__select, .moreContent .content__container .addContent__select option {
   color: black;
   height: 2.1em;
 }
@@ -792,6 +798,7 @@ body .backgroundImage {
   display: none;
   height: max-content;
   justify-content: end;
+  -webkit-justify-content: flex-end;
   margin-bottom: 2vh;
   margin-right: 4vh;
 }
@@ -801,6 +808,7 @@ body .backgroundImage {
   border-right: none;
   border-top: none;
   border-bottom: 1px solid lightblue;
+  max-width: 100%;
   border-radius: 5px;
 }
 .moreContent .content__container .addContent__cancelBtn, .moreContent .content__container .addContent__submitBtn {
@@ -881,7 +889,7 @@ body .backgroundImage {
   align-items: baseline;
   flex-direction: row;
   width: 100%;
-  margin: 0 0 3vh 0;
+  margin: 0 0 3vh;
 }
 .footer .credits * {
   font-size: 1.2em;

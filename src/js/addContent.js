@@ -5,8 +5,11 @@ const addContent = (parent, element) => {
 
   $(element, svg).off();
 
+console.log(svg);
   setTimeout(() => {
-    if (!$(`${element} section`).length) {
+    console.log(1);
+    if (!$(`${parent} ${element} section`).length) {
+      console.log(2);
       $(element)
         .mouseenter(() => {
           $(svg)

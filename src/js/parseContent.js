@@ -374,6 +374,29 @@ const parseContent = () => {
               .addClass('youtubeSearchContainer__content flex')
               .append(youtubeSearchInput, youtubeSearchResults)
               .appendTo(`${fullElementClassName} .youtubeSearchContainer`);
+
+            // Add content options
+            let contentOptions = $('<span></span>')
+              .addClass('contentOptions')
+              .appendTo(youtubeSearchHeader);
+
+            let updateContentBtn = $('<img>')
+              .addClass('contentOptions__clearResultsbtn')
+              .attr({
+                alt: 'Clear search results',
+                src: './src/css/icons/interface/clear.svg'
+              })
+              .appendTo(contentOptions);
+
+            let removeContentBtn = $('<img>')
+              .addClass('removeContentBtn')
+              .attr({
+                alt: 'Remove content',
+                src: './src/css/icons/interface/cross.svg'
+              })
+              .appendTo(contentOptions);
+
+            addContentOptions(fullElementClassName);
           }
 
           $('.youtubeSearchContainer *').keypress((event) => {

@@ -1,16 +1,20 @@
 const addContentOptions = (element) => {
   contentHeight = $('.content').height();
 
+  const showOptionsOnHover = (element, child) => {
+    $(child)
+      .mouseenter(() => {
+        // Show the removeContentBtn on content title hover
+        $(`${element} .contentOptions`).css('display', 'flex');
+      })
+      .mouseleave(() => {
+        $(`${element} .contentOptions`).hide();
+      });
+  }
+
   const removeContent = (parent, element2remove, child) => {
     if ($(element2remove).length) {
-      $(child)
-        .mouseenter(() => {
-          // Show the removeContentBtn on feedtitle hover
-          $(`${parent} .contentOptions`).css('display', 'flex');
-        })
-        .mouseleave(() => {
-          $(`${parent} .contentOptions`).hide();
-        });
+      showOptionsOnHover(parent, child);
 
       // Remove feed on button click
       $(`${parent} .removeContentBtn`).click(() => {
@@ -28,7 +32,7 @@ const addContentOptions = (element) => {
             })
             .addClass('flex');
         }
-
+        
         addContent(`.${$(parent).parent().attr('class').match(/content\d__container/)}`, `.${$(parent).attr('class').match(/content\d{1,}/)}`);
       });
     }
@@ -36,14 +40,7 @@ const addContentOptions = (element) => {
 
   const updateContent = (parent, element, child) => {
     if ($(element).length) {
-      $(child)
-        .mouseenter(() => {
-          // Show the removeContentBtn on content title hover
-          $(`${element} .contentOptions`).addClass('flex');
-        })
-        .mouseleave(() => {
-          $(`${element} .contentOptions`).hide();
-        });
+      showOptionsOnHover(element, child);
 
       $(`${element} .updateContentBtn`).click(function() {
         // Update RSS
@@ -54,7 +51,6 @@ const addContentOptions = (element) => {
           });
 
           socket.on('feed updated', (parsedData) => {
-            console.log('update successfull');
             let parsedElt = `${parsedData.parent} ${parsedData.element}`;
             let feed = parsedData.feed;
 
@@ -159,6 +155,18 @@ const addContentOptions = (element) => {
     }
   }
 
+  // Clear search results
+  const clearResults = (parent, element, child) => {
+    if ($(element).length) {
+
+      showOptionsOnHover(element, child);
+
+      $(`${element} .contentOptions__clearResultsbtn`).click(function() {
+        $('.youtubeSearchContainer__content__results').empty();
+      });
+    }
+  }
+
   $(`${element} .rssContainer`).ready(() => {
     removeContent(element, `${element} .rssContainer`, `${element} .rssContainer__header`);
     updateContent(element, `${element} .rssContainer`, `${element} .rssContainer__header`);
@@ -167,5 +175,10 @@ const addContentOptions = (element) => {
   $(`${element} .forecast`).ready(() => {
     removeContent(element, `${element} .forecast`, `${element} .forecast__header`);
     updateContent(element, `${element} .forecast`, `${element} .forecast__header`);
+  });
+
+  $(`${element} .youtubeSearchContainer`).ready(() => {
+    removeContent(element, `${element} .youtubeSearchContainer`, `${element} .youtubeSearchContainer__header`);
+    clearResults(element, `${element} .youtubeSearchContainer`, `${element} .youtubeSearchContainer__header`);
   });
 }

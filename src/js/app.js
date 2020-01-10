@@ -152,8 +152,7 @@ $(document).ready(() => {
 
   // Dynamically show the footer
   $('.footer').mouseenter(() => {
-    $('.credits')
-      .fadeIn();
+    $('.credits').fadeIn();
   }).mouseleave(() => {
     $('.credits').fadeOut();
   });
