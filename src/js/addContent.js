@@ -1,26 +1,12 @@
 // Design the content divs
 const addContent = (parent, element) => {
   let svg = `${parent} ${element} .blank`;
-  contentHeight = $('.content').height();
 
   $(element, svg).off();
 
-console.log(svg);
   setTimeout(() => {
-    console.log(1);
     if (!$(`${parent} ${element} section`).length) {
-      console.log(2);
-      $(element)
-        .mouseenter(() => {
-          $(svg)
-            .addClass('flex visible')
-            .removeClass('invisible');
-        })
-        .mouseleave(() => {
-          $(svg)
-            .addClass('invisible')
-            .removeClass('visible');
-        });
+      $(svg).removeClass('invisible');
     }
 
     // Show the "addContent" form on svg click

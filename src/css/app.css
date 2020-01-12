@@ -86,21 +86,6 @@ body .backgroundImage {
   margin-right: 0.5%;
 }
 
-.blank__addContent__svg:hover,
-.header__settingsBtn:hover {
-  animation-name: turnRound;
-  animation-duration: 1s;
-  animation-iteration-count: 1;
-}
-
-@keyframes turnRound {
-  0% {
-    transform: translate(0px, 0px) rotate(0deg);
-  }
-  100% {
-    transform: translate(0px, 0px) rotate(-180deg);
-  }
-}
 .settings__container {
   display: none;
   width: 100%;
@@ -594,18 +579,25 @@ body .backgroundImage {
   border-radius: 45%;
 }
 .moreContent .content__container .content .blank {
-  display: none;
+  display: flex;
   justify-content: center;
   align-items: center;
+  opacity: 0;
+  transition: opacity 1000ms, transform 200ms;
+}
+.moreContent .content__container .content .blank:hover {
+  display: flex;
+  opacity: 1;
+}
+.moreContent .content__container .content .blank:hover .blank__addContent__svg {
+  transform: rotate(360);
 }
 .moreContent .content__container .content .flex {
   display: flex;
 }
-.moreContent .content__container .content .visible {
-  visibility: visible;
-}
 .moreContent .content__container .content .invisible {
-  visibility: hidden;
+  display: none;
+  opacity: 0;
 }
 .moreContent .content__container .content .addContent,
 .moreContent .content__container .content .blank,
@@ -633,6 +625,16 @@ body .backgroundImage {
 .moreContent .content__container .content .rssContainer,
 .moreContent .content__container .content .warning {
   margin-bottom: 2vh;
+}
+.moreContent .content__container .content .forecast__header,
+.moreContent .content__container .content .rssContainer__header,
+.moreContent .content__container .content .youtubeSearchContainer__header {
+  transition: display 200ms;
+}
+.moreContent .content__container .content .forecast__header:hover .contentOptions,
+.moreContent .content__container .content .rssContainer__header:hover .contentOptions,
+.moreContent .content__container .content .youtubeSearchContainer__header:hover .contentOptions {
+  display: flex;
 }
 .moreContent .content__container .content .forecast {
   margin-right: -3%;
@@ -792,6 +794,7 @@ body .backgroundImage {
   font-style: italic;
   margin: 1.5% 0;
   text-align: center;
+  flex-wrap: wrap;
 }
 .moreContent .content__container .addContent__btnContainer {
   width: 100%;
@@ -863,9 +866,6 @@ body .backgroundImage {
   text-align: justify;
   padding: 5%;
 }
-.moreContent .content__container .newContent .blank {
-  visibility: hidden;
-}
 .moreContent .content__container .subRow {
   margin-top: 2.5vh;
 }
@@ -895,6 +895,22 @@ body .backgroundImage {
   font-size: 1.2em;
   height: auto;
   margin: 1% 0 0;
+}
+
+.confirmation {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.confirmation__child {
+  width: 40%;
+  height: 30%;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 1em;
 }
 
 /* Responsive design */

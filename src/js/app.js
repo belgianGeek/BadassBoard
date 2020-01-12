@@ -10,8 +10,6 @@ let mousePosition = {};
 // Store the OpenWeatherMap API token
 let owmToken = '';
 
-let contentHeight;
-
 // Store the default search engine
 let searchEngine = {};
 

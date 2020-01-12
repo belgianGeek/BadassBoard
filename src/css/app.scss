@@ -116,22 +116,6 @@ body {
   }
 }
 
-.blank__addContent__svg:hover,
-.header__settingsBtn:hover {
-  animation-name: turnRound;
-  animation-duration: 1s;
-  animation-iteration-count: 1;
-}
-@keyframes turnRound {
-  0% {
-    transform: translate(0px, 0px) rotate(0deg);
-  }
-
-  100% {
-    transform: translate(0px, 0px) rotate(-180deg);
-  }
-}
-
 .settings__container {
   display: none;
   width: 100%;
@@ -651,20 +635,28 @@ body {
       }
 
       .blank {
-        display: none;
+        display: flex;
         @include align(center, center);
+        opacity: 0;
+        transition: opacity 1000ms, transform 200ms;
+
+        &:hover {
+          display: flex;
+          opacity: 1;
+        }
+
+        &:hover .blank__addContent__svg {
+          transform: rotate(360);
+        }
       }
 
       .flex {
         display: flex;
       }
 
-      .visible {
-        visibility: visible;
-      }
-
       .invisible {
-        visibility: hidden;
+        display: none;
+        opacity: 0;
       }
 
       .addContent,
@@ -695,6 +687,18 @@ body {
       .rssContainer,
       .warning {
         margin-bottom: 2vh;
+      }
+      // Show content options
+      .forecast,
+      .rssContainer,
+      .youtubeSearchContainer {
+        &__header {
+          transition: display 200ms;
+
+          &:hover .contentOptions {
+            display: flex;
+          }
+        }
       }
 
       .forecast {
@@ -878,6 +882,7 @@ body {
           font-style: italic;
           margin: 1.5% 0;
           text-align: center;
+          flex-wrap: wrap;
         }
       }
 
@@ -961,12 +966,6 @@ body {
       }
     }
 
-    .newContent {
-      .blank {
-        visibility: hidden;
-      }
-    }
-
     .subRow {
       margin-top: 2.5vh;
     }
@@ -998,6 +997,22 @@ body {
       height: auto;
       margin: 1% 0 0;
     }
+  }
+}
+
+.confirmation {
+  display: none;
+  @include align(center, center);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-color: $contentBackground;
+
+  &__child {
+    width: 40%;
+    height: 30%;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 1em;
   }
 }
 /* Responsive design */

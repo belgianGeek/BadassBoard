@@ -1,5 +1,4 @@
 const addContentOptions = (element) => {
-  contentHeight = $('.content').height();
 
   const showOptionsOnHover = (element, child) => {
     $(child)
@@ -20,19 +19,6 @@ const addContentOptions = (element) => {
       $(`${parent} .removeContentBtn`).click(() => {
         $(element2remove).remove();
 
-        if (!$(element2remove).length) {
-          $(parent)
-            .css({
-              height: contentHeight
-            });
-
-          $(`${parent} .blank`)
-            .css({
-              height: contentHeight
-            })
-            .addClass('flex');
-        }
-        
         addContent(`.${$(parent).parent().attr('class').match(/content\d__container/)}`, `.${$(parent).attr('class').match(/content\d{1,}/)}`);
       });
     }

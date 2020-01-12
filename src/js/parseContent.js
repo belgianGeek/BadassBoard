@@ -54,57 +54,41 @@ const parseContent = () => {
             }
 
             let svg = $(`${parent} .newContent .blank`);
-            svg.addClass('flex');
 
-            $(`${parent} .newContent`)
-              .mouseenter(() => {
-                $(svg).css({
-                    visibility: 'visible',
-                    display: ''
-                  })
-                  .addClass('flex');
+            $(svg).click(() => {
+              $(fullElementClassName)
+                .css('padding', '0');
 
-                $(svg).click(() => {
-                  $(fullElementClassName)
-                    .css('padding', '0');
+              $(`${parent} .newContent .addContent`)
+                .css('display', '')
+                .addClass('flex');
 
-                  $(`${parent} .newContent .addContent`)
-                    .css('display', '')
-                    .addClass('flex');
+              $(svg)
+                .off()
+                .hide();
 
-                  $(svg)
-                    .off()
-                    .hide();
-
-                  $(`${parent} .newContent`)
-                    .mouseenter(() => {
-                      // Only show the 'blank' div if the addContent div is hidden
-                      if ($(`${parent} .newContent .addContent`).is(':visible')) {
-                        // console.log(`${parent} .newContent .addContent`);
-                        $(svg).hide();
-                      }
-                    });
-
-                  $(`${parent} .newContent .addContent`).ready(() => {
-                    handleOptionSelection(parent, '.newContent');
-                  });
+              $(`${parent} .newContent`)
+                .mouseenter(() => {
+                  // Only show the 'blank' div if the addContent div is hidden
+                  if ($(`${parent} .newContent .addContent`).is(':visible')) {
+                    $(svg).hide();
+                  }
                 });
-              })
-              .mouseleave(() => {
-                $(svg).css({
-                  visibility: 'hidden'
-                });
+
+              $(`${parent} .newContent .addContent`).ready(() => {
+                handleOptionSelection(parent, '.newContent');
               });
+            });
 
             // Fix the content divs order
             $('.newContent').ready(() => {
+              $('.newContent .blank').removeClass('invisible');
               $('.content').each(function(index) {
 
                 // Exclude the ".newContent" div
                 if (!$(this).hasClass('newContent')) {
                   $(this).css('order', $(this).attr('id').substring(7, 9));
                 } else {
-
                   // Send the newContent div at the bottom
                   $(this).css('order', 100);
                 }
@@ -397,6 +381,8 @@ const parseContent = () => {
               .appendTo(contentOptions);
 
             addContentOptions(fullElementClassName);
+
+            addNewContentContainer();
           }
 
           $('.youtubeSearchContainer *').keypress((event) => {
