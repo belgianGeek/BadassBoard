@@ -234,11 +234,6 @@ const handleOptionSelection = (parent, child) => {
 
   // Cancel new content adding
   $(`${parent} ${child} .addContent__cancelBtn`).click(function() {
-    $(this).parent('.addContent').hide();
-    $(this).parent('.blank')
-      .css({
-        visibility: 'visible',
-        display: 'flex'
-      });
+    $(this).parents('.addContent').fadeOut();
   });
 }
