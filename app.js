@@ -311,6 +311,11 @@ app.get('/', (req, res) => {
                                 .catch((err) => {
                                   if (err == 'Error: Not a feed') {
                                     console.log('Invalid feed URL');
+                                    io.emit('errorMsg', {
+                                      type: 'rss verification',
+                                      element: `${feedData[i].parent} ${feedData[i].element}`,
+                                      msg: `${feedData[i].url} is not a valid RSS feed`
+                                    });
                                   }
                                 });
 
@@ -329,8 +334,16 @@ app.get('/', (req, res) => {
                                 msg: `${feedData[i].url} is not a valid RSS feed`
                               });
                             }
+                          })
+                          .on('error', (err) => {
+                            console.log(`Error parsing feed : ${err}`);
+                            io.emit('errorMsg', {
+                              type: 'rss verification',
+                              element: `${feedData[i].parent} ${feedData[i].element}`,
+                              msg: `${feedData[i].url} is not a valid RSS feed`
+                            });
                           });
-                        // console.log(`newElt : ${JSON.stringify(newElt, null, 2)}`);
+
                       } else if (feedData[i].type === 'weather') {
                         newElt.element = feedData[i].element;
                         newElt.parent = feedData[i].parent;

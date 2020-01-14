@@ -63,17 +63,7 @@ const parseContent = () => {
                 .css('display', '')
                 .addClass('flex');
 
-              $(svg)
-                .off()
-                .hide();
-
-              $(`${parent} .newContent`)
-                .mouseenter(() => {
-                  // Only show the 'blank' div if the addContent div is hidden
-                  if ($(`${parent} .newContent .addContent`).is(':visible')) {
-                    $(svg).hide();
-                  }
-                });
+              $(svg).hide();
 
               $(`${parent} .newContent .addContent`).ready(() => {
                 handleOptionSelection(parent, '.newContent');
@@ -490,13 +480,6 @@ const parseContent = () => {
         // Add a margin to the dynamicaly created divs
         if (!parent.match(iElement)) {
           $(fullElementClassName).addClass('subRow');
-        }
-      });
-
-      // Hide the '.blank' divs if there are visibles siblings
-      $(fullElementClassName).ready(() => {
-        if (i === parsedData.length - 1 && !$(`${fullElementClassName} .blank`).siblings('*:visible')) {
-          $(`${fullElementClassName} .blank`).hide();
         }
       });
     }

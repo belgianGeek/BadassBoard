@@ -15,9 +15,11 @@ const addContentOptions = (element) => {
     if ($(element2remove).length) {
       showOptionsOnHover(parent, child);
 
-      // Remove feed on button click
+      // Remove content on button click
       $(`${parent} .removeContentBtn`).click(() => {
         $(element2remove).remove();
+
+        $(`${parent} .blank`).css('display', '');
 
         addContent(`.${$(parent).parent().attr('class').match(/content\d__container/)}`, `.${$(parent).attr('class').match(/content\d{1,}/)}`);
       });
