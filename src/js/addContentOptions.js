@@ -1,19 +1,7 @@
 const addContentOptions = (element) => {
 
-  const showOptionsOnHover = (element, child) => {
-    $(child)
-      .mouseenter(() => {
-        // Show the removeContentBtn on content title hover
-        $(`${element} .contentOptions`).css('display', 'flex');
-      })
-      .mouseleave(() => {
-        $(`${element} .contentOptions`).hide();
-      });
-  }
-
   const removeContent = (parent, element2remove, child) => {
     if ($(element2remove).length) {
-      showOptionsOnHover(parent, child);
 
       // Remove content on button click
       $(`${parent} .removeContentBtn`).click(() => {
@@ -28,7 +16,6 @@ const addContentOptions = (element) => {
 
   const updateContent = (parent, element, child) => {
     if ($(element).length) {
-      showOptionsOnHover(element, child);
 
       $(`${element} .updateContentBtn`).click(function() {
         // Update RSS
@@ -146,9 +133,6 @@ const addContentOptions = (element) => {
   // Clear search results
   const clearResults = (parent, element, child) => {
     if ($(element).length) {
-
-      showOptionsOnHover(element, child);
-
       $(`${element} .contentOptions__clearResultsbtn`).click(function() {
         $('.youtubeSearchContainer__content__results').empty();
       });

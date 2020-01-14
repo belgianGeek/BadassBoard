@@ -113,6 +113,11 @@ body {
 
   &__settingsBtn {
     margin-right: 0.5%;
+
+    &:hover {
+      transform: rotate(-720deg);
+      transition: transform 1000ms;
+    }
   }
 }
 
@@ -646,7 +651,8 @@ body {
         }
 
         &:hover .blank__addContent__svg {
-          transform: rotate(360);
+          transform: rotate(360deg);
+          transition: transform 1000ms;
         }
       }
 
@@ -693,7 +699,7 @@ body {
       .rssContainer,
       .youtubeSearchContainer {
         &__header {
-          transition: display 200ms;
+          transition: display 400ms;
 
           &:hover .contentOptions {
             display: flex;

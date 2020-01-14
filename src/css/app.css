@@ -85,6 +85,10 @@ body .backgroundImage {
 .header__settingsBtn {
   margin-right: 0.5%;
 }
+.header__settingsBtn:hover {
+  transform: rotate(-720deg);
+  transition: transform 1000ms;
+}
 
 .settings__container {
   display: none;
@@ -590,7 +594,8 @@ body .backgroundImage {
   opacity: 1;
 }
 .moreContent .content__container .content .blank:hover .blank__addContent__svg {
-  transform: rotate(360);
+  transform: rotate(360deg);
+  transition: transform 1000ms;
 }
 .moreContent .content__container .content .flex {
   display: flex;
@@ -629,7 +634,7 @@ body .backgroundImage {
 .moreContent .content__container .content .forecast__header,
 .moreContent .content__container .content .rssContainer__header,
 .moreContent .content__container .content .youtubeSearchContainer__header {
-  transition: display 200ms;
+  transition: display 400ms;
 }
 .moreContent .content__container .content .forecast__header:hover .contentOptions,
 .moreContent .content__container .content .rssContainer__header:hover .contentOptions,
