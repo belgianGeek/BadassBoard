@@ -6,6 +6,10 @@ const parseContent = () => {
     for (const [i, value] of parsedData.entries()) {
 
       const buildElement = (parent, element, iElement, callback) => {
+        $(`${element} .blank`).ready(function() {
+          $(this).addClass('invisible');
+        });
+
         if (!$(element).length) {
           let container = $('<div></div>')
             .addClass(`content content${iElement}`)
@@ -16,11 +20,13 @@ const parseContent = () => {
           }
 
           $(element).ready(() => {
+            // Append the new divs to the newly created element
             if (!$(`${element} .blank`).length && !$(`${element} .addContent`).length) {
               $(element)
                 .prepend(newBlank)
                 .append(newAddContent);
             }
+
             callback();
           });
         } else {

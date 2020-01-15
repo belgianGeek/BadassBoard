@@ -8,7 +8,7 @@ const showSettings = () => {
     // restore page scroll
     restoreScroll();
 
-    $('.backgroundImage, header, .mainContainer').css('filter', 'none');
+    $('.backgroundImage, header, .mainContainer').removeClass('blur');
     $('.settings__container').fadeOut();
   }
 
@@ -23,7 +23,7 @@ const showSettings = () => {
   }
 
   $('.header__settingsBtn').click(() => {
-    $('.backgroundImage, header, .mainContainer').css('filter', 'blur(4px)');
+    $('.backgroundImage, header, .mainContainer').addClass('blur');
 
     // Disable page scroll
     disableScroll();
@@ -177,8 +177,7 @@ const showSettings = () => {
 
       if ($('.backgroundImageUploadForm__InputFile').val() === '' && $('.backgroundImageUploadForm__InputUrl').val() === '' && $('.owmToken__input').val() === '') {
         // If none of the fields are fullfilled, just hide the settings menu
-        $('.backgroundImage, header, .mainContainer')
-          .css('filter', 'none');
+        $('.backgroundImage, header, .mainContainer').removeClass('blur');
 
         $('.settings__container').fadeOut();
       }
