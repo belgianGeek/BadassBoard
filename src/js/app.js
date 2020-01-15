@@ -19,6 +19,11 @@ const socket = io();
 // Store the style added to the head tag
 let headStyle = '';
 
+// Store the last created element number for each content container
+let lastContent1 = '';
+let lastContent2 = '';
+let lastContent3 = '';
+
 // Get the background image from the settings and add it to the page
 $.ajax({
   url: './settings/settings.json',
@@ -52,6 +57,12 @@ $.ajax({
         $('.backgroundImage').css('backgroundImage', `url(${settings.backgroundImage})`);
       });
   }
+
+  lastContent1 = settings.elements[0].elements[settings.elements[0].elements.length - 1];
+  lastContent2 = settings.elements[1].elements[settings.elements[1].elements.length - 1];
+  lastContent3 = settings.elements[2].elements[settings.elements[2].elements.length - 1];
+
+  console.log(lastContent1, lastContent2, lastContent3);
 
   if (settings.owmToken !== undefined) {
     owmToken = settings.owmToken;

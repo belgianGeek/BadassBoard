@@ -14,6 +14,9 @@ const addContentOptions = (element) => {
           .fadeIn()
           .css('display', 'flex');
 
+        // Make the div background blurry
+        $('.mainContainer').addClass('blur');
+
         $(element2remove).clone().appendTo('.confirmation__child__content');
 
         // Disable page scroll
@@ -24,6 +27,9 @@ const addContentOptions = (element) => {
 
           // Restore page scroll
           restoreScroll();
+
+          // Remove the blur
+          $('.mainContainer').removeClass('blur');
 
           $(`${parent} .blank`).css('display', '');
 
@@ -37,6 +43,9 @@ const addContentOptions = (element) => {
         $('.confirmation__child__btnContainer__cancelBtn').click(() => {
           restoreScroll();
           emptyConfirmationContent();
+          
+          // Remove the blur
+          $('.mainContainer').removeClass('blur');
           $('.confirmation').fadeOut();
         });
       });

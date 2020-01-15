@@ -16,11 +16,14 @@ const parseContent = () => {
           }
 
           $(element).ready(() => {
+            // Append the new divs to the newly created element
             if (!$(`${element} .blank`).length && !$(`${element} .addContent`).length) {
               $(element)
                 .prepend(newBlank)
                 .append(newAddContent);
             }
+
+            $(`${element} .blank`).addClass('invisible');
             callback();
           });
         } else {

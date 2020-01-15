@@ -41,6 +41,10 @@ body .backgroundImage {
   display: flex;
 }
 
+.blur {
+  filter: blur(5px);
+}
+
 .wrapper {
   padding: 0;
   margin: 0;
