@@ -1,15 +1,55 @@
 const addContentOptions = (element) => {
 
+  const restoreScroll = () => {
+    $('html, body').css({
+      overflow: '',
+      height: ''
+    });
+  }
+
+  const emptyConfirmationContent = () => {
+    // Empty the confirmation content
+    $('.confirmation__child__content section').remove();
+  }
+
   const removeContent = (parent, element2remove, child) => {
     if ($(element2remove).length) {
 
       // Remove content on button click
       $(`${parent} .removeContentBtn`).click(() => {
-        $(element2remove).remove();
+        $(`.confirmation`)
+          .fadeIn()
+          .css('display', 'flex');
 
-        $(`${parent} .blank`).css('display', '');
+        console.log(`${element2remove}`, $(`${parent} ${element2remove}`).clone());
+        $(element2remove).clone().appendTo('.confirmation__child__content');
 
-        addContent(`.${$(parent).parent().attr('class').match(/content\d__container/)}`, `.${$(parent).attr('class').match(/content\d{1,}/)}`);
+        // Disable page scroll
+        $('html, body').css({
+          overflow: 'hidden',
+          height: '100%'
+        });
+
+        $('.confirmation__child__btnContainer__saveBtn').click(function() {
+          $(element2remove).remove();
+
+          // Restore page scroll
+          restoreScroll();
+
+          $(`${parent} .blank`).css('display', '');
+
+          addContent(`.${$(parent).parent().attr('class').match(/content\d__container/)}`, `.${$(parent).attr('class').match(/content\d{1,}/)}`);
+
+          emptyConfirmationContent();
+
+          $('.confirmation').fadeOut();
+        });
+
+        $('.confirmation__child__btnContainer__cancelBtn').click(() => {
+          restoreScroll();
+          emptyConfirmationContent();
+          $('.confirmation').fadeOut();
+        });
       });
     }
   }

@@ -42,6 +42,13 @@ $greenChecked: #20df3d;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+@mixin btn-style() {
+  border: none;
+  border-radius: 15px;
+  padding: 0.7em;
+  margin-right: 1.1em;
+  cursor: pointer;
+}
 
 body,
 html {
@@ -444,6 +451,7 @@ body {
     border-radius: 2em;
     opacity: 0.7;
     margin: 3% 0 0;
+    box-shadow: 10px 10px 12px 2px $contentBackground;
 
     .form {
       display: inline-flex;
@@ -485,6 +493,7 @@ body {
     border-radius: 0 0 15px 15px;
     overflow-y: auto;
     margin-bottom: 3%;
+    box-shadow: 10px 10px 12px 2px $contentBackground;
 
     * {
       color: black;
@@ -677,6 +686,7 @@ body {
         height: 100%;
         width: 100%;
         font-size: 1.05em;
+        box-shadow: 10px 10px 12px 2px $contentBackground;
       }
 
       .blank,
@@ -940,7 +950,7 @@ body {
     .linksContainer {
       min-width: 0;
       flex: 1;
-      overflow-y: hidden;
+      overflow-y: auto;
 
       a:visited {
         color: grey;
@@ -1007,18 +1017,108 @@ body {
 }
 
 .confirmation {
-  display: none;
   @include align(center, center);
   width: 100%;
   height: 100%;
   position: absolute;
   background-color: $contentBackground;
+  display: none;
+  z-index: 3;
 
   &__child {
-    width: 40%;
-    height: 30%;
-    background-color: rgba(0,0,0,0.5);
+    width: 50%;
+    height: 50%;
+    background-color: rgba(0,0,0,0.7);
     border-radius: 1em;
+    flex-direction: column;
+    box-shadow: 10px 10px 12px 2px $contentBackground;
+
+    &__content {
+      height: 75%;
+      flex-direction: column;
+
+      &__msg {
+        text-align: center;
+        font-style: italic;
+        font-size: 1.2em;
+        margin-top: 0;
+      }
+
+      .rssContainer,
+      .youtubeSearchContainer {
+        flex-direction: column;
+        font-size: 1.5em;
+        width: 50%;
+        height: max-content;
+        align-items: center;
+        align-self: center;
+        padding: 0.5em;
+        border: 1px solid white;
+        border-radius: 1em;
+      }
+
+      .contentOptions {
+        display: none;
+      }
+
+      .youtubeSearchContainer {
+        &__header p {
+          width: 100%;
+          text-align: center;
+        }
+
+        &__content {
+          justify-content: center;
+
+          &__input {
+            @include input-style();
+          }
+        }
+      }
+
+      .linksContainer {
+        display: flex;
+        flex-direction: column;
+        max-width: 100%;
+
+        .article {
+          .link {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            min-width: 0;
+          }
+        }
+
+        .article__desc {
+          display: none;
+        }
+      }
+    }
+
+    &__title {
+      width: 100%;
+      text-align: center;
+      font-size: 2em;
+    }
+
+    &__btnContainer {
+      align-self: end;
+      margin: 1em 0;
+
+      * {
+        @include btn-style();
+        width: max-content;
+      }
+
+      &__saveBtn {
+        background-color: green;
+      }
+
+      &__cancelBtn {
+        background-color: red;
+      }
+    }
   }
 }
 /* Responsive design */
