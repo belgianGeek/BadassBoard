@@ -1,12 +1,5 @@
 const addContentOptions = (element) => {
 
-  const restoreScroll = () => {
-    $('html, body').css({
-      overflow: '',
-      height: ''
-    });
-  }
-
   const emptyConfirmationContent = () => {
     // Empty the confirmation content
     $('.confirmation__child__content section').remove();
@@ -21,14 +14,10 @@ const addContentOptions = (element) => {
           .fadeIn()
           .css('display', 'flex');
 
-        console.log(`${element2remove}`, $(`${parent} ${element2remove}`).clone());
         $(element2remove).clone().appendTo('.confirmation__child__content');
 
         // Disable page scroll
-        $('html, body').css({
-          overflow: 'hidden',
-          height: '100%'
-        });
+        disableScroll();
 
         $('.confirmation__child__btnContainer__saveBtn').click(function() {
           $(element2remove).remove();

@@ -5,6 +5,9 @@ const showSettings = () => {
       $('.uploadWarning').remove();
     }
 
+    // restore page scroll
+    restoreScroll();
+
     $('.backgroundImage, header, .mainContainer').css('filter', 'none');
     $('.settings__container').fadeOut();
   }
@@ -20,8 +23,11 @@ const showSettings = () => {
   }
 
   $('.header__settingsBtn').click(() => {
-    $('.backgroundImage, header, .mainContainer')
-      .css('filter', 'blur(4px)');
+    $('.backgroundImage, header, .mainContainer').css('filter', 'blur(4px)');
+
+    // Disable page scroll
+    disableScroll();
+
     $('.settings__container')
       .fadeIn()
       .css('display', 'flex');

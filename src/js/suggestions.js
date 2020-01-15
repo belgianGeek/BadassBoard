@@ -89,6 +89,12 @@ const suggestions = [
     url: 'https://www.ldlc.com/fr-be/recherche/'
   },
   {
+    label: '!lg',
+    desc: 'Les Grignoux',
+    icon: './src/css/icons/suggestions/grignoux.png',
+    url: 'https://www.grignoux.be//fr/recherche?search='
+  },
+  {
     label: '!li',
     desc: 'LinkedIn',
     icon: './src/css/icons/suggestions/linkedin.ico',
@@ -152,6 +158,12 @@ const suggestions = [
     label: '!p',
     desc: 'Play a Youtube audio stream or playlist',
     icon: './src/css/icons/suggestions/play.svg'
+  },
+  {
+    label: '!r',
+    desc: 'Reddit',
+    icon: './src/css/icons/suggestions/reddit.webp',
+    url: 'https://www.reddit.com/search?q='
   },
   {
     label: '!rarbg',

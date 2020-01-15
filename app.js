@@ -381,6 +381,7 @@ app.get('/', (req, res) => {
                             if (kValue.element === feedData[i].element && kValue.parent === feedData[i].parent) {
                               // console.log(1);
                               value.elements.splice(k, 1, newElt);
+                              iAddElt++;
                             } else if (kValue.element !== feedData[i].element && kValue.parent === feedData[i].parent) {
                               if (iAddElt === 0) {
                                 // console.log(2);
@@ -394,6 +395,7 @@ app.get('/', (req, res) => {
                           // console.log(3);
                           // Append the new element to the "elements" settings array
                           value.elements.push(newElt);
+                          iAddElt++;
                         }
 
                         fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
