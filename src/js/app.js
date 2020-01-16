@@ -43,9 +43,13 @@ $.ajax({
             $('.backgroundImage').css('backgroundImage', `url(${settings.backgroundImage})`);
           },
           404: () => {
-            $('.msgContainer')
-              .text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
-              .fade('.msgContainer');
+            headStyle = `<style>.formContainer__container::before {background-image: url('./src/css/wallpaper.jpg');}</style>`;
+            $('head').append(headStyle);
+
+            $('.msgContainer').text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
+            fade('.msgContainer');
+
+            $('.backgroundImage').css('backgroundImage', '');
           }
         }
       })
