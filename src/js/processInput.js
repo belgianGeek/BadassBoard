@@ -40,28 +40,8 @@ const processInput = (msg) => {
           msg: `You pasted an invalid link. If you tried to paste a URL, try the video ID only`
         });
       }
-    } else if (msg.startsWith('!sv ')) {
-      // Extract the command to only keep the keywords
-      args.shift();
-
-      $.ajax({
-        url: `https://invidio.us/api/v1/search?q=${args.join(' ')}&language=json&type=video`,
-        method: 'GET',
-        dataType: 'json',
-        statusCode: {
-          200: (res) => {
-            let results = '';
-            for (let i = 0; i < 10; i++) {
-              results += `${i + 1}) ${res[i].title} - ${res[i].videoId}\n\n`;
-
-              if (i === 9) {
-                console.log(results);
-              }
-            }
-          }
-        }
-      });
     }
+
     if (msg.startsWith('!p ')) {
       // Play audio function
       if (msg.match(/[0-9A-Za-z_-]{11}/) && !msg.match(/[0-9A-Za-z_-]{15,34}/)) {

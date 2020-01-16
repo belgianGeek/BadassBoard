@@ -196,11 +196,6 @@ const suggestions = [
     url: 'https://stackoverflow.com/search?q='
   },
   {
-    label: '!sv',
-    desc: 'Instant video search',
-    icon: ''
-  },
-  {
     label: '!torrent',
     desc: 'Oxtorrent.com',
     icon: './src/css/icons/suggestions/torrent.ico',

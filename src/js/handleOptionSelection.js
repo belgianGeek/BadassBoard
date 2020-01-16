@@ -154,7 +154,7 @@ const handleOptionSelection = (parent, child) => {
 
                 let count = forecast.count;
 
-                if (count === 1) {
+                if (count !== 0) {
                   // Add content to the page
                   parseContent();
 

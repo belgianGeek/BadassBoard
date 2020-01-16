@@ -105,7 +105,7 @@ const showSettings = () => {
               console.log('page not found !');
             },
             200: () => {
-              console.log('upload successfull !');
+              console.log('Image upload successfull !');
             }
           },
           success: (res) => {
