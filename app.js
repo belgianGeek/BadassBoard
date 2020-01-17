@@ -96,7 +96,7 @@ const customize = (customizationData) => {
 }
 
 const readSettings = () => {
-  fs.readFile('./settings/settings.json', 'utf-8', (err, data) => {
+  fs.readFile(settingsPath, 'utf-8', (err, data) => {
     if (err) throw err;
     let settings;
     if (data !== undefined) {
@@ -616,6 +616,23 @@ app.get('/', (req, res) => {
           }
         });
       });
+
+      io.on('remove content', (content2remove) => {
+        fs.readFile(settingsPath, 'utf-8', (err, data) => {
+          if (!err) {
+            let settings = JSON.parse(data);
+
+            for (let i = 0; i < settings.elements.length; i++) {
+              let settingsElts = settings.elements[i];
+              for (let j = 0; i < settingsElts.length; j++) {
+                console.log(settingsElts[j].element);
+              }
+            }
+          } else {
+            console.log(`Error reading settings : ${err}`);
+          }
+        });
+      });
     });
   })
 
@@ -657,7 +674,7 @@ app.get('/', (req, res) => {
   .use((req, res, next) => {
     res.status(404).render('404.ejs');
     io.once('connection', (io) => {
-      fs.readFile('./settings/settings.json', 'utf-8', (err, data) => {
+      fs.readFile(settingsPath, 'utf-8', (err, data) => {
         if (err) throw err;
         let settings;
         if (data !== undefined) {

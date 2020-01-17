@@ -23,8 +23,6 @@ const addContentOptions = (element) => {
         disableScroll();
 
         $('.confirmation__child__btnContainer__saveBtn').click(function() {
-          $(element2remove).remove();
-
           // Restore page scroll
           restoreScroll();
 
@@ -38,12 +36,20 @@ const addContentOptions = (element) => {
           emptyConfirmationContent();
 
           $('.confirmation').fadeOut();
+
+          socket.emit('remove content', [{
+            parent: `.${$(parent).parent().attr('class').match(/content\d__container/)}`,
+            element: `.${$(parent).attr('class').match(/content\d{1,}/)}`
+          }]);
+
+          // Remove the content div
+          $(element2remove).remove();
         });
 
         $('.confirmation__child__btnContainer__cancelBtn').click(() => {
           restoreScroll();
           emptyConfirmationContent();
-          
+
           // Remove the blur
           $('.mainContainer').removeClass('blur');
           $('.confirmation').fadeOut();
