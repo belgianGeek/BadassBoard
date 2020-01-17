@@ -90,8 +90,8 @@ body .backgroundImage {
   margin-right: 0.5%;
 }
 .header__settingsBtn:hover {
-  transform: rotate(-720deg);
-  transition: transform 1000ms;
+  transform: rotate(-360deg);
+  transition: transform 1500ms;
 }
 
 .settings__container {

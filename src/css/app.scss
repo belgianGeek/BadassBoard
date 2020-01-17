@@ -126,8 +126,8 @@ body {
     margin-right: 0.5%;
 
     &:hover {
-      transform: rotate(-720deg);
-      transition: transform 1000ms;
+      transform: rotate(-360deg);
+      transition: transform 1500ms;
     }
   }
 }

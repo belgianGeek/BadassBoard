@@ -31,6 +31,16 @@ $.ajax({
   dataType: 'json'
 }).done(settings => {
   if (settings.backgroundImage !== undefined) {
+    const handle404ImageError = () => {
+      headStyle = `<style>.formContainer__container::before {background-image: url('./src/css/wallpaper.jpg');}</style>`;
+      $('head').append(headStyle);
+
+      $('.msgContainer').text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
+      fade('.msgContainer');
+
+      $('.backgroundImage').css('backgroundImage', '');
+    }
+
     $.ajax({
         url: settings.backgroundImage,
         method: 'GET',
@@ -43,22 +53,15 @@ $.ajax({
             $('.backgroundImage').css('backgroundImage', `url(${settings.backgroundImage})`);
           },
           404: () => {
-            headStyle = `<style>.formContainer__container::before {background-image: url('./src/css/wallpaper.jpg');}</style>`;
-            $('head').append(headStyle);
-
-            $('.msgContainer').text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
-            fade('.msgContainer');
-
-            $('.backgroundImage').css('backgroundImage', '');
+            handle404ImageError();
           }
         }
       })
-      .fail(() => {
+      .fail(err => {
         // CORS error handling
-        headStyle = `<style>.formContainer__container::before {background-image: url(${settings.backgroundImage});}</style>`;
-        $('head').append(headStyle);
-
-        $('.backgroundImage').css('backgroundImage', `url(${settings.backgroundImage})`);
+        if (err.statusText === 'error' && err.readyState === 0) {
+          handle404ImageError();
+        }
       });
   }
 
