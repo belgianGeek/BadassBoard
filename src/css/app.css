@@ -943,6 +943,7 @@ body .backgroundImage {
   font-size: 1.2em;
   margin-top: 0;
 }
+.confirmation__child__content .forecast,
 .confirmation__child__content .rssContainer,
 .confirmation__child__content .youtubeSearchContainer {
   flex-direction: column;
@@ -957,6 +958,47 @@ body .backgroundImage {
 }
 .confirmation__child__content .contentOptions {
   display: none;
+}
+.confirmation__child__content .forecast {
+  width: 40%;
+}
+.confirmation__child__content .forecast__header__title {
+  display: flex;
+  justify-content: center;
+}
+.confirmation__child__content .forecast__content {
+  width: 100%;
+}
+.confirmation__child__content .forecast__content__info {
+  flex-direction: column;
+  width: 50%;
+}
+.confirmation__child__content .forecast__content__info * {
+  display: flex;
+}
+.confirmation__child__content .forecast__content__info p {
+  margin: 0;
+}
+.confirmation__child__content .forecast__content__info span {
+  margin-top: 5%;
+  align-items: center;
+}
+.confirmation__child__content .forecast__content__info .forecastIcon {
+  width: 15%;
+  height: 100%;
+  justify-content: center;
+  margin-top: 0;
+  margin-right: 10%;
+  font-size: 1.5em;
+}
+.confirmation__child__content .forecast__weatherIcon {
+  width: 50%;
+  justify-content: end;
+  align-items: flex-start;
+}
+.confirmation__child__content .forecast__weatherIcon__icon {
+  font-size: 3.5em;
+  margin-right: 5%;
 }
 .confirmation__child__content .youtubeSearchContainer__header p {
   width: 100%;

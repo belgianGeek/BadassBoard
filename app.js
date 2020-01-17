@@ -191,7 +191,7 @@ app.use("/src", express.static(__dirname + "/src"))
   .use("/settings", express.static(__dirname + "/settings"))
   .use("/tmp", express.static(__dirname + "/tmp"))
 
-if (!ip.address().match(/169.254/)) {
+if (!ip.address().match(/169.254/) || !ip.address().match(/127.0/)) {
   console.log(`Hey ${username} ! You can connect to the web interface with your local IP (http://${ip.address()}:8080) or hostname (http://${os.hostname()}:8080).`);
 } else {
   console.log(`Sorry Dude, I won't work properly if I don't have access to the Internet. Please fix your connection and try again.`);
@@ -618,14 +618,31 @@ app.get('/', (req, res) => {
       });
 
       io.on('remove content', (content2remove) => {
+        console.log(JSON.stringify(content2remove, null, 2));
         fs.readFile(settingsPath, 'utf-8', (err, data) => {
           if (!err) {
             let settings = JSON.parse(data);
 
-            for (let i = 0; i < settings.elements.length; i++) {
-              let settingsElts = settings.elements[i];
-              for (let j = 0; i < settingsElts.length; j++) {
-                console.log(settingsElts[j].element);
+            for (const [i, settingsElts] of settings.elements.entries()) {
+              // Set a variable to stop the loop as soon as the element is removed
+              let found = false;
+              for (const [j, settingsElt] of settingsElts.elements.entries()) {
+                if (found !== true) {
+                  if (content2remove.parent === settingsElt.parent && content2remove.element === settingsElt.element) {
+                    console.log(JSON.stringify(settingsElt, null, 2));
+                    settingsElts.elements.splice(j, 1);
+                    console.log(JSON.stringify(settings, null, 2));
+
+                    fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), (err) => {
+                      if (!err) {
+                        found = true;
+                        console.log(`${settingsElt.parent} ${settingsElt.element} was removed`);
+                      } else {
+                        console.log(`Error updating settings : ${err}`);
+                      }
+                    });
+                  }
+                }
               }
             }
           } else {

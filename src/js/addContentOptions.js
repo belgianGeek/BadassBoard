@@ -37,10 +37,10 @@ const addContentOptions = (element) => {
 
           $('.confirmation').fadeOut();
 
-          socket.emit('remove content', [{
+          socket.emit('remove content', {
             parent: `.${$(parent).parent().attr('class').match(/content\d__container/)}`,
             element: `.${$(parent).attr('class').match(/content\d{1,}/)}`
-          }]);
+          });
 
           // Remove the content div
           $(element2remove).remove();
