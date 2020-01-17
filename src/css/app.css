@@ -609,6 +609,9 @@ body .backgroundImage {
   transform: rotate(360deg);
   transition: transform 1000ms;
 }
+.moreContent .content__container .content .flex {
+  display: flex;
+}
 .moreContent .content__container .content .invisible {
   display: none;
   opacity: 0;
