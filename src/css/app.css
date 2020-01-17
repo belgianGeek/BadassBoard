@@ -549,6 +549,12 @@ body .backgroundImage {
   text-align: center;
 }
 
+.audio.playlist .audioMsg,
+.audio.playlist .player {
+  width: 47%;
+  min-width: 47%;
+}
+
 .moreContent {
   justify-content: space-evenly;
   align-items: flex-start;

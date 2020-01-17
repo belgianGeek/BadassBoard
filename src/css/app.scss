@@ -612,6 +612,12 @@ body {
   }
 }
 
+.audio.playlist .audioMsg,
+.audio.playlist .player {
+  width: 47%;
+  min-width: 47%;
+}
+
 .moreContent {
   @include align(space-evenly, flex-start);
   @include flex-direction(row);

@@ -1,11 +1,4 @@
 const listen2Playlist = (data) => {
-  $('.audio').addClass('flex');
-
-  $('.audio__leftSvg, .audio__rightSvg').off();
-
-  // Remove the player on delete button click
-  hideContent('.audio__remove');
-
   if (data.videos[iPlaylist] === undefined) {
     printError({
       type: 'generic',
@@ -13,6 +6,13 @@ const listen2Playlist = (data) => {
     });
   } else {
     if (iPlaylist < data.videoCount && !data.videos[iPlaylist].title.match(/deleted video/gi) && data.videos[iPlaylist] !== undefined) {
+      // Remove the player on delete button click
+      hideContent('.audio__remove');
+
+      $('.audio').addClass('playlist flex');
+
+      $('.audio__leftSvg, .audio__rightSvg').off();
+
       // Adapt the .moreContent height so all the elements can fit on the page
       $('.moreContent').css('marginTop', 0);
 
@@ -118,6 +118,8 @@ const listen2Playlist = (data) => {
               .text('There is no track left in here... 😭')
               .addClass('audioMsg__playlistEnd')
               .prependTo('.audioMsg');
+
+            $('.audio').removeClass('playlist');
           }
 
           $('.audio').css('width', '50%');
