@@ -1,5 +1,5 @@
 // Store the current version number
-let currentVersion = '0.1.1';
+let currentVersion = '0.2.0';
 
 // Define a variable to store the ID of the currently played track
 let iPlaylist = 0;
@@ -32,7 +32,7 @@ $.ajax({
 }).done(settings => {
   if (settings.backgroundImage !== undefined) {
     const handle404ImageError = () => {
-      headStyle = `<style>.formContainer__container::before {background-image: url('./src/css/wallpaper.jpg');}</style>`;
+      headStyle = `<style>.formContainer__container::before {background-image: url('./src/css/wallpaper.png');}</style>`;
       $('head').append(headStyle);
 
       $('.msgContainer').text('Sorry, your background image couldn\'t be loaded... Maybe try another one')

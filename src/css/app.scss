@@ -20,7 +20,7 @@ $greenChecked: #20df3d;
   flex-direction: $direction;
 }
 @mixin background-image {
-  background-image: url("./wallpaper.jpg");
+  background-image: url("./wallpaper.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
