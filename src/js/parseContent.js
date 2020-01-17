@@ -6,8 +6,6 @@ const parseContent = () => {
     for (const [i, value] of parsedData.entries()) {
 
       const buildElement = (parent, element, iElement, callback) => {
-
-
         if (!$(element).length) {
           let container = $('<div></div>')
             .addClass(`content content${iElement}`)
@@ -260,7 +258,7 @@ const parseContent = () => {
                           .appendTo('.youtubeSearchContainer__content__results');
 
                         let thumbnailContainer = $('<div></div>')
-                          .addClass('youtubeSearchContainer__content__results__result__thumbnailContainer')
+                          .addClass('youtubeSearchContainer__content__results__result__thumbnailContainer flex')
                           .prependTo(result);
 
                         if (res[i].type !== 'channel' && res[i].type !== 'playlist') {

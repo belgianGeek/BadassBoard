@@ -618,7 +618,6 @@ app.get('/', (req, res) => {
       });
 
       io.on('remove content', (content2remove) => {
-        console.log(JSON.stringify(content2remove, null, 2));
         fs.readFile(settingsPath, 'utf-8', (err, data) => {
           if (!err) {
             let settings = JSON.parse(data);
@@ -629,14 +628,11 @@ app.get('/', (req, res) => {
               for (const [j, settingsElt] of settingsElts.elements.entries()) {
                 if (found !== true) {
                   if (content2remove.parent === settingsElt.parent && content2remove.element === settingsElt.element) {
-                    console.log(JSON.stringify(settingsElt, null, 2));
                     settingsElts.elements.splice(j, 1);
-                    console.log(JSON.stringify(settings, null, 2));
 
                     fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), (err) => {
                       if (!err) {
                         found = true;
-                        console.log(`${settingsElt.parent} ${settingsElt.element} was removed`);
                       } else {
                         console.log(`Error updating settings : ${err}`);
                       }

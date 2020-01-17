@@ -609,9 +609,6 @@ body .backgroundImage {
   transform: rotate(360deg);
   transition: transform 1000ms;
 }
-.moreContent .content__container .content .flex {
-  display: flex;
-}
 .moreContent .content__container .content .invisible {
   display: none;
   opacity: 0;
@@ -628,6 +625,12 @@ body .backgroundImage {
   height: 100%;
   width: 100%;
   font-size: 1.05em;
+}
+.moreContent .content__container .content .blank,
+.moreContent .content__container .content .forecast,
+.moreContent .content__container .content .rssContainer,
+.moreContent .content__container .content .youtubeSearchContainer,
+.moreContent .content__container .content .addContent {
   box-shadow: 10px 10px 12px 2px rgba(0, 0, 0, 0.5);
 }
 .moreContent .content__container .content .blank,
@@ -743,8 +746,14 @@ body .backgroundImage {
 .moreContent .content__container .content .youtubeSearchContainer__content__results__result {
   margin-bottom: 1.5em;
 }
+.moreContent .content__container .content .youtubeSearchContainer__content__results__result:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 0.5em;
+  border-radius: 1em;
+}
 .moreContent .content__container .content .youtubeSearchContainer__content__results__result__thumbnailContainer {
   width: 25%;
+  align-items: center;
 }
 .moreContent .content__container .content .youtubeSearchContainer__content__results__result__thumbnailContainer img {
   max-height: 100%;
@@ -753,7 +762,7 @@ body .backgroundImage {
 .moreContent .content__container .content .youtubeSearchContainer__content__results__result__content {
   flex-direction: column;
   width: 75%;
-  padding-left: 1em;
+  padding: 0 0.5em;
   font-size: 1.1em;
 }
 .moreContent .content__container .content .youtubeSearchContainer__content__results__result__content a {

@@ -683,10 +683,6 @@ body {
         }
       }
 
-      .flex {
-        display: flex;
-      }
-
       .invisible {
         display: none;
         opacity: 0;
@@ -704,6 +700,13 @@ body {
         height: 100%;
         width: 100%;
         font-size: 1.05em;
+      }
+
+      .blank,
+      .forecast,
+      .rssContainer,
+      .youtubeSearchContainer,
+      .addContent {
         box-shadow: 10px 10px 12px 2px $contentBackground;
       }
 
@@ -822,8 +825,15 @@ body {
             &__result {
               margin-bottom: 1.5em;
 
+              &:hover {
+                background-color: opacify($contentBackground, 0.2);
+                padding: 0.5em;
+                border-radius: 1em;
+              }
+
               &__thumbnailContainer {
                 width: 25%;
+                align-items: center;
 
                 img {
                   max-height: 100%;
@@ -834,7 +844,7 @@ body {
               &__content {
                 @include flex-direction();
                 width: 75%;
-                padding-left: 1em;
+                padding: 0 0.5em;
                 font-size: 1.1em;
 
                 a {
