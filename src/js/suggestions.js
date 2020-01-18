@@ -1,9 +1,9 @@
 const suggestions = [
   {
     label: '!1337x',
-    desc: '1337x.to',
+    desc: '1337x.am',
     icon: './src/css/icons/suggestions/1337x.ico',
-    url: 'https://1337x.to/search/'
+    url: 'https://www.1337x.am/search/'
   },
   {
     label: '!afr',

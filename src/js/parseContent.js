@@ -251,6 +251,28 @@ const parseContent = () => {
                       let resultContent = '';
                       let thumbnail = '';
 
+                      const getDuration = () => {
+                        let time = res[i].lengthSeconds;
+                        let minutes = Math.floor(time / 60);
+                        let seconds = time % 60;
+                        let hours = Math.floor(time / 3600);
+                        let totalTime = '';
+
+                        if (hours !== 0) {
+                          totalTime += `${hours}h `;
+                        }
+
+                        if (minutes !== 0 && minutes < 60) {
+                          totalTime += `${minutes}min. `;
+                        }
+
+                        if (seconds !== 0 && seconds < 60) {
+                          totalTime += `${seconds}s.`;
+                        }
+
+                        return totalTime;
+                      }
+
                       const processResults = () => {
                         let result = $('<span></span>')
                           .addClass(`youtubeSearchContainer__content__results__result youtube__result${i} flex`)
@@ -286,7 +308,7 @@ const parseContent = () => {
 
                         id = $('<p></p>').text(res[i].videoId).prepend('<u>Video ID</u> : ');
 
-                        duration = $('<p></p>').text(`${res[i].lengthSeconds} s.`).prepend('<u>Duration</u> : ');
+                        duration = $('<p></p>').text(getDuration()).prepend('<u>Duration</u> : ');
                       } else if (res[i].type === 'channel') {
                         title = $(`<a></a>`)
                           .attr('href', `https://invidio.us${res[i].authorUrl}`)

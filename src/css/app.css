@@ -748,10 +748,10 @@ body .backgroundImage {
 }
 .moreContent .content__container .content .youtubeSearchContainer__content__results__result {
   margin-bottom: 1.5em;
+  padding: 0.5em;
 }
 .moreContent .content__container .content .youtubeSearchContainer__content__results__result:hover {
   background-color: rgba(0, 0, 0, 0.7);
-  padding: 0.5em;
   border-radius: 1em;
 }
 .moreContent .content__container .content .youtubeSearchContainer__content__results__result__thumbnailContainer {
