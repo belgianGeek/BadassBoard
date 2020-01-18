@@ -47,12 +47,27 @@ const customize = (customizationData) => {
       const processNewSettings = (callback) => {
         if (customizationData.backgroundImage !== null && customizationData.backgroundImage !== undefined) {
           if (!customizationData.backgroundImage.match(/^http/)) {
-            // fs.rename(customizationData.backgroundImage, `./upload/wallpaper.${customizationData.backgroundImage.match(/[a-z]{1,4}$/im)}`, (err) => {
-            //   if (err) throw err;
-            // settings.backgroundImage = `./upload/wallpaper.${customizationData.backgroundImage.match(/[a-z]{1,4}$/im)}`;
-            // console.log(`file renamed : ./upload/wallpaper.${customizationData.backgroundImage.match(/[a-z]{1,4}$/im)}`);
-            // });
-            settings.backgroundImage = customizationData.backgroundImage;
+
+            // Remove the old wallpaper and rename the new
+            fs.unlink(settings.backgroundImage, (err) => {
+              if (!err || err.code === 'ENOENT') {
+                if (customizationData.backgroundImage.match(' ')) {
+                  let newFilename = customizationData.backgroundImage.split(' ').join('_');
+                  fs.rename(customizationData.backgroundImage, newFilename, (err) => {
+                    if (!err) {
+                      settings.backgroundImage = newFilename;
+                    } else {
+                      // Avoid errors saying the path does not exist after renaming
+                      if (err.code !== 'ENOENT') {
+                        console.log(`Error renaming background-image : ${err}`);
+                      }
+                    }
+                  });
+                } else {
+                  settings.backgroundImage = customizationData.backgroundImage;
+                }
+              }
+            })
           } else {
             settings.backgroundImage = customizationData.backgroundImage;
           }
@@ -72,25 +87,26 @@ const customize = (customizationData) => {
           settings.searchEngine = customizationData.searchEngine;
         }
 
-        callback();
+        setTimeout(() => {
+          callback();
+        }, 500);
       }
 
       processNewSettings(() => {
-        setTimeout(() => {
-          fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
-            if (err) throw err;
-            // console.log(`config saved : ${settings.backgroundImage}`);
-
+        fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
+          if (!err) {
             if (settings.backgroundImage !== null && settings.backgroundImage !== undefined) {
               io.emit('server settings updated', {
                 backgroundImage: settings.backgroundImage
               });
             }
-          });
-        }, 1000)
+          } else {
+            console.log(`Error updating settings after customization : ${err}`);
+          }
+        });
       });
     } else {
-      console.log(`File content is undefined !`);
+      console.log(`Settings file content is undefined !`);
     }
   });
 }
@@ -673,8 +689,6 @@ app.get('/', (req, res) => {
           res.render('home.ejs', {
             msg: `${req.file.originalname} successfully uploaded !`,
           });
-
-          customize(data);
         }
       } else if (err) {
         // console.log(JSON.stringify(req.file, null, 2));

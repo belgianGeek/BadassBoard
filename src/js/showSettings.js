@@ -105,7 +105,7 @@ const showSettings = () => {
               console.log('page not found !');
             },
             200: () => {
-              console.log('Image upload successfull !');
+              console.log(`${file.name} was uploaded successfully !`);
             }
           },
           success: (res) => {
@@ -117,7 +117,7 @@ const showSettings = () => {
             $('head').append(`<style>.formContainer__container::before {background-image: url(${updatedSettings.backgroundImage});}</style>`);
           },
           error: (err) => {
-            console.log(fd, file, `Error uploading file :\n${JSON.stringify(err, null, 2)}`);
+            console.log(fd, file, `Error uploading wallpaper :\n${JSON.stringify(err, null, 2)}`);
           }
         });
       }
@@ -162,17 +162,6 @@ const showSettings = () => {
         });
       }
 
-      if (updatedSettings.RSS !== undefined) {
-        // Reload the page if the RSS status is modified to be true
-        if (updatedSettings.RSS === true) {
-          // Send the updated RSS status to the server
-          socket.emit('customization', updatedSettings);
-          location.reload();
-        } else {
-          $('.moreContent').hide();
-        }
-      }
-
       if (checkboxState !== $('.toggleRss__Input').prop('checked')) {}
 
       if ($('.backgroundImageUploadForm__InputFile').val() === '' && $('.backgroundImageUploadForm__InputUrl').val() === '' && $('.owmToken__input').val() === '') {
@@ -201,6 +190,15 @@ const showSettings = () => {
 
       if ($('.uploadWarning').length) {
         $('.uploadWarning').remove();
+      }
+
+      if (updatedSettings.RSS !== undefined) {
+        // Reload the page if the RSS status is modified to be true
+        if (updatedSettings.RSS === true) {
+          location.reload();
+        } else {
+          $('.moreContent').hide();
+        }
       }
     }
   });

@@ -135,9 +135,8 @@ $(document).ready(() => {
     if (data !== null && data !== undefined) {
       $('.backgroundImage').css('background-image', `url(${data.backgroundImage})`);
 
-      $('.backgroundImage, header, .mainContainer').css('filter', 'none');
-
-      $('.settings').fadeOut();
+      headStyle = `<style>.formContainer__container::before {background-image: url(${data.backgroundImage});}</style>`;
+      $('head').append(headStyle);
     }
   });
 
