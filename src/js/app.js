@@ -1,5 +1,5 @@
 // Store the current version number
-let currentVersion = '0.2.0';
+let currentVersion = '0.2.1';
 
 // Define a variable to store the ID of the currently played track
 let iPlaylist = 0;

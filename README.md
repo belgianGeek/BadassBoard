@@ -4,7 +4,7 @@
 
 This project intent to be an open source, self-hosted replacement for services like _start.me_.
 
-Please not that this a project intented for me to LEARN. So do not exepect a beautifully amazing state-of-the-art stuff 😇. This might contains bugs or missing features you would LOVE to use. You're in that case ? Well, the deal is really simple : open a GitHub issue or email me 😉.
+Please not that this a project intented for me to LEARN. So do not exepect a beautifully amazing state-of-the-art stuff :innocent: . This might contains bugs or missing features you would LOVE to use. You're in that case ? Well, the deal is really simple : open a GitHub issue or email me :wink: .
 
 Its features includes :
 
@@ -25,7 +25,9 @@ You must have [Node.js](http://nodejs.org) installed on your system. If this is 
 
 Then, you can clone this repo or download the files using the download button in upper right corner of the main page, or by downloading the `.zip` file in the releases tab.
 
-Then, open a terminal/console in the project's root directory on your computer and install the dependencies by running the command `npm install` or `yarn install`.
+Once Node.js is installed, open a terminal/console in the project's root directory on your computer and install the dependencies by running the command `npm install` or `yarn install`.
+
+:point_right: **Please note that this last step won't work if you do not have Node.js installed**.
 
 # How to use it ?
 
