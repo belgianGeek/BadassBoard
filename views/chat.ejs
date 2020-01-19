@@ -4,8 +4,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Home</title>
+  <title>Chat</title>
   <link rel="icon" type="image/png" href="src/favicon.png">
+  <link rel="stylesheet" href="src/css/chat/chat.css">
 </head>
 
 <body>
@@ -13,11 +14,12 @@
   <div class="wrapper flex">
     <header class="header"></header>
     <main class="mainContainer flex">
-      <section class="msg flex">
+      <section class="msgContainer flex">
         <h1>Messages</h1>
-        <div class="msg__container flex">
-          <input class="msg__container__inputMsg" type="text" name="" value="" placeholder="Say something...">
-          <button class="msg__container__sendBtn" type="button" name="button">Send</button>
+        <div class="msgContainer__list flex"></div>
+        <div class="msgContainer__form flex">
+          <input class="msgContainer__form__inputMsg" type="text" name="" value="" placeholder="Say something...">
+          <button class="msgContainer__form__sendBtn" type="button" name="button">Send</button>
         </div>
       </section>
     </main>

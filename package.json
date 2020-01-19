@@ -6,9 +6,8 @@
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "start": "node app.js",
-    "sass": "sass ./src/css/app.scss:./src/css/app.css",
-    "minify-home": "node minify_home.js",
-    "minify-chat": "node minify_chat.js"
+    "sass": "sass ./src/css/home/app.scss:./src/css/home/app.css && sass ./src/css/chat/chat.scss:./src/css/chat/chat.css",
+    "minify": "node minify_home.js && node minify_chat.js"
   },
   "dependencies": {
     "ejs": "^2.6.2",
