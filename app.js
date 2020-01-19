@@ -665,6 +665,15 @@ app.get('/', (req, res) => {
     });
   })
 
+  .get('/chat', (req, res) => {
+    res.render('chat.ejs');
+
+    io.once('connection', io => {
+      io.on('chat msg', (msg) => {
+        console.log(msg);
+      });
+    })
+  })
   // Prompt the user to download the file
   .get('/download', (req, res) => {
     res.download(downloadedFile.path, downloadedFile.name, (err) => {

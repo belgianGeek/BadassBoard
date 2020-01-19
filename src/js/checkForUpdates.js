@@ -13,7 +13,7 @@ const checkForUpdates = () => {
             });
 
           $('.msgContainer')
-            .text('A new BadassBoard version is available ! Please click on the top left button to download the latest release 😉')
+            .text('A new BadassBoard version is available ! Please click on the top right button to download the latest release 😉')
             .fadeIn(2000);
 
           setTimeout(() => {

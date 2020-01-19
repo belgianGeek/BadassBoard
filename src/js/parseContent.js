@@ -259,15 +259,15 @@ const parseContent = () => {
                         let totalTime = '';
 
                         if (hours !== 0) {
-                          totalTime += `${hours}h `;
+                          totalTime += `${hours}:`;
                         }
 
                         if (minutes !== 0 && minutes < 60) {
-                          totalTime += `${minutes}min. `;
+                          totalTime += `${minutes}:`;
                         }
 
                         if (seconds !== 0 && seconds < 60) {
-                          totalTime += `${seconds}s.`;
+                          totalTime += `${seconds}`;
                         }
 
                         return totalTime;
