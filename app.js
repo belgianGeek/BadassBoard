@@ -454,35 +454,46 @@ app.get('/', (req, res) => {
         ];
 
         const manualAudioDownload = () => {
+          console.log(`Youtube-dl executable was not found... Using the manual download method.`);
           var info = ytdl.getInfo(id, (err, info) => {
-            if (err) throw err;
+            if (!err) {
+              let filename = info.player_response.videoDetails.title.replace(/[\/\\%:]/, '');
+              filename = `${filename}.mp3`;
 
-            let filename = info.player_response.videoDetails.title.replace(/[\/\\%:]/, '');
-            filename = `${filename}.mp3`;
+              let path = `${__dirname}\\src\\${filename}`;
 
-            let path = `${__dirname}\\src\\${filename}`;
+              // Create a file containing the stream
+              let audioFile = fs.createWriteStream(path);
 
-            // Create a file containing the stream
-            let audioFile = fs.createWriteStream(path);
+              let stream = ytdl(id, {
+                  filter: 'audioonly'
+                }, {
+                  quality: 'highestaudio'
+                })
+                .pipe(audioFile);
 
-            let stream = ytdl(id, {
-                filter: 'audioonly'
-              }, {
-                quality: 'highestaudio'
-              })
-              .pipe(audioFile);
+              stream.on('close', () => {
 
-            stream.on('close', () => {
-              // console.log(`I finished downloading ${filename} !`);
+                downloadedFile.path = path;
+                downloadedFile.name = filename;
 
-              downloadedFile.path = path;
-              downloadedFile.name = filename;
-
-              // Inform the client that the download ended
-              io.emit('download ended', {
-                title: info.player_response.videoDetails.title,
+                // Inform the client that the download ended
+                io.emit('download ended', {
+                  title: info.player_response.videoDetails.title,
+                });
               });
-            });
+            } else {
+              if (err.toString().match(/This video is unavailable/)) {
+                console.log(`Error downloading an audio file using the manual method : the video is unavailable`);
+
+                io.emit('errorMsg', {
+                  type: 'generic',
+                  msg: `Sorry, this video is not available for download...`
+                });
+              } else {
+                console.log(`Error downloading an audio file using the manual method : ${err.toString()}`);
+              }
+            }
           });
         }
 
