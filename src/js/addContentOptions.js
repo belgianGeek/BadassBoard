@@ -113,13 +113,13 @@ const addContentOptions = (element) => {
 
               displayArticleSummary();
 
-              $(`${parsedElt} .rssContainer__header`)
-                .mouseenter(() => {
-                  $(`${parsedElt} .contentOptions`).addClass('flex');
-                })
-                .mouseleave(() => {
-                  $(`${parsedElt} .contentOptions`).addClass('flex');
-                });
+              // $(`${parsedElt} .rssContainer__header`)
+              //   .mouseenter(() => {
+              //     $(`${parsedElt} .contentOptions`).addClass('flex');
+              //   })
+              //   .mouseleave(() => {
+              //     $(`${parsedElt} .contentOptions`).removeClass('flex');
+              //   });
             });
           });
         } else if (element.match(/forecast/i)) {
