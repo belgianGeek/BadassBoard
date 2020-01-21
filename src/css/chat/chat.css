@@ -71,6 +71,7 @@ header h1 {
   width: 70%;
   position: fixed;
   top: 90%;
+  height: 5%;
 }
 .mainContainer__form__inputMsg {
   background-color: transparent;
@@ -93,19 +94,20 @@ header h1 {
 }
 
 .msgContainer {
-  height: 100%;
+  height: 95%;
   align-items: center;
   font-size: 1.1em;
 }
 .msgContainer__list {
   width: 65%;
-  height: 82%;
+  height: 100%;
   flex-direction: column;
   align-self: start;
   margin-left: 3em;
   overflow: hidden;
   top: 3em;
-  position: fixed;
+  position: relative;
+  flex: 2;
 }
 .msgContainer__list .msg {
   width: max-content;
@@ -121,6 +123,7 @@ header h1 {
 }
 .msgContainer__list .reply {
   align-self: end;
+  margin-right: 1em;
 }
 .msgContainer__botInfo {
   height: 100%;
@@ -131,10 +134,8 @@ header h1 {
   background-color: rgba(0, 0, 0, 0.3);
   box-shadow: 0 0 1em black;
   font-size: 1.1em;
-  position: absolute;
   z-index: 1;
-  top: 0;
-  right: 0;
+  align-self: end;
 }
 
 /*# sourceMappingURL=chat.css.map */

@@ -685,18 +685,21 @@ app.get('/', (req, res) => {
     });
 
     io.once('connection', io => {
+      let reply = '';
+
       io.on('chat msg', msg => {
+        let functionAnswer;
         const getWeatherForecast = (msg) => {
-          let url = `https://api.openweathermap.org/data/2.5/find?q=${msg}&units=metric&lang=en&appid=9b013a34970de2ddd85f46ea9185dbc5`;
+          // Srtip accents and diacritics
+          let location = msg.normalize('NFD');
+          let url = `https://api.openweathermap.org/data/2.5/find?q=${location}&units=metric&lang=en&appid=9b013a34970de2ddd85f46ea9185dbc5`;
 
           request(url, function(err, res, body) {
             if (!err) {
               let result = JSON.parse(body);
               let count = result.count;
 
-              if (count === 0) {
-                return new Reply("Sorry, I can't find this place... Make sure of the location you have given me and retry...").send();
-              } else {
+              if (count !== 0) {
                 let previsions = {
                   temp: result.list[0].main.temp,
                   city: result.list[0].name,
@@ -707,6 +710,8 @@ app.get('/', (req, res) => {
 
                 return new Reply(`Currently in ${previsions.city}, the temperature is ${previsions.temp} C°, ${previsions.description}\n.
                   Humidity is about ${previsions.humidity}%, and the wind blows at ${previsions.windSpeed} km/h.`).send();
+              } else {
+                return new Reply("Sorry, I can't find this place... Make sure of the location you have given me and retry...").send();
               }
             } else {
               console.log(`Error getting weather forecast : ${err}`);
@@ -715,15 +720,30 @@ app.get('/', (req, res) => {
           });
         }
 
-        let reply = '';
         if (msg.content.match(new RegExp(`@${bot.name}`, 'i'))) {
-          reply = new Reply(`Hey ${msg.author} ! What can I do for you ?`).send();
+          reply = `Hey ${msg.author} ! What can I do for you ?`;
         } else if (msg.content.match(new RegExp(`weather forecast`, 'i'))) {
-          reply = new Reply(`Which city do you want to get the forecast ?`).send();
+          reply = '';
+          functionAnswer = new Reply(`Which city do you want to get the forecast for ?`).send();
+          let i = 0;
 
-          io.on('chat msg', msg => {
-            reply = getWeatherForecast(msg.content);
-          });
+          if (i < 1) {
+            io.on('chat msg', msg => {
+              reply = '';
+              functionAnswer = getWeatherForecast(msg.content);
+              i++;
+            });
+          }
+        } else {
+          if (functionAnswer !== undefined) {
+            reply = null;
+          }
+        }
+
+        if (reply !== '' && reply !== null) {
+          let answer = new Reply(reply).send();
+        } else if (reply === null) {
+          let answer = new Reply(`Sorry, I didn't understand you because I'm not clever enough for now...`).send();
         }
       });
     })

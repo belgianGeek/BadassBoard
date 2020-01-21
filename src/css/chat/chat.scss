@@ -102,6 +102,7 @@ header {
     width: 70%;
     position: fixed;
     top: 90%;
+    height:5%;
 
     &__inputMsg {
       @include input-style();
@@ -118,19 +119,20 @@ header {
 }
 
 .msgContainer {
-  height: 100%;
+  height: 95%;
   align-items: center;
   font-size: 1.1em;
 
   &__list {
     width: 65%;
-    height: 82%;
+    height: 100%;
     flex-direction: column;
     align-self: start;
     margin-left: 3em;
     overflow: hidden;
     top: 3em;
-    position: fixed;
+    position: relative;
+    flex: 2;
 
     .msg {
       width: max-content;
@@ -147,6 +149,7 @@ header {
 
     .reply {
       align-self: end;
+      margin-right: 1em;
     }
   }
 
@@ -158,9 +161,7 @@ header {
     background-color: rgba(0,0,0,0.3);
     box-shadow: 0 0 1em black;
     font-size: 1.1em;
-    position: absolute;
     z-index: 1;
-    top: 0;
-    right: 0;
+    align-self: end;
   }
 }
