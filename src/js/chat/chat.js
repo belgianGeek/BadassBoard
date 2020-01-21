@@ -41,7 +41,8 @@ $.ajax({
   }
 });
 
-$('.msgContainer__form__sendBtn').click(() => {
+$('.msgContainer__form').submit((event) => {
+  event.preventDefault();
   let msg = new Message();
   msg.send();
 });

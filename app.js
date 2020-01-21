@@ -188,6 +188,15 @@ const existPath = (path, callback) => {
   });
 }
 
+function Reply(content) {
+  this.author = 'Ava';
+  this.content = content;
+  this.dateTime = new Date();
+  this.send = function() {
+    io.emit('reply', this);
+  };
+}
+
 // Get current the logged in user name
 let username = os.userInfo().username;
 
@@ -670,7 +679,11 @@ app.get('/', (req, res) => {
 
     io.once('connection', io => {
       io.on('chat msg', (msg) => {
-        console.log(msg);
+        let reply = '';
+        if (msg.match('test')) {
+          reply = new Reply('Yes I heard you !');
+          reply.send();
+        }
       });
     })
   })

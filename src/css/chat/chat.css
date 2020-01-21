@@ -25,6 +25,12 @@ body .backgroundImage {
   background-attachment: fixed;
   background-color: rgba(0, 0, 0, 0.2);
 }
+body .backgroundColor {
+  background-color: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
 
 .flex {
   display: flex;
@@ -47,11 +53,27 @@ body .backgroundImage {
   flex-direction: column;
   align-items: center;
   justify-content: end;
+  font-size: 1.1em;
 }
 .msgContainer__list {
-  width: 100%;
+  width: 70%;
   height: 100%;
   flex-direction: column;
+  align-self: start;
+  margin-left: 3em;
+  overflow: auto;
+}
+.msgContainer__list .msg {
+  width: max-content;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 0.6em;
+  border-radius: 1em;
+  box-shadow: 0.3em 0.2em 0.2em black;
+  margin-top: 1em;
+  transition: opacity 700ms;
+}
+.msgContainer__list .reply {
+  align-self: end;
 }
 .msgContainer__form__inputMsg {
   background-color: transparent;
