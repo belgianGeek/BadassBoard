@@ -13,12 +13,24 @@
   border-bottom: 1px solid lightblue;
   max-width: 100%;
 }
+@mixin placeholder($color: lightgray) {
+  color: $color;
+  font-style: italic;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 @mixin btn-style($border: none) {
   border: $border;
   border-radius: 15px;
   padding: 0.7em;
   margin-right: 1.1em;
   cursor: pointer;
+}
+@mixin align($justify: start, $align: start) {
+  justify-content: $justify;
+  align-items: $align;
 }
 
 body,
@@ -50,7 +62,20 @@ body {
     background-color: rgba(0,0,0,0.6);
     width: 100%;
     height: 100%;
-    position: absolute;
+    position: fixed;
+  }
+}
+
+header {
+  z-index: 1;
+  font-size: 1.2em;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  h1 {
+    text-align: center;
   }
 }
 
@@ -61,6 +86,10 @@ body {
 .wrapper {
   height: 100vh;
   flex-direction: column;
+
+  ::placeholder {
+    @include placeholder();
+  }
 }
 
 .mainContainer {
@@ -68,41 +97,16 @@ body {
   height: 100%;
   z-index: 1;
   flex-direction: column;
-}
-
-.msgContainer {
-  height: 100%;
-  flex-direction: column;
-  align-items: center;
-  justify-content: end;
-  font-size: 1.1em;
-
-  &__list {
-    width: 70%;
-    height: 100%;
-    flex-direction: column;
-    align-self: start;
-    margin-left: 3em;
-    overflow: auto;
-
-    .msg {
-      width: max-content;
-      background-color: rgba(0,0,0,0.5);
-      padding: 0.6em;
-      border-radius: 1em;
-      box-shadow: 0.3em 0.2em 0.2em black;
-      margin-top: 1em;
-      transition: opacity 700ms;
-    }
-
-    .reply {
-      align-self: end;
-    }
-  }
 
   &__form {
+    width: 70%;
+    position: fixed;
+    top: 90%;
+
     &__inputMsg {
       @include input-style();
+      width: 90%;
+      margin-left: 3em;
     }
 
     &__sendBtn {
@@ -110,5 +114,53 @@ body {
       background-color: transparent;
       margin-left: 1em;
     }
+  }
+}
+
+.msgContainer {
+  height: 100%;
+  align-items: center;
+  font-size: 1.1em;
+
+  &__list {
+    width: 65%;
+    height: 82%;
+    flex-direction: column;
+    align-self: start;
+    margin-left: 3em;
+    overflow: hidden;
+    top: 3em;
+    position: fixed;
+
+    .msg {
+      width: max-content;
+      max-width: 45%;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 0.6em;
+      border-radius: 1em;
+      box-shadow: 0.3em 0.2em 0.2em black;
+      margin-top: 1em;
+      transition: opacity 700ms;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .reply {
+      align-self: end;
+    }
+  }
+
+  &__botInfo {
+    height: 100%;
+    width: 30%;
+    flex-direction: column;
+    @include align(center, center);
+    background-color: rgba(0,0,0,0.3);
+    box-shadow: 0 0 1em black;
+    font-size: 1.1em;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
   }
 }

@@ -13,23 +13,23 @@
   <div class="backgroundImage"></div>
   <div class="backgroundColor"></div>
   <div class="wrapper flex">
-    <header class="header"></header>
+    <header class="header">
+      <h1>Your conversation with <%=botName%></h1>
+    </header>
     <main class="mainContainer flex">
       <section class="msgContainer flex">
-        <h1>Messages</h1>
         <div class="msgContainer__list flex"></div>
-        <form class="msgContainer__form flex">
-          <input class="msgContainer__form__inputMsg" type="text" name="" value="" placeholder="Say something...">
-          <button class="msgContainer__form__sendBtn" type="submit" name="msgContainer__form__sendBtn">Send</button>
-        </form>
+        <section class="msgContainer__botInfo flex">
+          <img class="msgContainer__botInfo__icon" src="./src/css/chat/bot.png" alt="Bot icon">
+          <p><%=botName%></p>
+        </section>
       </section>
+      <form class="mainContainer__form flex">
+        <input class="mainContainer__form__inputMsg" type="text" name="" value="" placeholder="Say something...">
+        <button class="mainContainer__form__sendBtn" type="submit" name="mainContainer__form__sendBtn">Send</button>
+      </form>
     </main>
-    <footer class="footer flex">
-      <span class="icon">̿̿ ̿̿ ̿̿ ̿'̿'\̵͇̿̿\з= ( ▀ ͜͞ʖ▀) =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿</span>
-      <span class="credits flex">
-        <p>BadassBoard, proudly handmade in Belgium 🍺</p>
-      </span>
-    </footer>
+    <%- include('footer'); %>
   </div>
   <script src="https://code.jquery.com/jquery-3.4.1.min.js" charset="utf-8" type="application/javascript"></script>
   <script src="/socket.io/socket.io.js" type="application/javascript"></script>

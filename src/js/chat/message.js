@@ -1,13 +1,16 @@
 const Message = function() {
   this.author = 'Max';
-  this.content = $('.msgContainer__form__inputMsg').val();
+  this.content = $('.mainContainer__form__inputMsg').val();
   this.dateTime = new Date();
   this.send = function() {
-    let msgContainer = $('<span></span>')
-      .addClass('msg flex')
-      .text(`${this.content}`)
-      .appendTo('.msgContainer__list');
+    if (this.content !== null && this.content !== '') {
+      let msgContainer = $('<span></span>')
+        .addClass('msg flex')
+        .text(this.content)
+        .appendTo('.msgContainer__list');
 
-    socket.emit('chat msg', this.content);
+      socket.emit('chat msg', this);
+      $('.mainContainer__form__inputMsg').val('');
+    }
   }
 }

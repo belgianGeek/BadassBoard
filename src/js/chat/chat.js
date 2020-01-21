@@ -41,7 +41,7 @@ $.ajax({
   }
 });
 
-$('.msgContainer__form').submit((event) => {
+$('.mainContainer__form').submit((event) => {
   event.preventDefault();
   let msg = new Message();
   msg.send();
