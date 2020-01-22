@@ -745,13 +745,14 @@ app.get('/', (req, res) => {
         } else if (tempReply === 'forecast') {
           reply = getWeatherForecast(msg.content);
         } else if (tempReply === 'news') {
+          tempReply = '';
+          
           let answers = [
             'Nice to hear !',
             'Great !'
           ];
 
           reply = answers[Math.floor(Math.random() * answers.length)];
-          tempReply = '';
         }
 
         if (reply !== '') {
