@@ -41,8 +41,15 @@ $.ajax({
   }
 });
 
-$('.mainContainer__form').submit((event) => {
+$('.msgContainer__msgList__form').submit((event) => {
   event.preventDefault();
   let msg = new Message();
   msg.send();
 });
+
+$('.header__homeIcon').click(() => {
+  window.open('/');
+});
+
+// Define the message ID
+let msgID = 0;

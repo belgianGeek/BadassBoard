@@ -13,23 +13,26 @@
   <div class="backgroundImage"></div>
   <div class="backgroundColor"></div>
   <div class="wrapper flex">
-    <header class="header">
-      <h1>Your conversation with <%=botName%></h1>
+    <header class="header flex">
+      <svg class="header__homeIcon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9" />
+        <path d="M9 22V12h6v10M2 10.6L12 2l10 8.6" /></svg>
     </header>
     <main class="mainContainer flex">
       <section class="msgContainer flex">
-        <div class="msgContainer__list flex"></div>
+        <div class="msgContainer__msgList flex">
+          <div class="msgContainer__msgList__list flex"></div>
+          <form class="msgContainer__msgList__form flex">
+            <input class="msgContainer__msgList__form__inputMsg" type="text" name="" value="" placeholder="Say something...">
+            <button class="msgContainer__msgList__form__sendBtn" type="submit" name="msgContainer__msgList__form__sendBtn">Send</button>
+          </form>
+        </div>
         <section class="msgContainer__botInfo flex">
           <img class="msgContainer__botInfo__icon" src="./src/css/chat/bot.png" alt="Bot icon">
           <p><%=botName%></p>
         </section>
       </section>
-      <form class="mainContainer__form flex">
-        <input class="mainContainer__form__inputMsg" type="text" name="" value="" placeholder="Say something...">
-        <button class="mainContainer__form__sendBtn" type="submit" name="mainContainer__form__sendBtn">Send</button>
-      </form>
     </main>
-    <%- include('footer'); %>
   </div>
   <script src="https://code.jquery.com/jquery-3.4.1.min.js" charset="utf-8" type="application/javascript"></script>
   <script src="/socket.io/socket.io.js" type="application/javascript"></script>

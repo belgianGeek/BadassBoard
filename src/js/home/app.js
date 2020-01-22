@@ -169,6 +169,11 @@ $(document).ready(() => {
   // Get current mouse position
   getMousePosition();
 
+  // Redirect to the chat page
+  $('.header__chatBtn').click(() => {
+    window.open('/chat');
+  });
+
   // Dynamically show the footer
   $('.footer').mouseenter(() => {
     $('.credits').fadeIn();
