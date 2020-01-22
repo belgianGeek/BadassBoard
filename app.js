@@ -693,9 +693,9 @@ app.get('/', (req, res) => {
 
     io.once('connection', io => {
       let reply = '';
+      let tempReply = '';
 
       io.on('chat msg', msg => {
-        console.log(msg);
         const getWeatherForecast = (msg) => {
           // Strip accents and diacritics
           let location = msg.normalize('NFD');
@@ -715,10 +715,13 @@ app.get('/', (req, res) => {
                   windSpeed: result.list[0].wind.speed
                 };
 
-                reply = new Reply(`Currently in ${previsions.city}, the temperature is ${previsions.temp} C°, ${previsions.description}. ` +
+                tempReply = '';
+
+                return new Reply(`Currently in ${previsions.city}, the temperature is ${previsions.temp} C°, ${previsions.description}. ` +
                   `Humidity is about ${previsions.humidity}%, and the wind blows at ${previsions.windSpeed} km/h.`).send();
+
               } else {
-                reply = new Reply("Sorry, I can't find this place... Make sure of the location you have given me and retry...");
+                return new Reply("Sorry, I can't find this place... Make sure of the location you have given me and retry...").send();
               }
             } else {
               console.log(`Error getting weather forecast : ${err}`);
@@ -727,23 +730,32 @@ app.get('/', (req, res) => {
           });
         }
 
-        if (reply !== 'noReply') {
+        if (tempReply === '') {
           if (msg.content.match(new RegExp(`@${bot.name}`, 'i'))) {
             reply = `Hey ${msg.author} ! What can I do for you ?`;
           } else if (msg.content.match(new RegExp(`weather forecast`, 'i'))) {
             reply = `Which city do you want to get the forecast for ?`;
+            tempReply = 'forecast';
           } else if (msg.content.match(new RegExp('how are you', 'i'))) {
-            reply = 'noReply';
-            let tempReply = new Reply('Fine ! What about you ?').send();
+            reply = 'Fine, what about you ?';
+            tempReply = 'news';
+          } else {
+            reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
           }
-        } else {
-          reply = 'Nice to hear !';
+        } else if (tempReply === 'forecast') {
+          reply = getWeatherForecast(msg.content);
+        } else if (tempReply === 'news') {
+          let answers = [
+            'Nice to hear !',
+            'Great !'
+          ];
+
+          reply = answers[Math.floor(Math.random() * answers.length)];
+          tempReply = '';
         }
 
-        if (reply !== '' && reply !== 'noReply') {
+        if (reply !== '') {
           let answer = new Reply(reply).send();
-        } else if (reply === '') {
-          let answer = new Reply(`Sorry, I didn't understand you because I'm not clever enough for now...`).send();
         }
       });
     })
