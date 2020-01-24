@@ -20,7 +20,8 @@
     "request": "^2.88.0",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
-    "ytdl-core": "^1.0.6"
+    "ytdl-core": "^1.0.6",
+    "natural": "^0.6.3"
   },
   "devDependencies": {
     "minify": "^5.0.0",

@@ -40,6 +40,24 @@ const bot = {
   icon: './src/css/chat/bot.png'
 }
 
+const nlp = require('natural');
+const classifier = new nlp.BayesClassifier();
+
+classifier.addDocument('hi', 'greetings');
+classifier.addDocument('hey', 'greetings');
+classifier.addDocument('hello', 'greetings');
+classifier.addDocument('How how are you how you ?', 'news');
+classifier.addDocument("what's up", 'news');
+classifier.addDocument("what up", 'news');
+classifier.addDocument('what doing', 'activity');
+classifier.addDocument('what do doing', 'activity');
+classifier.addDocument('fuck', 'gross');
+classifier.addDocument('suck', 'gross');
+classifier.addDocument('current weather', 'weather');
+classifier.addDocument('forecast', 'weather');
+
+classifier.train();
+
 const customize = (customizationData) => {
   // console.log(JSON.stringify(customizationData, null, 2));
 
@@ -696,6 +714,7 @@ app.get('/', (req, res) => {
       let tempReply = '';
 
       io.on('chat msg', msg => {
+        console.log(classifier.getClassifications(msg.content));
         const getWeatherForecast = (msg) => {
           // Strip accents and diacritics
           let location = msg.normalize('NFD');
@@ -731,14 +750,18 @@ app.get('/', (req, res) => {
         }
 
         if (tempReply === '') {
-          if (msg.content.match(new RegExp(`@${bot.name}`, 'i'))) {
+          if (classifier.classify(msg.content) === 'greetings') {
             reply = `Hey ${msg.author} ! What can I do for you ?`;
-          } else if (msg.content.match(new RegExp(`weather forecast`, 'i'))) {
+          } else if (classifier.classify(msg.content) === 'weather') {
             reply = `Which city do you want to get the forecast for ?`;
             tempReply = 'forecast';
-          } else if (msg.content.match(new RegExp('how are you', 'i'))) {
+          } else if (classifier.classify(msg.content) === 'news') {
             reply = 'Fine, what about you ?';
             tempReply = 'news';
+          } else if (classifier.classify(msg.content) === 'activity') {
+            reply = `I'm just talking to you ${msg.author}.`;
+          } else if (classifier.classify(msg.content) === 'gross') {
+            reply = `Don't be so gross ${msg.author} !`;
           } else {
             reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
           }
@@ -746,7 +769,7 @@ app.get('/', (req, res) => {
           reply = getWeatherForecast(msg.content);
         } else if (tempReply === 'news') {
           tempReply = '';
-          
+
           let answers = [
             'Nice to hear !',
             'Great !'
