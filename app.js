@@ -54,13 +54,12 @@ nlp.BayesClassifier.load('classifier.json', null, function(err, classifier) {
 });
 
 // Greetings
-classifier.addDocument('hi hey hello', 'greetings');
+classifier.addDocument('hi hey hello ooo', 'greetings');
 
 // News
-classifier.addDocument('How how are you u ?', 'news');
-classifier.addDocument('hi hey hello what\'s up ?', 'news');
-classifier.addDocument('hi hey hello how are you ?', 'news');
-classifier.addDocument("what's up", 'news');
+classifier.addDocument('how are you u uuu', 'news');
+classifier.addDocument('hi hey hello what\'s up', 'news');
+classifier.addDocument('hi hey hello how are you', 'news');
 
 // Activities
 classifier.addDocument('what are u doing', 'activity');
@@ -68,8 +67,9 @@ classifier.addDocument('what are you doing', 'activity');
 classifier.addDocument('what do doing', 'activity');
 
 // Insults
-classifier.addDocument('suck', 'gross');
-classifier.addDocument(`bitch fuck shut up`, 'insult');
+classifier.addDocument('suck me', 'gross');
+classifier.addDocument(`fuck you u uuu`, 'insult');
+classifier.addDocument(`bitch fuck shup up`, 'insult');
 
 // Love
 classifier.addDocument(`I love you u`, 'love');
@@ -80,10 +80,19 @@ classifier.addDocument('weather forecast', 'weather');
 // Thanks
 classifier.addDocument('thanks you', 'thanks');
 
+// Jokes
+classifier.addDocument('tell me a joke', 'joke');
+classifier.addDocument('make me laugh', 'joke');
+
+// Wikipedia
+classifier.addDocument('define', 'wiki');
+classifier.addDocument('search for', 'wiki');
+classifier.addDocument('wiki wikipedia', 'wiki');
+
 classifier.train();
 
 console.log(classifier.getClassifications("how are you ?"));
-console.log(classifier.getClassifications("fine"));
+console.log(classifier.getClassifications("test"));
 
 const customize = (customizationData) => {
   // console.log(JSON.stringify(customizationData, null, 2));
@@ -807,6 +816,23 @@ app.get('/', (req, res) => {
           } else if (classifier.classify(msg.content) === 'thanks') {
             reply = `You're welcome ${msg.author} !`;
             msgTheme = 'thanks';
+          } else if (classifier.classify(msg.content) === 'joke') {
+            reply = `I don't have any jokes for now...`;
+            msgTheme = 'joke';
+          } else if (classifier.classify(msg.content) === 'wiki') {
+            let args = msg.content.split(' ');
+            msgTheme = 'wiki';
+
+            if (msg.content.startsWith('define')) {
+              args.shift();
+              request(`https://en.wikipedia.org/api/rest_v1/page/summary/${args.join('_')}?redirect=true`, (err, res, body) => {
+                if (!err) {
+                  reply = `According to Wikipedia, ${res.extract_html}`;
+                }
+              });
+            } else if (msg.content.startsWith('search for')) {
+              args.splice(0, 2);
+            }
           } else {
             reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
           }
@@ -826,9 +852,9 @@ app.get('/', (req, res) => {
         }
 
         if (reply !== '') {
-          let answer = new Reply(reply).send();
+          if (msgTheme !== 'function' && msgTheme !== 'wiki') {
+            let answer = new Reply(reply).send();
 
-          if (msgTheme !== 'function') {
             classifier.addDocument(msg.content, msgTheme);
             classifier.train();
 
@@ -840,6 +866,8 @@ app.get('/', (req, res) => {
                 console.log(`Error saving changes to the classifier : ${err}`);
               }
             });
+          } else if (msgTheme === 'wiki') {
+            let answer = new Reply(reply).sendHTML();
           }
         }
       });
