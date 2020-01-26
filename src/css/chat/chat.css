@@ -51,6 +51,7 @@ body .backgroundColor {
 .wrapper {
   height: 100vh;
   flex-direction: column;
+  position: fixed;
 }
 .wrapper ::placeholder {
   color: lightgray;
@@ -85,8 +86,9 @@ body .backgroundColor {
 .msgContainer__msgList__list {
   height: 100%;
   width: 100%;
-  padding-bottom: 1.5em;
+  margin-bottom: 1.5em;
   flex-direction: column;
+  overflow: auto;
 }
 .msgContainer__msgList__list .msg {
   width: max-content;

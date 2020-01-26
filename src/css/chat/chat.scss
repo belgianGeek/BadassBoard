@@ -86,6 +86,7 @@ body {
 .wrapper {
   height: 100vh;
   flex-direction: column;
+  position: fixed;
 
   ::placeholder {
     @include placeholder();
@@ -116,8 +117,9 @@ body {
     &__list {
       height: 100%;
       width: 100%;
-      padding-bottom: 1.5em;
+      margin-bottom: 1.5em;
       flex-direction: column;
+      overflow: auto;
 
       .msg {
         width: max-content;

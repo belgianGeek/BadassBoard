@@ -43,20 +43,47 @@ const bot = {
 const nlp = require('natural');
 const classifier = new nlp.BayesClassifier();
 
-classifier.addDocument('hi', 'greetings');
-classifier.addDocument('hey', 'greetings');
-classifier.addDocument('hello', 'greetings');
-classifier.addDocument('How how are you how you ?', 'news');
+nlp.BayesClassifier.load('classifier.json', null, function(err, classifier) {
+  if (!err) {
+    console.log('Classifier successfully loaded !');
+  } else {
+    if (err.code !== 'ENOENT') {
+      console.log(`Error calling classifier : ${JSON.stringify(err, null, 2)}`);
+    }
+  }
+});
+
+// Greetings
+classifier.addDocument('hi hey hello', 'greetings');
+
+// News
+classifier.addDocument('How how are you u ?', 'news');
+classifier.addDocument('hi hey hello what\'s up ?', 'news');
+classifier.addDocument('hi hey hello how are you ?', 'news');
 classifier.addDocument("what's up", 'news');
-classifier.addDocument("what up", 'news');
-classifier.addDocument('what doing', 'activity');
+
+// Activities
+classifier.addDocument('what are u doing', 'activity');
+classifier.addDocument('what are you doing', 'activity');
 classifier.addDocument('what do doing', 'activity');
-classifier.addDocument('fuck', 'gross');
+
+// Insults
 classifier.addDocument('suck', 'gross');
-classifier.addDocument('current weather', 'weather');
-classifier.addDocument('forecast', 'weather');
+classifier.addDocument(`bitch fuck shut up`, 'insult');
+
+// Love
+classifier.addDocument(`I love you u`, 'love');
+
+// Weather
+classifier.addDocument('weather forecast', 'weather');
+
+// Thanks
+classifier.addDocument('thanks you', 'thanks');
 
 classifier.train();
+
+console.log(classifier.getClassifications("how are you ?"));
+console.log(classifier.getClassifications("fine"));
 
 const customize = (customizationData) => {
   // console.log(JSON.stringify(customizationData, null, 2));
@@ -713,8 +740,12 @@ app.get('/', (req, res) => {
       let reply = '';
       let tempReply = '';
 
+      // Define the user request theme to avoid training the bot with unecessary data
+      // like city names or stupid stuff (msgTheme == 'function' in that case)
+      let msgTheme = '';
+
       io.on('chat msg', msg => {
-        console.log(classifier.getClassifications(msg.content));
+        // console.log(classifier.getClassifications(msg.content));
         const getWeatherForecast = (msg) => {
           // Strip accents and diacritics
           let location = msg.normalize('NFD');
@@ -752,23 +783,39 @@ app.get('/', (req, res) => {
         if (tempReply === '') {
           if (classifier.classify(msg.content) === 'greetings') {
             reply = `Hey ${msg.author} ! What can I do for you ?`;
+            msgTheme = 'greetings';
           } else if (classifier.classify(msg.content) === 'weather') {
             reply = `Which city do you want to get the forecast for ?`;
             tempReply = 'forecast';
+            msgTheme = 'weather';
           } else if (classifier.classify(msg.content) === 'news') {
-            reply = 'Fine, what about you ?';
+            reply = `I'm fine. What about you ?`;
             tempReply = 'news';
+            msgTheme = 'news';
           } else if (classifier.classify(msg.content) === 'activity') {
             reply = `I'm just talking to you ${msg.author}.`;
+            msgTheme = 'activity';
+          } else if (classifier.classify(msg.content) === 'love') {
+            reply = `Sorry ${msg.author}, I don't think human and robots can love each other...`;
+            msgTheme = 'love';
           } else if (classifier.classify(msg.content) === 'gross') {
             reply = `Don't be so gross ${msg.author} !`;
+            msgTheme = 'gross';
+          } else if (classifier.classify(msg.content) === 'insult') {
+            reply = `Didn't you Mother teach you politeness ?`;
+            msgTheme = 'insults';
+          } else if (classifier.classify(msg.content) === 'thanks') {
+            reply = `You're welcome ${msg.author} !`;
+            msgTheme = 'thanks';
           } else {
             reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
           }
         } else if (tempReply === 'forecast') {
           reply = getWeatherForecast(msg.content);
+          msgTheme = 'function';
         } else if (tempReply === 'news') {
           tempReply = '';
+          msgTheme = 'function';
 
           let answers = [
             'Nice to hear !',
@@ -780,6 +827,20 @@ app.get('/', (req, res) => {
 
         if (reply !== '') {
           let answer = new Reply(reply).send();
+
+          if (msgTheme !== 'function') {
+            classifier.addDocument(msg.content, msgTheme);
+            classifier.train();
+
+            console.log(classifier.classify(msg.content));
+            classifier.save('classifier.json', function(err, classifier) {
+              if (!err) {
+                console.log('Classifier updated !');
+              } else {
+                console.log(`Error saving changes to the classifier : ${err}`);
+              }
+            });
+          }
         }
       });
     })
