@@ -6,7 +6,20 @@ socket.on('reply', reply => {
         .text(reply.content)
         .appendTo('.msgContainer__msgList__list');
     }, 500);
+  };
+
+  reply.addEmbed = function() {
+    setTimeout(() => {
+      let replyElt = $('<span></span>')
+        .addClass('msg reply embed')
+        .append(reply.content)
+        .appendTo('.msgContainer__msgList__list');
+    }, 500);
   }
 
-  reply.add();
+  if (reply.theme !== 'embed') {
+    reply.add();
+  } else {
+    reply.addEmbed();
+  }
 });

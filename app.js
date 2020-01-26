@@ -252,11 +252,16 @@ let username = os.userInfo().username;
 
 let replyID = 0;
 
+// Define the user request theme to avoid training the bot with unecessary data
+// like city names or stupid stuff (msgTheme == 'function' in that case)
+let msgTheme = '';
+
 function Reply(content) {
   this.author = 'Ava';
   this.content = content;
   this.id = replyID;
   this.dateTime = new Date();
+  this.theme = msgTheme;
   this.send = function() {
     return new Promise((fullfill, reject) => {
       io.emit('reply', this);
@@ -749,10 +754,6 @@ app.get('/', (req, res) => {
       let reply = '';
       let tempReply = '';
 
-      // Define the user request theme to avoid training the bot with unecessary data
-      // like city names or stupid stuff (msgTheme == 'function' in that case)
-      let msgTheme = '';
-
       io.on('chat msg', msg => {
         // console.log(classifier.getClassifications(msg.content));
         const getWeatherForecast = (msg) => {
@@ -821,13 +822,16 @@ app.get('/', (req, res) => {
             msgTheme = 'joke';
           } else if (classifier.classify(msg.content) === 'wiki') {
             let args = msg.content.split(' ');
-            msgTheme = 'wiki';
+            msgTheme = 'embed';
 
             if (msg.content.startsWith('define')) {
               args.shift();
               request(`https://en.wikipedia.org/api/rest_v1/page/summary/${args.join('_')}?redirect=true`, (err, res, body) => {
                 if (!err) {
-                  reply = `According to Wikipedia, ${res.extract_html}`;
+                  let res = JSON.parse(body);
+                  reply = new Reply(`According to Wikipedia, <i>${res.extract}</i>`).send();
+                } else {
+                  console.log(`Error parsing Wikipedia API : ${err}`);
                 }
               });
             } else if (msg.content.startsWith('search for')) {
@@ -852,7 +856,7 @@ app.get('/', (req, res) => {
         }
 
         if (reply !== '') {
-          if (msgTheme !== 'function' && msgTheme !== 'wiki') {
+          if (msgTheme !== 'function') {
             let answer = new Reply(reply).send();
 
             classifier.addDocument(msg.content, msgTheme);
@@ -866,9 +870,9 @@ app.get('/', (req, res) => {
                 console.log(`Error saving changes to the classifier : ${err}`);
               }
             });
-          } else if (msgTheme === 'wiki') {
-            let answer = new Reply(reply).sendHTML();
           }
+        } else {
+          console.log(reply);
         }
       });
     })

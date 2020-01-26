@@ -90,6 +90,9 @@ body .backgroundColor {
   flex-direction: column;
   overflow: auto;
 }
+.msgContainer__msgList__list .embed * {
+  margin-top: 0.5em;
+}
 .msgContainer__msgList__list .msg {
   width: max-content;
   max-width: 45%;

@@ -121,6 +121,12 @@ body {
       flex-direction: column;
       overflow: auto;
 
+      .embed {
+        * {
+          margin-top: 0.5em;
+        }
+      }
+
       .msg {
         width: max-content;
         max-width: 45%;
