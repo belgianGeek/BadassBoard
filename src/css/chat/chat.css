@@ -141,7 +141,8 @@ body .backgroundColor {
   align-self: end;
 }
 .msgContainer__botInfo__icon {
-  max-width: 75%;
+  max-width: 50%;
+  max-height: 25%;
 }
 
 /*# sourceMappingURL=chat.css.map */

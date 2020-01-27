@@ -17,7 +17,7 @@ socket.on('reply', reply => {
     }, 500);
   }
 
-  if (reply.theme !== 'embed') {
+  if (reply.theme !== 'wiki') {
     reply.add();
   } else {
     reply.addEmbed();

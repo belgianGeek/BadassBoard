@@ -69,7 +69,7 @@ classifier.addDocument('what do doing', 'activity');
 // Insults
 classifier.addDocument('suck me', 'gross');
 classifier.addDocument(`fuck you u uuu`, 'insult');
-classifier.addDocument(`bitch fuck shup up`, 'insult');
+classifier.addDocument(`bitch fuck shut up`, 'insult');
 
 // Love
 classifier.addDocument(`I love you u`, 'love');
@@ -90,9 +90,6 @@ classifier.addDocument('search for', 'wiki');
 classifier.addDocument('wiki wikipedia', 'wiki');
 
 classifier.train();
-
-console.log(classifier.getClassifications("how are you ?"));
-console.log(classifier.getClassifications("test"));
 
 const customize = (customizationData) => {
   // console.log(JSON.stringify(customizationData, null, 2));
@@ -754,6 +751,8 @@ app.get('/', (req, res) => {
       let reply = '';
       let tempReply = '';
 
+      let welcomeMsg = new Reply(`Hi ! I'm ${bot.name}, how can I help you ?`).send();
+
       io.on('chat msg', msg => {
         // console.log(classifier.getClassifications(msg.content));
         const getWeatherForecast = (msg) => {
@@ -790,6 +789,20 @@ app.get('/', (req, res) => {
           });
         }
 
+        const searchWiki = (args, msg) => {
+          request(`https://en.wikipedia.org/api/rest_v1/page/summary/${args.join('_')}?redirect=true`, (err, res, body) => {
+            if (!err) {
+              let res = JSON.parse(body);
+              tempReply = '';
+              return new Reply(`According to Wikipedia, <i>${res.extract}</i>`).send();
+            } else {
+              tempReply = '';
+              console.log(`Error parsing Wikipedia API : ${err}`);
+              return new Reply(`Sorry, ${msg.author}, I was unable to complete your request. Please check the logs for details.`).send();
+            }
+          });
+        }
+
         if (tempReply === '') {
           if (classifier.classify(msg.content) === 'greetings') {
             reply = `Hey ${msg.author} ! What can I do for you ?`;
@@ -822,51 +835,54 @@ app.get('/', (req, res) => {
             msgTheme = 'joke';
           } else if (classifier.classify(msg.content) === 'wiki') {
             let args = msg.content.split(' ');
-            msgTheme = 'embed';
+            msgTheme = reply = 'wiki';
 
             if (msg.content.startsWith('define')) {
               args.shift();
-              request(`https://en.wikipedia.org/api/rest_v1/page/summary/${args.join('_')}?redirect=true`, (err, res, body) => {
-                if (!err) {
-                  let res = JSON.parse(body);
-                  reply = new Reply(`According to Wikipedia, <i>${res.extract}</i>`).send();
-                } else {
-                  console.log(`Error parsing Wikipedia API : ${err}`);
-                }
-              });
+              searchWiki(args, msg);
             } else if (msg.content.startsWith('search for')) {
               args.splice(0, 2);
+              searchWiki(args, msg);
+            } else {
+              reply = `Sorry ${msg.author}, I couldn't understand... What are you searching for ?`;
+              tempReply = 'wiki';
             }
           } else {
             reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
           }
-        } else if (tempReply === 'forecast') {
-          reply = getWeatherForecast(msg.content);
-          msgTheme = 'function';
-        } else if (tempReply === 'news') {
-          tempReply = '';
+        } else {
           msgTheme = 'function';
 
-          let answers = [
-            'Nice to hear !',
-            'Great !'
-          ];
+          if (tempReply === 'forecast') {
+            reply = getWeatherForecast(msg.content);
+          } else if (tempReply === 'news') {
+            tempReply = '';
 
-          reply = answers[Math.floor(Math.random() * answers.length)];
+            let answers = [
+              'Nice to hear !',
+              'Great !'
+            ];
+
+            reply = answers[Math.floor(Math.random() * answers.length)];
+          } else if (tempReply === 'wiki') {
+            let args = msg.content.split(' ');
+
+            // Modify the message theme to create the embed
+            msgTheme = 'wiki';
+            searchWiki(args, msg);
+            console.log(`reply : ${reply}`);
+          }
         }
 
-        if (reply !== '') {
+        if (reply !== '' && reply !== 'wiki') {
           if (msgTheme !== 'function') {
             let answer = new Reply(reply).send();
 
             classifier.addDocument(msg.content, msgTheme);
             classifier.train();
 
-            console.log(classifier.classify(msg.content));
             classifier.save('classifier.json', function(err, classifier) {
-              if (!err) {
-                console.log('Classifier updated !');
-              } else {
+              if (err) {
                 console.log(`Error saving changes to the classifier : ${err}`);
               }
             });
