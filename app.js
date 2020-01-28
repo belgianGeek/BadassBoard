@@ -251,7 +251,7 @@ let replyID = 0;
 
 // Define the user request theme to avoid training the bot with unecessary data
 // like city names or stupid stuff (msgTheme == 'function' in that case)
-let msgTheme = '';
+let msgTheme = 'none';
 
 function Reply(content) {
   this.author = 'Ava';
@@ -749,12 +749,11 @@ app.get('/', (req, res) => {
 
     io.once('connection', io => {
       let reply = '';
-      let tempReply = '';
+      let replyType = 'generic';
 
       let welcomeMsg = new Reply(`Hi ! I'm ${bot.name}, how can I help you ?`).send();
 
       io.on('chat msg', msg => {
-        // console.log(classifier.getClassifications(msg.content));
         const getWeatherForecast = (msg) => {
           // Strip accents and diacritics
           let location = msg.normalize('NFD');
@@ -774,7 +773,7 @@ app.get('/', (req, res) => {
                   windSpeed: result.list[0].wind.speed
                 };
 
-                tempReply = '';
+                replyType = 'generic';
 
                 return new Reply(`Currently in ${previsions.city}, the temperature is ${previsions.temp} C°, ${previsions.description}. ` +
                   `Humidity is about ${previsions.humidity}%, and the wind blows at ${previsions.windSpeed} km/h.`).send();
@@ -793,27 +792,43 @@ app.get('/', (req, res) => {
           request(`https://en.wikipedia.org/api/rest_v1/page/summary/${args.join('_')}?redirect=true`, (err, res, body) => {
             if (!err) {
               let res = JSON.parse(body);
-              tempReply = '';
-              return new Reply(`According to Wikipedia, <i>${res.extract}</i>`).send();
+              replyType = 'generic';
+
+              let reply = `According to Wikipedia, <i>${res.extract}</i>`;
+
+              // Check if the API entry exists
+              if (res.title !== 'Not found.') {
+                if (res.type === 'disambiguation') {
+                  reply += `<br>A disambiguation page is available here : <a href="${res.content_urls.desktop.page}">${res.title}</a>`;
+                } else {
+                  reply += `<br>More info : <a href="${res.content_urls.desktop.page}">${res.title}</a>`;
+                }
+
+                // Modify the message theme to create the embed
+                reply.theme = 'wiki';
+                return new Reply(reply).send();
+              } else {
+                return new Reply(`Sorry ${msg.author}, Wikipedia does not have any entry for this...`).send();
+              }
             } else {
-              tempReply = '';
+              replyType = 'generic';
               console.log(`Error parsing Wikipedia API : ${err}`);
               return new Reply(`Sorry, ${msg.author}, I was unable to complete your request. Please check the logs for details.`).send();
             }
           });
         }
 
-        if (tempReply === '') {
+        if (replyType === 'generic') {
           if (classifier.classify(msg.content) === 'greetings') {
             reply = `Hey ${msg.author} ! What can I do for you ?`;
             msgTheme = 'greetings';
           } else if (classifier.classify(msg.content) === 'weather') {
             reply = `Which city do you want to get the forecast for ?`;
-            tempReply = 'forecast';
+            replyType = 'forecast';
             msgTheme = 'weather';
           } else if (classifier.classify(msg.content) === 'news') {
             reply = `I'm fine. What about you ?`;
-            tempReply = 'news';
+            replyType = 'news';
             msgTheme = 'news';
           } else if (classifier.classify(msg.content) === 'activity') {
             reply = `I'm just talking to you ${msg.author}.`;
@@ -835,7 +850,7 @@ app.get('/', (req, res) => {
             msgTheme = 'joke';
           } else if (classifier.classify(msg.content) === 'wiki') {
             let args = msg.content.split(' ');
-            msgTheme = reply = 'wiki';
+            msgTheme = 'wiki';
 
             if (msg.content.startsWith('define')) {
               args.shift();
@@ -845,7 +860,7 @@ app.get('/', (req, res) => {
               searchWiki(args, msg);
             } else {
               reply = `Sorry ${msg.author}, I couldn't understand... What are you searching for ?`;
-              tempReply = 'wiki';
+              replyType = 'wiki';
             }
           } else {
             reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
@@ -853,10 +868,10 @@ app.get('/', (req, res) => {
         } else {
           msgTheme = 'function';
 
-          if (tempReply === 'forecast') {
+          if (replyType === 'forecast') {
             reply = getWeatherForecast(msg.content);
-          } else if (tempReply === 'news') {
-            tempReply = '';
+          } else if (replyType === 'news') {
+            replyType = 'generic';
 
             let answers = [
               'Nice to hear !',
@@ -864,35 +879,35 @@ app.get('/', (req, res) => {
             ];
 
             reply = answers[Math.floor(Math.random() * answers.length)];
-          } else if (tempReply === 'wiki') {
+          } else if (replyType === 'wiki') {
             let args = msg.content.split(' ');
 
-            // Modify the message theme to create the embed
-            msgTheme = 'wiki';
             searchWiki(args, msg);
-            console.log(`reply : ${reply}`);
           }
         }
 
-        if (reply !== '' && reply !== 'wiki') {
+        // Check if the reply is not empty before sending it
+        if (reply !== '') {
+          // Send the reply if it is not part of a function
           if (msgTheme !== 'function') {
             let answer = new Reply(reply).send();
 
+            // Add the last user message to classifier and train the bot with it
             classifier.addDocument(msg.content, msgTheme);
             classifier.train();
 
+            // Save the classifier for further usage
             classifier.save('classifier.json', function(err, classifier) {
               if (err) {
                 console.log(`Error saving changes to the classifier : ${err}`);
               }
             });
           }
-        } else {
-          console.log(reply);
         }
       });
     })
   })
+
   // Prompt the user to download the file
   .get('/download', (req, res) => {
     res.download(downloadedFile.path, downloadedFile.name, (err) => {

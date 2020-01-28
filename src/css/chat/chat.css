@@ -93,6 +93,10 @@ body .backgroundColor {
 .msgContainer__msgList__list .embed * {
   margin-top: 0.5em;
 }
+.msgContainer__msgList__list .embed a {
+  margin-left: 0.5em;
+  font-style: italic;
+}
 .msgContainer__msgList__list .msg {
   width: max-content;
   max-width: 45%;
