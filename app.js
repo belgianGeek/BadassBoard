@@ -53,6 +53,11 @@ nlp.BayesClassifier.load('classifier.json', null, function(err, classifier) {
   }
 });
 
+const rottenParser = require('./modules/rottenParser');
+rottenParser.getMovieReview('Ex Machina').then(data => {
+  console.log(data.title, data.rating);
+});
+
 // Greetings
 classifier.addDocument('hi hey hello ooo', 'greetings');
 
