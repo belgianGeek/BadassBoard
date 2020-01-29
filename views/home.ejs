@@ -93,48 +93,7 @@
         </div>
       </div>
     </main>
-    <div class="settings__container">
-      <div class="settings__child flex">
-        <span class="settings__child__header flex">
-          <h1>BadassBoard settings</h1>
-        </span>
-        <h2 class="settings__child__heading2 settings__child__heading">General</h2>
-        <span class="toggleRss flex">
-          <span class="toggleRss__Comment">Show the content containers on startup ?</span>
-          <label class="toggleRss__Switch">
-            <input class="toggleRss__Input" type="checkbox" name="toggleRssInput" value="">
-            <span class="toggleRss__Slider"></span>
-          </label>
-        </span>
-        <h2 class="settings__child__heading2 settings__child__heading">Search</h2>
-        <span class="searchEngineSelection flex">
-          <span class="searchEngineSelection__Comment flex">Which search engine do you want to use ?</span>
-          <select class="searchEngineSelection__select flex">
-            <option value="Bing">Bing</option>
-            <option value="DuckDuckGo">DuckDuckGo</option>
-            <option value="Ecosia">Ecosia</option>
-            <option value="Google">Google</option>
-            <option value="Qwant">Qwant</option>
-          </select>
-        </span>
-        <h2 class="settings__child__heading2 settings__child__heading">Customization</h2>
-        <form class="backgroundImageUploadForm flex" action="/" enctype="multipart/form-data" method="post">
-          <label for="backgroundImageUploadForm__label">This background is 🤮 !</label>
-          <button class="backgroundImageUploadForm__Btn" type="button" name="backgroundImageUploadBtn">Let's upload a BADASS picture !</button>
-          <input class="backgroundImageUploadForm__InputFile" type="file" name="backgroundImageUploadInput" accept="image/png, image/jpg">
-          <input class="backgroundImageUploadForm__InputUrl" type="text" name="backgroundImageUrl" value="" placeholder='I prefer pasting an URL'>
-        </form>
-        <h2 class="settings__child__heading2 settings__child__heading">Awesome features corner 😇</h2>
-        <span class="owmToken flex">
-          <span class="owmToken__Comment">So you want to use weather forecast feature ? You can update your OpenWeatherMap API token here :</span>
-          <input class="owmToken__input" type="text" name="owmToken__input" value="" placeholder="OpenWeatherMap API token">
-        </span>
-        <span class="settings__BtnContainer">
-          <button class="settings__child__cancelBtn" type="button" name="cancelSettings">Cancel</button>
-          <button class="settings__child__saveBtn" type="submit" name="saveSettings">Save settings</button>
-        </span>
-      </div>
-    </div>
+    <%- include('settings'); %>
     <div class="rssTooltip flex"></div>
     <div class="confirmation">
       <section class="confirmation__child flex">

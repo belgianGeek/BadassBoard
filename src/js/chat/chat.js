@@ -1,6 +1,9 @@
 //Websocket connection
 const socket = io();
 
+// Define the message ID
+let msgID = 0;
+
 // Get the background image from the settings and add it to the page
 $.ajax({
   url: './settings/settings.json',
@@ -51,5 +54,6 @@ $('.header__homeIcon').click(() => {
   window.open('/');
 });
 
-// Define the message ID
-let msgID = 0;
+$('.header__settingsBtn').click(() => {
+  showSettings();
+});

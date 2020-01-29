@@ -1,0 +1,195 @@
+.settings__container {
+  display: none;
+  width: 100%;
+  height: 100%;
+  @include align(center, center);
+  position: absolute;
+  font-size: 1em;
+  z-index: 3;
+
+  .settings__child {
+    @include align;
+    @include flex-direction;
+    width: 60%;
+    height: 85%;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 15px;
+    position: relative;
+    box-shadow: 10px 10px 12px 2px $contentBackground;
+
+    &__header {
+      @include flex-direction(row);
+      width: 100%;
+      margin: 1% 0 0 1%;
+
+      h1 {
+        font-size: 1.5em;
+        width: 100%;
+        text-align: center;
+        font-family: distant_galaxyregular;
+        margin-bottom: 0;
+      }
+    }
+
+    &__heading {
+      font-family: distant_galaxyregular;
+      margin: 2em 0 0 1em;
+    }
+
+    &__heading2 {
+      font-size: 1.3em;
+    }
+
+    .settings__BtnContainer {
+      position: absolute;
+      top: 92%;
+      width: 100%;
+      left: 0;
+      display: inline-flex;
+      justify-content: end;
+      -webkit-justify-content: flex-end;
+    }
+
+    &__cancelBtn,
+    &__saveBtn {
+      border: none;
+      border-radius: 15px;
+      padding: 0.7em;
+      margin-right: 1.1em;
+      cursor: pointer;
+    }
+
+    &__saveBtn {
+      background: green;
+    }
+
+    &__cancelBtn {
+      background: red;
+    }
+
+    .backgroundImageUploadForm,
+    .owmToken,
+    .searchEngineSelection,
+    .toggleRss {
+      @include flex-direction(row);
+      align-items: baseline;
+
+      & * {
+        font-size: 1.05em;
+      }
+    }
+
+    .owmToken__Comment {
+      margin-right: 1.5em;
+    }
+
+    .searchEngineSelection,
+    .toggleRss {
+      justify-content: space-between;
+      margin: 2em 0 0 1em;
+      width: 90%;
+
+      &__Comment {
+        width: 100%;
+      }
+
+      &__Switch {
+        position: absolute;
+        display: inline-block;
+        width: auto;
+        height: 100%;
+        left: 86%;
+      }
+
+      &__Slider {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: red;
+        transition: 0.4s;
+        border-radius: 2em;
+        height: 1.6em;
+        width: 3em;
+        cursor: pointer;
+
+        &:before {
+          position: absolute;
+          content: "";
+          height: 70%;
+          width: 45%;
+          bottom: 15%;
+          background-color: white;
+          transition: 0.4s;
+          border-radius: 50%;
+        }
+
+        &.checked:before {
+          left: 4px;
+        }
+
+        &.unchecked:before {
+          left: 4px;
+        }
+      }
+
+      &__Input {
+        display: none;
+
+        &:checked + .toggleRss__Slider {
+          background-color: $greenChecked;
+        }
+
+        &:focus + .toggleRss__Slider {
+          box-shadow: 0 0 1px $greenChecked;
+        }
+
+        &:checked + .toggleRss__Slider:before {
+          transform: translateX(26px);
+        }
+      }
+    }
+
+    .backgroundImageUploadForm {
+      margin: 2em 0 0 1em;
+      justify-content: space-between;
+      width: 90%;
+
+      &__Btn {
+        color: black;
+        border-radius: 15px;
+        border: none;
+        background-color: lightblue;
+        padding: 1%;
+        cursor: pointer;
+      }
+
+      &__InputFile {
+        display: none;
+      }
+
+      &__InputUrl {
+        @include input-style;
+      }
+    }
+
+    .owmToken {
+      justify-content: space-between;
+      margin: 2em 0 0 1em;
+      width: 90%;
+
+      &__input {
+        @include input-style;
+      }
+    }
+
+    .searchEngineSelection {
+      &__select,
+      &__select option {
+        color: black;
+        font-size: 1em;
+      }
+    }
+  }
+}

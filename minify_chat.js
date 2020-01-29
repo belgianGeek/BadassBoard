@@ -27,5 +27,27 @@ fs.readdir('./src/js/chat', (err, files) => {
         })
         .catch(console.error);
     }
+
+    minify('./src/js/home/showSettings.js').then((code) => {
+        fs.appendFile('./src/js/chat.min.js', code, (err) => {
+          if (err) {
+            console.log(`Error writing file : ${err}`);
+          } else {
+            console.log(`Successfully minified file : showSettings.js`);
+          }
+        });
+      })
+      .catch(console.error);
+
+    minify('./src/js/home/scroll.js').then((code) => {
+        fs.appendFile('./src/js/chat.min.js', code, (err) => {
+          if (err) {
+            console.log(`Error writing file : ${err}`);
+          } else {
+            console.log(`Successfully minified file : scroll.js`);
+          }
+        });
+      })
+      .catch(console.error);
   }
 });
