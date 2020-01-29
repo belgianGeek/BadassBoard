@@ -14,8 +14,9 @@
     height: 85%;
     background-color: rgba(0, 0, 0, 0.8);
     border-radius: 15px;
-    position: relative;
     box-shadow: 10px 10px 12px 2px $contentBackground;
+    overflow-y: auto;
+    overflow-x: hidden;
 
     &__header {
       @include flex-direction(row);
@@ -40,14 +41,17 @@
       font-size: 1.3em;
     }
 
+    &__heading3 {
+      font-size: 1.2em;
+    }
+
     .settings__BtnContainer {
-      position: absolute;
-      top: 92%;
       width: 100%;
-      left: 0;
       display: inline-flex;
-      justify-content: end;
+      justify-content: flex-end;
       -webkit-justify-content: flex-end;
+      margin-top: 1.5em;
+      padding-bottom: 1.5em;
     }
 
     &__cancelBtn,
@@ -68,11 +72,14 @@
     }
 
     .backgroundImageUploadForm,
+    .chatCustomizationForm,
     .owmToken,
     .searchEngineSelection,
     .toggleRss {
-      @include flex-direction(row);
-      align-items: baseline;
+      margin: 2em 0 0 1em;
+      justify-content: space-between;
+      width: 90%;
+      align-items: center;
 
       & * {
         font-size: 1.05em;
@@ -155,23 +162,26 @@
       margin: 2em 0 0 1em;
       justify-content: space-between;
       width: 90%;
+    }
 
-      &__Btn {
-        color: black;
-        border-radius: 15px;
-        border: none;
-        background-color: lightblue;
-        padding: 1%;
-        cursor: pointer;
-      }
+    .backgroundImageUploadForm__Btn,
+    .chatCustomizationForm__btn {
+      color: black;
+      border-radius: 15px;
+      border: none;
+      background-color: lightblue;
+      padding: 1%;
+      cursor: pointer;
+    }
 
-      &__InputFile {
-        display: none;
-      }
+    .backgroundImageUploadForm__InputFile,
+    .chatCustomizationForm__inputFile {
+      display: none;
+    }
 
-      &__InputUrl {
-        @include input-style;
-      }
+    .backgroundImageUploadForm__InputUrl,
+    .chatCustomizationForm__inputUrl {
+      @include input-style;
     }
 
     .owmToken {
