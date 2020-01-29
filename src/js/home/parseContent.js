@@ -160,7 +160,7 @@ const parseContent = () => {
                 .addClass('updateContentBtn')
                 .attr({
                   alt: 'Update content',
-                  src: './src/css/icons/interface/refresh.svg'
+                  src: './src/scss/icons/interface/refresh.svg'
                 })
                 .appendTo(contentOptions);
 
@@ -168,7 +168,7 @@ const parseContent = () => {
                 .addClass('removeContentBtn')
                 .attr({
                   alt: 'Remove content',
-                  src: './src/css/icons/interface/cross.svg'
+                  src: './src/scss/icons/interface/cross.svg'
                 })
                 .appendTo(contentOptions);
 
@@ -216,7 +216,7 @@ const parseContent = () => {
               .addClass('contentOptions__clearResultsbtn')
               .attr({
                 alt: 'Clear search results',
-                src: './src/css/icons/interface/clear.svg'
+                src: './src/scss/icons/interface/clear.svg'
               })
               .appendTo(contentOptions);
 
@@ -224,7 +224,7 @@ const parseContent = () => {
               .addClass('removeContentBtn')
               .attr({
                 alt: 'Remove content',
-                src: './src/css/icons/interface/cross.svg'
+                src: './src/scss/icons/interface/cross.svg'
               })
               .appendTo(contentOptions);
 

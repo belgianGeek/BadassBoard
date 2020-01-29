@@ -32,7 +32,7 @@ $.ajax({
 }).done(settings => {
   if (settings.backgroundImage !== undefined) {
     const handle404ImageError = () => {
-      headStyle = `<style>.formContainer__container::before {background-image: url('./src/css/wallpaper.png');}</style>`;
+      headStyle = `<style>.formContainer__container::before {background-image: url('./src/scss/wallpaper.png');}</style>`;
       $('head').append(headStyle);
 
       $('.msgContainer').text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
