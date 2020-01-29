@@ -6,7 +6,7 @@
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "start": "node app.js",
-    "sass": "sass ./src/css/home/app.scss:./src/css/home/app.css && sass ./src/css/chat/chat.scss:./src/css/chat/chat.css",
+    "sass": "sass ./src/scss/home/app.scss:./src/scss/home/app.css --style compressed && sass ./src/scss/chat/chat.scss:./src/scss/chat/chat.css --style compressed",
     "minify": "node minify_home.js && node minify_chat.js"
   },
   "dependencies": {
