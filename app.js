@@ -54,27 +54,29 @@ nlp.BayesClassifier.load('classifier.json', null, function(err, classifier) {
 });
 
 const rottenParser = require('./modules/rottenParser');
-rottenParser.getMovieReview('Ex Machina').then(data => {
-  console.log(data.title, data.rating);
-});
+// rottenParser.getMovieReview('Ex Machina').then(data => {
+//   console.log(data.title, data.rating);
+// });
 
 // Greetings
-classifier.addDocument('hi hey hello ooo', 'greetings');
+classifier.addDocument('hi hey hello', 'greetings');
 
 // News
-classifier.addDocument('how are you u uuu', 'news');
-classifier.addDocument('hi hey hello what\'s up', 'news');
-classifier.addDocument('hi hey hello how are you', 'news');
+classifier.addDocument('How are you ?', 'news');
+classifier.addDocument('What\'s up ?', 'news');
+classifier.addDocument('Hi how are you ?', 'news');
+classifier.addDocument('Hey what\'s up ?', 'news');
+classifier.addDocument('Hello how are you ?', 'news');
 
 // Activities
-classifier.addDocument('what are u doing', 'activity');
-classifier.addDocument('what are you doing', 'activity');
-classifier.addDocument('what do doing', 'activity');
+classifier.addDocument('Hey ! What are you doing ?', 'activity');
+classifier.addDocument('Hi, what are u doing ?', 'activity');
 
 // Insults
 classifier.addDocument('suck me', 'gross');
-classifier.addDocument(`fuck you u uuu`, 'insult');
-classifier.addDocument(`bitch fuck shut up`, 'insult');
+classifier.addDocument(`shut up`, 'insults');
+classifier.addDocument(`fuck you bitch !`, 'insults');
+classifier.addDocument(`go fuck yourself`, 'insults');
 
 // Love
 classifier.addDocument(`I love you u`, 'love');
@@ -83,18 +85,18 @@ classifier.addDocument(`I love you u`, 'love');
 classifier.addDocument('weather forecast', 'weather');
 
 // Thanks
-classifier.addDocument('thanks you', 'thanks');
+classifier.addDocument('thank u thanks you', 'thanks');
 
 // Jokes
 classifier.addDocument('tell me a joke', 'joke');
-classifier.addDocument('make me laugh', 'joke');
+classifier.addDocument('Make me laugh', 'joke');
 
 // Wikipedia
-classifier.addDocument('define', 'wiki');
-classifier.addDocument('search for', 'wiki');
-classifier.addDocument('wiki wikipedia', 'wiki');
+classifier.addDocument('define search wiki wikipedia', 'wiki');
 
 classifier.train();
+
+console.log(classifier.getClassifications('how are you'));
 
 const customize = (customizationData) => {
   // console.log(JSON.stringify(customizationData, null, 2));
@@ -759,6 +761,7 @@ app.get('/', (req, res) => {
       let welcomeMsg = new Reply(`Hi ! I'm ${bot.name}, how can I help you ?`).send();
 
       io.on('chat msg', msg => {
+        console.log(1, classifier.getClassifications(msg.content));
         const getWeatherForecast = (msg) => {
           // Strip accents and diacritics
           let location = msg.normalize('NFD');
@@ -900,6 +903,8 @@ app.get('/', (req, res) => {
             // Add the last user message to classifier and train the bot with it
             classifier.addDocument(msg.content, msgTheme);
             classifier.train();
+
+            console.log(2, classifier.getClassifications(msg.content));
 
             // Save the classifier for further usage
             classifier.save('classifier.json', function(err, classifier) {
