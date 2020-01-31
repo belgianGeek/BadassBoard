@@ -42,6 +42,8 @@ const bot = {
 
 const nlp = require('natural');
 const classifier = new nlp.BayesClassifier();
+const stemmer = nlp.PorterStemmer.attach();
+const tokenizer = new nlp.WordTokenizer();
 
 nlp.BayesClassifier.load('classifier.json', null, function(err, classifier) {
   if (!err) {
@@ -60,17 +62,30 @@ const rottenParser = require('./modules/rottenParser');
 
 // Greetings
 classifier.addDocument('hi hey hello', 'greetings');
+classifier.addDocument('hi', 'greetings');
+classifier.addDocument('hey', 'greetings');
+classifier.addDocument('hello', 'greetings');
 
 // News
 classifier.addDocument('How are you ?', 'news');
+classifier.addDocument('how are you ?', 'news');
 classifier.addDocument('What\'s up ?', 'news');
-classifier.addDocument('Hi how are you ?', 'news');
-classifier.addDocument('Hey what\'s up ?', 'news');
+classifier.addDocument('what\'s up ?', 'news');
 classifier.addDocument('Hello how are you ?', 'news');
+classifier.addDocument('hello, how are you ?', 'news');
+classifier.addDocument('hi how are you ?', 'news');
+classifier.addDocument('Hi, how are you ?', 'news');
+classifier.addDocument('hi, how are you ?', 'news');
+classifier.addDocument('Hey hey how are you ?', 'news');
+classifier.addDocument('Hi hi what\'s up ?', 'news');
+classifier.addDocument('Hey hey what\'s up ?', 'news');
+classifier.addDocument('Hello hello what\'s up ?', 'news');
 
 // Activities
+classifier.addDocument('Hey, what are you doing ?', 'activity');
 classifier.addDocument('Hey ! What are you doing ?', 'activity');
-classifier.addDocument('Hi, what are u doing ?', 'activity');
+classifier.addDocument('Hi ! What are u doing ?', 'activity');
+classifier.addDocument('Hi what are u doing ?', 'activity');
 
 // Insults
 classifier.addDocument('suck me', 'gross');
@@ -96,7 +111,7 @@ classifier.addDocument('define search wiki wikipedia', 'wiki');
 
 classifier.train();
 
-console.log(classifier.getClassifications('how are you'));
+console.log(classifier.getClassifications('bitch !'));
 
 const customize = (customizationData) => {
   // console.log(JSON.stringify(customizationData, null, 2));
@@ -847,7 +862,7 @@ app.get('/', (req, res) => {
           } else if (classifier.classify(msg.content) === 'gross') {
             reply = `Don't be so gross ${msg.author} !`;
             msgTheme = 'gross';
-          } else if (classifier.classify(msg.content) === 'insult') {
+          } else if (classifier.classify(msg.content) === 'insults') {
             reply = `Didn't you Mother teach you politeness ?`;
             msgTheme = 'insults';
           } else if (classifier.classify(msg.content) === 'thanks') {
@@ -862,10 +877,10 @@ app.get('/', (req, res) => {
 
             if (msg.content.startsWith('define')) {
               args.shift();
-              searchWiki(args, msg);
+              // searchWiki(args, msg);
             } else if (msg.content.startsWith('search for')) {
               args.splice(0, 2);
-              searchWiki(args, msg);
+              // searchWiki(args, msg);
             } else {
               reply = `Sorry ${msg.author}, I couldn't understand... What are you searching for ?`;
               replyType = 'wiki';
@@ -886,11 +901,11 @@ app.get('/', (req, res) => {
               'Great !'
             ];
 
-            reply = answers[Math.floor(Math.random() * answers.length)];
+            // reply = answers[Math.floor(Math.random() * answers.length)];
           } else if (replyType === 'wiki') {
             let args = msg.content.split(' ');
 
-            searchWiki(args, msg);
+            // searchWiki(args, msg);
           }
         }
 
@@ -900,8 +915,10 @@ app.get('/', (req, res) => {
           if (msgTheme !== 'function') {
             let answer = new Reply(reply).send();
 
+            let content = tokenizer.tokenize(msg.content);
+
             // Add the last user message to classifier and train the bot with it
-            classifier.addDocument(msg.content, msgTheme);
+            classifier.addDocument(content, msgTheme);
             classifier.train();
 
             console.log(2, classifier.getClassifications(msg.content));
