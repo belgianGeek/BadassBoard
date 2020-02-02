@@ -61,31 +61,72 @@ const rottenParser = require('./modules/rottenParser');
 // });
 
 // Greetings
-classifier.addDocument('hi hey hello', 'greetings');
-classifier.addDocument('hi', 'greetings');
-classifier.addDocument('hey', 'greetings');
-classifier.addDocument('hello', 'greetings');
+classifier.addDocument('Hi', 'greetings');
+classifier.addDocument('Hi', 'greetings');
+classifier.addDocument('Hi', 'greetings');
+classifier.addDocument('Hi', 'greetings');
+classifier.addDocument('Hi', 'greetings');
+classifier.addDocument('Hi', 'greetings');
+classifier.addDocument('Hey', 'greetings');
+classifier.addDocument('Hey', 'greetings');
+classifier.addDocument('Hey', 'greetings');
+classifier.addDocument('Hey', 'greetings');
+classifier.addDocument('Hey', 'greetings');
+classifier.addDocument('Hey', 'greetings');
+classifier.addDocument('Hello', 'greetings');
+classifier.addDocument('Hello', 'greetings');
+classifier.addDocument('Hello', 'greetings');
+classifier.addDocument('Hello', 'greetings');
 
 // News
 classifier.addDocument('How are you ?', 'news');
 classifier.addDocument('how are you ?', 'news');
+classifier.addDocument('How are you ?', 'news');
+classifier.addDocument('how are you ?', 'news');
+classifier.addDocument('What\'s up ?', 'news');
+classifier.addDocument('what\'s up ?', 'news');
 classifier.addDocument('What\'s up ?', 'news');
 classifier.addDocument('what\'s up ?', 'news');
 classifier.addDocument('Hello how are you ?', 'news');
-classifier.addDocument('hello, how are you ?', 'news');
 classifier.addDocument('hi how are you ?', 'news');
-classifier.addDocument('Hi, how are you ?', 'news');
-classifier.addDocument('hi, how are you ?', 'news');
-classifier.addDocument('Hey hey how are you ?', 'news');
-classifier.addDocument('Hi hi what\'s up ?', 'news');
-classifier.addDocument('Hey hey what\'s up ?', 'news');
-classifier.addDocument('Hello hello what\'s up ?', 'news');
+classifier.addDocument('hi how are you ?', 'news');
+classifier.addDocument('hi how are you ?', 'news');
+classifier.addDocument('hi how are you ?', 'news');
+classifier.addDocument('Hey how are you ?', 'news');
+classifier.addDocument('Hey how are you ?', 'news');
+classifier.addDocument('Hey how are you ?', 'news');
+classifier.addDocument('Hey how are you ?', 'news');
+classifier.addDocument('Hi what\'s up ?', 'news');
+classifier.addDocument('Hi what\'s up ?', 'news');
+classifier.addDocument('Hi what\'s up ?', 'news');
+classifier.addDocument('Hi what\'s up ?', 'news');
+classifier.addDocument('Hey what\'s up ?', 'news');
+classifier.addDocument('Hey what\'s up ?', 'news');
+classifier.addDocument('Hey what\'s up ?', 'news');
+classifier.addDocument('Hey what\'s up ?', 'news');
+classifier.addDocument('Hello what\'s up ?', 'news');
+classifier.addDocument('Hello what\'s up ?', 'news');
+classifier.addDocument('Hello what\'s up ?', 'news');
+classifier.addDocument('Hello what\'s up ?', 'news');
 
 // Activities
+classifier.addDocument('what are you doing ?', 'activity');
+classifier.addDocument('What are you doing ?', 'activity');
+classifier.addDocument('what are you doing ?', 'activity');
+classifier.addDocument('What are you doing ?', 'activity');
+classifier.addDocument('what are u doing ?', 'activity');
+classifier.addDocument('What are u doing ?', 'activity');
+classifier.addDocument('what are u doing ?', 'activity');
+classifier.addDocument('What are u doing ?', 'activity');
+classifier.addDocument('Hey, what are you doing ?', 'activity');
+classifier.addDocument('Hey ! What are you doing ?', 'activity');
 classifier.addDocument('Hey, what are you doing ?', 'activity');
 classifier.addDocument('Hey ! What are you doing ?', 'activity');
 classifier.addDocument('Hi ! What are u doing ?', 'activity');
 classifier.addDocument('Hi what are u doing ?', 'activity');
+classifier.addDocument('Hi ! What are u doing ?', 'activity');
+classifier.addDocument('Hi what are u doing ?', 'activity');
+
 
 // Insults
 classifier.addDocument('suck me', 'gross');
@@ -107,11 +148,30 @@ classifier.addDocument('tell me a joke', 'joke');
 classifier.addDocument('Make me laugh', 'joke');
 
 // Wikipedia
-classifier.addDocument('define search wiki wikipedia', 'wiki');
+classifier.addDocument('define', 'wiki');
+classifier.addDocument('define', 'wiki');
+classifier.addDocument('define', 'wiki');
+classifier.addDocument('Define', 'wiki');
+classifier.addDocument('Define', 'wiki');
+classifier.addDocument('Define', 'wiki');
+classifier.addDocument('Search for', 'wiki');
+classifier.addDocument('Search for', 'wiki');
+classifier.addDocument('Search for', 'wiki');
+classifier.addDocument('search for', 'wiki');
+classifier.addDocument('search for', 'wiki');
+classifier.addDocument('search for', 'wiki');
+classifier.addDocument('Wiki Wikipedia', 'wiki');
+classifier.addDocument('Wiki Wikipedia', 'wiki');
+classifier.addDocument('Wiki Wikipedia', 'wiki');
+classifier.addDocument('Wiki Wikipedia', 'wiki');
+classifier.addDocument('wiki wikipedia', 'wiki');
+classifier.addDocument('wiki wikipedia', 'wiki');
+classifier.addDocument('wiki wikipedia', 'wiki');
+classifier.addDocument('wiki wikipedia', 'wiki');
 
 classifier.train();
 
-console.log(classifier.getClassifications('bitch !'));
+console.log(classifier.classify('Hi !'));
 
 const customize = (customizationData) => {
   // console.log(JSON.stringify(customizationData, null, 2));
@@ -797,11 +857,13 @@ app.get('/', (req, res) => {
                 };
 
                 replyType = 'generic';
+                msgTheme = 'weather';
 
                 return new Reply(`Currently in ${previsions.city}, the temperature is ${previsions.temp} C°, ${previsions.description}. ` +
                   `Humidity is about ${previsions.humidity}%, and the wind blows at ${previsions.windSpeed} km/h.`).send();
 
               } else {
+                msgTheme = 'weather';
                 return new Reply("Sorry, I can't find this place... Make sure of the location you have given me and retry...").send();
               }
             } else {
@@ -809,6 +871,17 @@ app.get('/', (req, res) => {
             }
 
           });
+        }
+
+        const revertGreetings = (msg) => {
+          if (msg.content.match(/(how are (you|u)|what's up)/gi)) {
+            reply = `I'm fine. What about you ?`;
+            replyType = 'news';
+            msgTheme = 'news';
+          } else {
+            reply = `Hey ${msg.author} ! What can I do for you ?`;
+            msgTheme = 'greetings';
+          }
         }
 
         const searchWiki = (args, msg) => {
@@ -828,6 +901,7 @@ app.get('/', (req, res) => {
                 }
 
                 // Modify the message theme to create the embed
+                msgTheme = 'wiki';
                 reply.theme = 'wiki';
                 return new Reply(reply).send();
               } else {
@@ -843,16 +917,13 @@ app.get('/', (req, res) => {
 
         if (replyType === 'generic') {
           if (classifier.classify(msg.content) === 'greetings') {
-            reply = `Hey ${msg.author} ! What can I do for you ?`;
-            msgTheme = 'greetings';
+            revertGreetings(msg);
           } else if (classifier.classify(msg.content) === 'weather') {
             reply = `Which city do you want to get the forecast for ?`;
             replyType = 'forecast';
             msgTheme = 'weather';
           } else if (classifier.classify(msg.content) === 'news') {
-            reply = `I'm fine. What about you ?`;
-            replyType = 'news';
-            msgTheme = 'news';
+            revertGreetings(msg);
           } else if (classifier.classify(msg.content) === 'activity') {
             reply = `I'm just talking to you ${msg.author}.`;
             msgTheme = 'activity';
@@ -875,12 +946,12 @@ app.get('/', (req, res) => {
             let args = msg.content.split(' ');
             msgTheme = 'wiki';
 
-            if (msg.content.startsWith('define')) {
+            if (msg.content.match(/^define/i)) {
               args.shift();
-              // searchWiki(args, msg);
-            } else if (msg.content.startsWith('search for')) {
+              searchWiki(args, msg);
+            } else if (msg.content.match(/^search for/i)) {
               args.splice(0, 2);
-              // searchWiki(args, msg);
+              searchWiki(args, msg);
             } else {
               reply = `Sorry ${msg.author}, I couldn't understand... What are you searching for ?`;
               replyType = 'wiki';
@@ -895,17 +966,18 @@ app.get('/', (req, res) => {
             reply = getWeatherForecast(msg.content);
           } else if (replyType === 'news') {
             replyType = 'generic';
+            msgTheme = 'news';
 
             let answers = [
               'Nice to hear !',
               'Great !'
             ];
 
-            // reply = answers[Math.floor(Math.random() * answers.length)];
+            reply = answers[Math.floor(Math.random() * answers.length)];
           } else if (replyType === 'wiki') {
             let args = msg.content.split(' ');
 
-            // searchWiki(args, msg);
+            searchWiki(args, msg);
           }
         }
 
