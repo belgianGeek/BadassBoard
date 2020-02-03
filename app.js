@@ -37,7 +37,7 @@ server.listen(8080);
 
 const bot = {
   name: 'Ava',
-  icon: './src/css/chat/bot.png'
+  icon: './src/scss/chat/bot.png'
 }
 
 const nlp = require('natural');
