@@ -609,7 +609,8 @@ app.get('/', (req, res) => {
           id,
           '--youtube-skip-dash-manifest',
           '--embed-thumbnail',
-          '--add-metadata'
+          '--add-metadata',
+          '--verbose'
         ];
 
         const manualAudioDownload = () => {
@@ -657,22 +658,30 @@ app.get('/', (req, res) => {
 
           download.on('close', () => {
 
-            filename = downloadLog
-              .match(/((.|)(\/|\\|)tmp(\/|\\)\w.+\.mp3)/i)[1]
-              .substring(1, 100);
+            if (downloadLog !== undefined) {
+              filename = downloadLog
+                .match(/((.|)(\/|\\|)tmp(\/|\\)\w.+\.mp3)/i)[1]
+                .substring(1, 100);
 
-            if (os.platform() === 'Win32') {
-              downloadedFile.path = `${__dirname}\\${filename}`;
-            } else if (os.platform() === 'linux') {
-              downloadedFile.path = `${__dirname}${filename}`;
+              if (os.platform() === 'Win32') {
+                downloadedFile.path = `${__dirname}\\${filename}`;
+              } else if (os.platform() === 'linux') {
+                downloadedFile.path = `${__dirname}${filename}`;
+              }
+
+              downloadedFile.name = filename;
+
+              // Inform the client that the download ended
+              io.emit('download ended', {
+                title: downloadedFile.name
+              });
+            } else {
+              io.emit('errorMsg', {
+                type: 'generic',
+                msg: `Sorry, this video couldn't be downloaded... Unable to retrieve filename.`
+              });
+              console.log(`Sorry, this video couldn't be downloaded... Unable to retrieve filename.`);
             }
-
-            downloadedFile.name = filename;
-
-            // Inform the client that the download ended
-            io.emit('download ended', {
-              title: downloadedFile.name
-            });
           });
         }
 
@@ -682,6 +691,10 @@ app.get('/', (req, res) => {
               if (err.code === 'ENOENT') {
                 manualAudioDownload();
               } else {
+                io.emit('errorMsg', {
+                  type: 'generic',
+                  msg: `Error downloading file without Youtube-dl. Please check the logs for details.`
+                });
                 console.log(`Error downloading file without Youtube-dl : ${err}`);
               }
             } else {
@@ -694,6 +707,10 @@ app.get('/', (req, res) => {
               if (err.code === 'ENOENT') {
                 manualAudioDownload();
               } else {
+                io.emit('errorMsg', {
+                  type: 'generic',
+                  msg: `Error downloading file without Youtube-dl. Please check the logs for details.`
+                });
                 console.log(`Error downloading file without Youtube-dl : ${err}`);
               }
             } else {
