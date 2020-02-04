@@ -1,6 +1,6 @@
 const request = require('request');
-const cheerio = require('cheerio');
-const jquery = require('jquery');
+let $ = require('cheerio');
+const puppeteer = require('puppeteer');
 
 module.exports = {
   getMovieReview: function(title) {
@@ -11,7 +11,7 @@ module.exports = {
         if (err) throw err;
 
         if (!err && response.statusCode === 200) {
-          const $ = cheerio.load(body);
+          $ = $.load(body);
 
           let rottenTitle = $('.mop-ratings-wrap__title--top').text();
           let rottenRating = $('#tomato_meter_link .mop-ratings-wrap__percentage').text().trim();
@@ -32,6 +32,46 @@ module.exports = {
           reject(new Error(`Page not found !`));
         }
       });
+    });
+  },
+  getOpenings: function() {
+    const url = `https://www.rottentomatoes.com/browse/opening/`;
+    return new Promise((fullfill, reject) => {
+      puppeteer
+        .launch()
+        .then(browser => {
+          return browser.newPage();
+        })
+        .then(page => {
+          return page.goto(url)
+            .then(() => {
+              return page.content();
+            });
+        })
+        .then(html => {
+          let openingMovies = [];
+
+          // Avoid ES6 because it breaks $(this)...
+          $('.mb-movies .mb-movie', html).each(function() {
+            let movie = {};
+
+            movie.link = `https://www.rottentomatoes.com/${$(this).find('.movie_info a').attr('href')}`;
+            movie.poster = $(this).find('.poster_container img').attr('src');
+            movie.releaseDate = $(this).find('.release-date').text();
+            movie.title = $(this).find('.movieTitle').text();
+
+            // Define the movie score
+            if ($(this).find('.movie_info .tMeterScore').length) {
+              movie.score = $(this).find('.movie_info .tMeterScore').text();
+            } else {
+              movie.score = 'No consensus yet...';
+            }
+
+            openingMovies.push(movie);
+          });
+
+          fullfill(openingMovies);
+        });
     });
   }
 }
