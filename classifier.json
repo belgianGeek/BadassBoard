@@ -1,1 +1,355 @@
-{"classifier":{"classFeatures":{"greetings":{"0":7,"1":7,"2":5},"news":{"0":9,"1":9,"2":6},"activity":{"0":5,"1":5},"gross":{"3":2},"insults":{"4":2,"5":3,"6":2,"7":2},"love":{"8":2},"weather":{"9":2,"10":2},"thanks":{"11":2},"joke":{"12":2,"13":2,"14":2},"wiki":{"15":7,"16":7,"17":9,"18":9}},"classTotals":{"greetings":17,"news":22,"activity":9,"gross":2,"insults":4,"love":2,"weather":2,"thanks":2,"joke":3,"wiki":21},"totalExamples":75,"smoothing":1},"docs":[{"label":"greetings","text":["hi"]},{"label":"greetings","text":["hi"]},{"label":"greetings","text":["hi"]},{"label":"greetings","text":["hi"]},{"label":"greetings","text":["hi"]},{"label":"greetings","text":["hi"]},{"label":"greetings","text":["hei"]},{"label":"greetings","text":["hei"]},{"label":"greetings","text":["hei"]},{"label":"greetings","text":["hei"]},{"label":"greetings","text":["hei"]},{"label":"greetings","text":["hei"]},{"label":"greetings","text":["hello"]},{"label":"greetings","text":["hello"]},{"label":"greetings","text":["hello"]},{"label":"greetings","text":["hello"]},{"label":"news","text":["hello"]},{"label":"news","text":["hi"]},{"label":"news","text":["hi"]},{"label":"news","text":["hi"]},{"label":"news","text":["hi"]},{"label":"news","text":["hei"]},{"label":"news","text":["hei"]},{"label":"news","text":["hei"]},{"label":"news","text":["hei"]},{"label":"news","text":["hi"]},{"label":"news","text":["hi"]},{"label":"news","text":["hi"]},{"label":"news","text":["hi"]},{"label":"news","text":["hei"]},{"label":"news","text":["hei"]},{"label":"news","text":["hei"]},{"label":"news","text":["hei"]},{"label":"news","text":["hello"]},{"label":"news","text":["hello"]},{"label":"news","text":["hello"]},{"label":"news","text":["hello"]},{"label":"activity","text":["hei"]},{"label":"activity","text":["hei"]},{"label":"activity","text":["hei"]},{"label":"activity","text":["hei"]},{"label":"activity","text":["hi"]},{"label":"activity","text":["hi"]},{"label":"activity","text":["hi"]},{"label":"activity","text":["hi"]},{"label":"gross","text":["suck"]},{"label":"insults","text":["shut"]},{"label":"insults","text":["fuck","bitch"]},{"label":"insults","text":["go","fuck"]},{"label":"love","text":["love"]},{"label":"weather","text":["weather","forecast"]},{"label":"thanks","text":["thank","thank"]},{"label":"joke","text":["tell","joke"]},{"label":"joke","text":["laugh"]},{"label":"wiki","text":["defin"]},{"label":"wiki","text":["defin"]},{"label":"wiki","text":["defin"]},{"label":"wiki","text":["defin"]},{"label":"wiki","text":["defin"]},{"label":"wiki","text":["defin"]},{"label":"wiki","text":["search"]},{"label":"wiki","text":["search"]},{"label":"wiki","text":["search"]},{"label":"wiki","text":["search"]},{"label":"wiki","text":["search"]},{"label":"wiki","text":["search"]},{"label":"wiki","text":["wiki","wikipedia"]},{"label":"wiki","text":["wiki","wikipedia"]},{"label":"wiki","text":["wiki","wikipedia"]},{"label":"wiki","text":["wiki","wikipedia"]},{"label":"wiki","text":["wiki","wikipedia"]},{"label":"wiki","text":["wiki","wikipedia"]},{"label":"wiki","text":["wiki","wikipedia"]},{"label":"wiki","text":["wiki","wikipedia"]}],"features":{"hi":18,"hei":18,"hello":9,"suck":1,"shut":1,"fuck":2,"bitch":1,"go":1,"love":1,"weather":1,"forecast":1,"thank":2,"tell":1,"joke":1,"laugh":1,"defin":6,"search":6,"wiki":8,"wikipedia":8},"stemmer":{},"lastAdded":74,"events":{"_events":{},"_eventsCount":0}}
+{
+  "classifier": {
+    "classFeatures": {
+      "greetings": {
+        "0": 7,
+        "1": 7,
+        "2": 5
+      },
+      "news": {
+        "0": 9,
+        "1": 9,
+        "2": 6,
+        "19": 2,
+        "20": 2,
+        "21": 2,
+        "22": 2
+      },
+      "activity": {
+        "0": 5,
+        "1": 5
+      },
+      "gross": {
+        "3": 2
+      },
+      "insults": {
+        "4": 2,
+        "5": 3,
+        "6": 2,
+        "7": 2
+      },
+      "love": {
+        "8": 2
+      },
+      "weather": {
+        "9": 3,
+        "10": 2,
+        "19": 2,
+        "26": 2,
+        "27": 2,
+        "28": 2,
+        "29": 2,
+        "30": 2
+      },
+      "thanks": {
+        "11": 2,
+        "31": 2
+      },
+      "joke": {
+        "12": 2,
+        "13": 2,
+        "14": 2
+      },
+      "wiki": {
+        "15": 7,
+        "16": 8,
+        "17": 9,
+        "18": 9,
+        "21": 2,
+        "23": 2,
+        "24": 2,
+        "25": 2
+      }
+    },
+    "classTotals": {
+      "greetings": 17,
+      "news": 24,
+      "activity": 9,
+      "gross": 2,
+      "insults": 4,
+      "love": 2,
+      "weather": 3,
+      "thanks": 3,
+      "joke": 3,
+      "wiki": 22
+    },
+    "totalExamples": 80,
+    "smoothing": 1
+  },
+  "docs": [{
+    "label": "greetings",
+    "text": ["hi"]
+  }, {
+    "label": "greetings",
+    "text": ["hi"]
+  }, {
+    "label": "greetings",
+    "text": ["hi"]
+  }, {
+    "label": "greetings",
+    "text": ["hi"]
+  }, {
+    "label": "greetings",
+    "text": ["hi"]
+  }, {
+    "label": "greetings",
+    "text": ["hi"]
+  }, {
+    "label": "greetings",
+    "text": ["hei"]
+  }, {
+    "label": "greetings",
+    "text": ["hei"]
+  }, {
+    "label": "greetings",
+    "text": ["hei"]
+  }, {
+    "label": "greetings",
+    "text": ["hei"]
+  }, {
+    "label": "greetings",
+    "text": ["hei"]
+  }, {
+    "label": "greetings",
+    "text": ["hei"]
+  }, {
+    "label": "greetings",
+    "text": ["hello"]
+  }, {
+    "label": "greetings",
+    "text": ["hello"]
+  }, {
+    "label": "greetings",
+    "text": ["hello"]
+  }, {
+    "label": "greetings",
+    "text": ["hello"]
+  }, {
+    "label": "news",
+    "text": ["hello"]
+  }, {
+    "label": "news",
+    "text": ["hi"]
+  }, {
+    "label": "news",
+    "text": ["hi"]
+  }, {
+    "label": "news",
+    "text": ["hi"]
+  }, {
+    "label": "news",
+    "text": ["hi"]
+  }, {
+    "label": "news",
+    "text": ["hei"]
+  }, {
+    "label": "news",
+    "text": ["hei"]
+  }, {
+    "label": "news",
+    "text": ["hei"]
+  }, {
+    "label": "news",
+    "text": ["hei"]
+  }, {
+    "label": "news",
+    "text": ["hi"]
+  }, {
+    "label": "news",
+    "text": ["hi"]
+  }, {
+    "label": "news",
+    "text": ["hi"]
+  }, {
+    "label": "news",
+    "text": ["hi"]
+  }, {
+    "label": "news",
+    "text": ["hei"]
+  }, {
+    "label": "news",
+    "text": ["hei"]
+  }, {
+    "label": "news",
+    "text": ["hei"]
+  }, {
+    "label": "news",
+    "text": ["hei"]
+  }, {
+    "label": "news",
+    "text": ["hello"]
+  }, {
+    "label": "news",
+    "text": ["hello"]
+  }, {
+    "label": "news",
+    "text": ["hello"]
+  }, {
+    "label": "news",
+    "text": ["hello"]
+  }, {
+    "label": "activity",
+    "text": ["hei"]
+  }, {
+    "label": "activity",
+    "text": ["hei"]
+  }, {
+    "label": "activity",
+    "text": ["hei"]
+  }, {
+    "label": "activity",
+    "text": ["hei"]
+  }, {
+    "label": "activity",
+    "text": ["hi"]
+  }, {
+    "label": "activity",
+    "text": ["hi"]
+  }, {
+    "label": "activity",
+    "text": ["hi"]
+  }, {
+    "label": "activity",
+    "text": ["hi"]
+  }, {
+    "label": "gross",
+    "text": ["suck"]
+  }, {
+    "label": "insults",
+    "text": ["shut"]
+  }, {
+    "label": "insults",
+    "text": ["fuck", "bitch"]
+  }, {
+    "label": "insults",
+    "text": ["go", "fuck"]
+  }, {
+    "label": "love",
+    "text": ["love"]
+  }, {
+    "label": "weather",
+    "text": ["weather", "forecast"]
+  }, {
+    "label": "thanks",
+    "text": ["thank", "thank"]
+  }, {
+    "label": "joke",
+    "text": ["tell", "joke"]
+  }, {
+    "label": "joke",
+    "text": ["laugh"]
+  }, {
+    "label": "wiki",
+    "text": ["defin"]
+  }, {
+    "label": "wiki",
+    "text": ["defin"]
+  }, {
+    "label": "wiki",
+    "text": ["defin"]
+  }, {
+    "label": "wiki",
+    "text": ["defin"]
+  }, {
+    "label": "wiki",
+    "text": ["defin"]
+  }, {
+    "label": "wiki",
+    "text": ["defin"]
+  }, {
+    "label": "wiki",
+    "text": ["search"]
+  }, {
+    "label": "wiki",
+    "text": ["search"]
+  }, {
+    "label": "wiki",
+    "text": ["search"]
+  }, {
+    "label": "wiki",
+    "text": ["search"]
+  }, {
+    "label": "wiki",
+    "text": ["search"]
+  }, {
+    "label": "wiki",
+    "text": ["search"]
+  }, {
+    "label": "wiki",
+    "text": ["wiki", "wikipedia"]
+  }, {
+    "label": "wiki",
+    "text": ["wiki", "wikipedia"]
+  }, {
+    "label": "wiki",
+    "text": ["wiki", "wikipedia"]
+  }, {
+    "label": "wiki",
+    "text": ["wiki", "wikipedia"]
+  }, {
+    "label": "wiki",
+    "text": ["wiki", "wikipedia"]
+  }, {
+    "label": "wiki",
+    "text": ["wiki", "wikipedia"]
+  }, {
+    "label": "wiki",
+    "text": ["wiki", "wikipedia"]
+  }, {
+    "label": "wiki",
+    "text": ["wiki", "wikipedia"]
+  }, {
+    "label": "news",
+    "text": ["How", "are", "u"]
+  }, {
+    "label": "news",
+    "text": ["Fine"]
+  }, {
+    "label": "wiki",
+    "text": ["Can", "u", "search", "for"]
+  }, {
+    "label": "weather",
+    "text": ["How", "is", "the", "weather", "like"]
+  }, {
+    "label": "thanks",
+    "text": ["Thanks"]
+  }],
+  "features": {
+    "hi": 18,
+    "hei": 18,
+    "hello": 9,
+    "suck": 1,
+    "shut": 1,
+    "fuck": 2,
+    "bitch": 1,
+    "go": 1,
+    "love": 1,
+    "weather": 2,
+    "forecast": 1,
+    "thank": 2,
+    "tell": 1,
+    "joke": 1,
+    "laugh": 1,
+    "defin": 6,
+    "search": 7,
+    "wiki": 8,
+    "wikipedia": 8,
+    "How": 2,
+    "are": 1,
+    "u": 2,
+    "Fine": 1,
+    "Can": 1,
+    "for": 1,
+    "is": 1,
+    "the": 1,
+    "like": 1,
+    "in": 1,
+    "Thanks": 1
+  },
+  "stemmer": {},
+  "lastAdded": 79,
+  "events": {
+    "_events": {},
+    "_eventsCount": 0
+  }
+}
