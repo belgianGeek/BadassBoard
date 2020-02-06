@@ -135,9 +135,7 @@ const parseContent = () => {
           // Create the RSS container if they don't exist
           if (!$(`${fullElementClassName} .rssContainer`).length) {
             buildRssContainer(feed, (feed, rssContainer) => {
-              rssContainer.appendTo(fullElementClassName, () => {
-                //$(`${fullElementClassName} .blank`).addClass('invisible');
-              });
+              rssContainer.appendTo(fullElementClassName);
 
               let rssContainerHeader = $('<div></div>')
                 .addClass('rssContainer__header')
@@ -362,9 +360,11 @@ const parseContent = () => {
           $(fullElementClassName).addClass('subRow');
         }
 
-        if ($(`${fullElementClassName} section`).length) {
-          $(`${fullElementClassName} .blank`).addClass('invisible');
-        }
+        $(fullElementClassName).ready(function() {
+          if ($(`${$(this)} section`).length) {
+            $(`${$(this)} .blank`).addClass('invisible');
+          }
+        });
       });
     }
   });
