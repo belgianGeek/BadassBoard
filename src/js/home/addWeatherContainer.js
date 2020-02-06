@@ -27,7 +27,7 @@ const addWeatherContainer = (forecast, fullElementClassName, addNewContentContai
     let forecastContainer = $('<section></section>')
       .addClass('forecast flex')
       .appendTo(fullElementClassName, () => {
-        $(`${fullElementClassName} .blank`).addClass('invisible');
+        //$(`${fullElementClassName} .blank`).addClass('invisible');
       });
 
     let forecastHeader = $('<span></span>')

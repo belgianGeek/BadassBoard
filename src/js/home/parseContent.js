@@ -136,7 +136,7 @@ const parseContent = () => {
           if (!$(`${fullElementClassName} .rssContainer`).length) {
             buildRssContainer(feed, (feed, rssContainer) => {
               rssContainer.appendTo(fullElementClassName, () => {
-                $(`${fullElementClassName} .blank`).addClass('invisible');
+                //$(`${fullElementClassName} .blank`).addClass('invisible');
               });
 
               let rssContainerHeader = $('<div></div>')
@@ -360,6 +360,10 @@ const parseContent = () => {
         // Add a margin to the dynamicaly created divs
         if (!parent.match(iElement)) {
           $(fullElementClassName).addClass('subRow');
+        }
+
+        if ($(`${fullElementClassName} section`).length) {
+          $(`${fullElementClassName} .blank`).addClass('invisible');
         }
       });
     }
