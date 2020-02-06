@@ -17,6 +17,17 @@
     box-shadow: 10px 10px 12px 2px $contentBackground;
     overflow-y: auto;
     overflow-x: hidden;
+    @media(max-width: 720px) {
+      overflow-y: auto;
+      width: 90%;
+
+      .backgroundImageUploadForm__Btn,
+      .backgroundImageUploadForm__InputUrl,
+      .owmToken__input,
+      .searchEngineSelection__select {
+        margin-top: 1.5em;
+      }
+    }
 
     &__header {
       @include flex-direction(row);
@@ -52,6 +63,12 @@
       -webkit-justify-content: flex-end;
       margin-top: 1.5em;
       padding-bottom: 1.5em;
+      @media(max-width: 720px) {
+        position: relative;
+        top: 5%;
+        left: 0;
+        justify-content: space-evenly;
+      }
     }
 
     &__cancelBtn,
@@ -61,6 +78,10 @@
       padding: 0.7em;
       margin-right: 1.1em;
       cursor: pointer;
+      @media(max-width: 720px) {
+        margin-bottom: 1em;
+        margin-right: 0;
+      }
     }
 
     &__saveBtn {
@@ -80,6 +101,9 @@
       justify-content: space-between;
       width: 90%;
       align-items: center;
+      @media(max-width: 720px) {
+        @include flex-direction;
+      }
 
       & * {
         font-size: 1.05em;

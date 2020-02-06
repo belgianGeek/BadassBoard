@@ -11,6 +11,6 @@ const hideContent = (element2hide) => {
     }
   });
 
-  // Adapt the height of the moreContent container
-  $('.moreContent').css('marginTop', '');
+  // Adapt the height of the contentContainers container
+  $('.contentContainers').css('marginTop', '');
 }

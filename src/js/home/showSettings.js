@@ -197,7 +197,7 @@ const showSettings = () => {
         if (updatedSettings.RSS === true) {
           location.reload();
         } else {
-          $('.moreContent').hide();
+          $('.contentContainers').hide();
         }
       }
     }

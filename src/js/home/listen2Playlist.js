@@ -13,8 +13,8 @@ const listen2Playlist = (data) => {
 
       $('.audio__leftSvg, .audio__rightSvg').off();
 
-      // Adapt the .moreContent height so all the elements can fit on the page
-      $('.moreContent').css('marginTop', 0);
+      // Adapt the .contentContainers height so all the elements can fit on the page
+      $('.contentContainers').css('marginTop', 0);
 
       // Define the audio player
       if (!$('.audio__player').length) {

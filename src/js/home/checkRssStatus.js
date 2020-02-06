@@ -7,8 +7,8 @@ const checkRSSstatus = (rssStatus) => {
     addContent('.content2__container', '.content2');
     addContent('.content3__container', '.content3');
 
-    if ($('.moreContent').css('display') === 'none') {
-      $('.moreContent').css('display', '');
+    if ($('.contentContainers').css('display') === 'none') {
+      $('.contentContainers').css('display', '');
 
       $('.formContainer__container').css({
         position: '',
@@ -18,9 +18,9 @@ const checkRSSstatus = (rssStatus) => {
   } else {
     $('.toggleRss__Input').prop('checked', false);
 
-    // If RSS feeds are disabled, hide the moreContent div
+    // If RSS feeds are disabled, hide the contentContainers div
     if (!$('.toggleRss__Input').prop('checked')) {
-      $('.moreContent').hide();
+      $('.contentContainers').hide();
 
       $('.formContainer__container').css({
         position: 'absolute',

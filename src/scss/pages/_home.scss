@@ -31,6 +31,14 @@
   width: 100%;
   @include align(flex-end, center);
   z-index: 3;
+  @media(max-width: 720px) {
+    width: auto;
+    left: 88%;
+
+    .header__converterBtn {
+      display: none;
+    }
+  }
 
   svg {
     margin-left: 1.5%;
@@ -176,6 +184,9 @@
     opacity: 0.7;
     margin: 3% 0 0;
     box-shadow: 10px 10px 12px 2px $contentBackground;
+    @media(max-width: 720px) {
+      width: 70%;
+    }
 
     .form {
       display: inline-flex;
@@ -189,6 +200,14 @@
         border: none;
         background: none;
         color: black;
+        @media(max-width: 720px) {
+          width: 80%;
+          height: 2em;
+          border: none;
+          background: none;
+          overflow-x: hidden;
+          text-overflow: ellipsis;
+        }
       }
 
       ::placeholder {
@@ -205,6 +224,10 @@
 
       &__Submit {
         margin-left: 1%;
+        @media(max-width: 720px) {
+          width: 30px;
+          height: 30px;
+        }
       }
     }
   }
@@ -218,6 +241,10 @@
     overflow-y: auto;
     margin-bottom: 3%;
     box-shadow: 10px 10px 12px 2px $contentBackground;
+    @media(max-width: 720px) {
+      height: auto;
+      overflow-y: auto;
+    }
 
     * {
       color: black;
@@ -240,6 +267,9 @@
 
       &__label {
         width: 10%;
+        @media(max-width: 720px) {
+          width: 30%;
+        }
       }
 
       &__desc {
@@ -338,7 +368,7 @@
   min-width: 47%;
 }
 
-.moreContent {
+.contentContainers {
   @include align(space-evenly, flex-start);
   @include flex-direction(row);
   width: 100%;
@@ -346,17 +376,40 @@
   flex-wrap: wrap;
   position: relative;
   padding-bottom: 2em;
+  @media(max-width: 720px) {
+    justify-content: flex-start;
+    margin-top: 15%;
+    width: 90%;
+    flex-wrap: wrap;
+  }
 
   .content__container {
     width: 30%;
     justify-content: space-between;
     @include flex-direction;
     font-size: 1em;
+    @media(max-width: 720px) {
+      width: 100%;
+
+      .content.content1 {
+        margin-top: 5%;
+      }
+
+      .newContent {
+        display: none;
+      }
+    }
 
     .content {
       height: 40vh;
       width: 100%;
       font-size: 1.2em;
+      @media(max-width: 720px) {
+        height: auto;
+        width: 100%;
+        @include align(flex-start, end);
+        margin-top: 1.5em;
+      }
 
       .contentOptions {
         display: none;
@@ -414,15 +467,19 @@
         background-color: $contentBackground;
         border-radius: 15px;
         height: 100%;
+        max-height: 100%;
         width: 100%;
         font-size: 1.05em;
+        @media(max-width: 720px) {
+          width: 95%;
+        }
       }
 
+      .addContent,
       .blank,
       .forecast,
       .rssContainer,
-      .youtubeSearchContainer,
-      .addContent {
+      .youtubeSearchContainer {
         box-shadow: 10px 10px 12px 2px $contentBackground;
       }
 
@@ -431,8 +488,6 @@
       .rssContainer,
       .warning,
       .youtubeSearchContainer {
-        height: 100%;
-        max-height: 100%;
         padding: 0 1% 0 2%;
       }
 
@@ -441,10 +496,11 @@
       .warning {
         margin-bottom: 2vh;
       }
-      // Show content options
+
       .forecast,
       .rssContainer,
       .youtubeSearchContainer {
+        // Show content options
         &__header {
           transition: display 400ms;
 
@@ -515,6 +571,10 @@
       }
 
       .youtubeSearchContainer {
+        @media(max-width: 720px) {
+          height: 50vh;
+        }
+
         &__content {
           height: 85%;
           width: 100%;
@@ -562,6 +622,7 @@
                 width: 75%;
                 padding: 0 0.5em;
                 font-size: 1.1em;
+                word-break: break-word;
 
                 a {
                   text-overflow: ellipsis;
@@ -698,6 +759,9 @@
       .article {
         @include flex-direction;
         margin-top: 0.5em;
+        @media(max-width: 720px) {
+          padding-left: 0.6em;
+        }
 
         .link {
           white-space: nowrap;
@@ -904,119 +968,6 @@
 
       &__cancelBtn {
         background-color: red;
-      }
-    }
-  }
-}
-/* Responsive design */
-@media (max-width: 720px) {
-  .header {
-    width: auto;
-    left: 88%;
-
-    .header__converterBtn {
-      display: none;
-    }
-  }
-
-  .formContainer__container .formContainer {
-    width: 70%;
-
-    .questionBox {
-      width: 80%;
-      height: 2em;
-      border: none;
-      background: none;
-      overflow-x: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .formSubmit {
-      width: 30px;
-      height: 30px;
-    }
-  }
-
-  .suggestions {
-    height: auto;
-    overflow-y: auto;
-
-    .suggestion {
-      &__label {
-        width: 30%;
-      }
-    }
-  }
-
-  .moreContent {
-    @include flex-direction(row);
-    justify-content: flex-start;
-    margin-top: 15%;
-    overflow-y: auto;
-    width: 80%;
-    flex-wrap: wrap;
-
-    .content__container {
-      width: 100%;
-
-      .content.content1 {
-        margin-top: 5%;
-      }
-
-      .content {
-        height: auto;
-        width: 100%;
-        @include align(flex-start, end);
-        margin-top: 1.5em;
-
-        .forecast,
-        .rssContainer {
-          height: 100%;
-
-          .linksContainer {
-            .article {
-              padding-left: 0.6em;
-            }
-          }
-        }
-      }
-
-      .newContent {
-        display: none;
-      }
-    }
-  }
-
-  .settings__container {
-    .settings__child {
-      overflow-y: auto;
-      width: 90%;
-
-      .backgroundImageUploadForm,
-      .owmToken,
-      .searchEngineSelection,
-      .toggleRss {
-        @include flex-direction;
-      }
-
-      .backgroundImageUploadForm__Btn,
-      .backgroundImageUploadForm__InputUrl,
-      .owmToken__input,
-      .searchEngineSelection__select {
-        margin-top: 1.5em;
-      }
-
-      .settings__BtnContainer {
-        position: relative;
-        top: 5%;
-        left: 0;
-        justify-content: space-evenly;
-      }
-
-      &__cancelBtn,
-      &__saveBtn {
-        margin-bottom: 1em;
-        margin-right: 0;
       }
     }
   }
