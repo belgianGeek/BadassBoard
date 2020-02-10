@@ -12,8 +12,10 @@ $.ajax({
 }).done(settings => {
   if (settings.backgroundImage !== undefined) {
     const handle404ImageError = () => {
-      $('.msgContainer').text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
-      fade('.msgContainer');
+      let backrgoundImageReply = $('<span></span>')
+        .addClass('msg reply')
+        .text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
+        .appendTo('.msgContainer__msgList__list');
 
       $('.backgroundImage').css('backgroundImage', '');
     }
