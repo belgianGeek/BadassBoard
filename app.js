@@ -41,13 +41,14 @@ const bot = {
 }
 
 const nlp = require('natural');
-const classifier = new nlp.BayesClassifier();
+let classifier = new nlp.LogisticRegressionClassifier();
 const stemmer = nlp.PorterStemmer.attach();
 const tokenizer = new nlp.WordTokenizer();
 
-nlp.BayesClassifier.load('classifier.json', null, function(err, classifier) {
+nlp.BayesClassifier.load('classifier.json', null, function(err, loadedClassifier) {
   if (!err) {
     console.log('Classifier successfully loaded !');
+    classifier = loadedClassifier;
   } else {
     if (err.code !== 'ENOENT') {
       console.log(`Error calling classifier : ${JSON.stringify(err, null, 2)}`);
@@ -62,69 +63,23 @@ const rottenParser = require('./modules/rottenParser');
 
 // Greetings
 classifier.addDocument('Hi', 'greetings');
-classifier.addDocument('Hi', 'greetings');
-classifier.addDocument('Hi', 'greetings');
-classifier.addDocument('Hi', 'greetings');
-classifier.addDocument('Hi', 'greetings');
-classifier.addDocument('Hi', 'greetings');
 classifier.addDocument('Hey', 'greetings');
-classifier.addDocument('Hey', 'greetings');
-classifier.addDocument('Hey', 'greetings');
-classifier.addDocument('Hey', 'greetings');
-classifier.addDocument('Hey', 'greetings');
-classifier.addDocument('Hey', 'greetings');
-classifier.addDocument('Hello', 'greetings');
-classifier.addDocument('Hello', 'greetings');
-classifier.addDocument('Hello', 'greetings');
 classifier.addDocument('Hello', 'greetings');
 
 // News
-classifier.addDocument('How are you ?', 'news');
-classifier.addDocument('how are you ?', 'news');
-classifier.addDocument('How are you ?', 'news');
-classifier.addDocument('how are you ?', 'news');
+classifier.addDocument('How are you u ?', 'news');
 classifier.addDocument('What\'s up ?', 'news');
-classifier.addDocument('what\'s up ?', 'news');
-classifier.addDocument('What\'s up ?', 'news');
-classifier.addDocument('what\'s up ?', 'news');
 classifier.addDocument('Hello how are you ?', 'news');
 classifier.addDocument('hi how are you ?', 'news');
-classifier.addDocument('hi how are you ?', 'news');
-classifier.addDocument('hi how are you ?', 'news');
-classifier.addDocument('hi how are you ?', 'news');
-classifier.addDocument('Hey how are you ?', 'news');
-classifier.addDocument('Hey how are you ?', 'news');
-classifier.addDocument('Hey how are you ?', 'news');
 classifier.addDocument('Hey how are you ?', 'news');
 classifier.addDocument('Hi what\'s up ?', 'news');
-classifier.addDocument('Hi what\'s up ?', 'news');
-classifier.addDocument('Hi what\'s up ?', 'news');
-classifier.addDocument('Hi what\'s up ?', 'news');
 classifier.addDocument('Hey what\'s up ?', 'news');
-classifier.addDocument('Hey what\'s up ?', 'news');
-classifier.addDocument('Hey what\'s up ?', 'news');
-classifier.addDocument('Hey what\'s up ?', 'news');
-classifier.addDocument('Hello what\'s up ?', 'news');
-classifier.addDocument('Hello what\'s up ?', 'news');
-classifier.addDocument('Hello what\'s up ?', 'news');
 classifier.addDocument('Hello what\'s up ?', 'news');
 
 // Activities
 classifier.addDocument('what are you doing ?', 'activity');
-classifier.addDocument('What are you doing ?', 'activity');
-classifier.addDocument('what are you doing ?', 'activity');
-classifier.addDocument('What are you doing ?', 'activity');
 classifier.addDocument('what are u doing ?', 'activity');
-classifier.addDocument('What are u doing ?', 'activity');
-classifier.addDocument('what are u doing ?', 'activity');
-classifier.addDocument('What are u doing ?', 'activity');
-classifier.addDocument('Hey, what are you doing ?', 'activity');
-classifier.addDocument('Hey ! What are you doing ?', 'activity');
-classifier.addDocument('Hey, what are you doing ?', 'activity');
-classifier.addDocument('Hey ! What are you doing ?', 'activity');
-classifier.addDocument('Hi ! What are u doing ?', 'activity');
-classifier.addDocument('Hi what are u doing ?', 'activity');
-classifier.addDocument('Hi ! What are u doing ?', 'activity');
+classifier.addDocument('Hey what are you doing ?', 'activity');
 classifier.addDocument('Hi what are u doing ?', 'activity');
 
 
@@ -149,29 +104,10 @@ classifier.addDocument('Make me laugh', 'joke');
 
 // Wikipedia
 classifier.addDocument('define', 'wiki');
-classifier.addDocument('define', 'wiki');
-classifier.addDocument('define', 'wiki');
-classifier.addDocument('Define', 'wiki');
-classifier.addDocument('Define', 'wiki');
-classifier.addDocument('Define', 'wiki');
-classifier.addDocument('Search for', 'wiki');
-classifier.addDocument('Search for', 'wiki');
-classifier.addDocument('Search for', 'wiki');
-classifier.addDocument('search for', 'wiki');
-classifier.addDocument('search for', 'wiki');
 classifier.addDocument('search for', 'wiki');
 classifier.addDocument('Wiki Wikipedia', 'wiki');
-classifier.addDocument('Wiki Wikipedia', 'wiki');
-classifier.addDocument('Wiki Wikipedia', 'wiki');
-classifier.addDocument('Wiki Wikipedia', 'wiki');
-classifier.addDocument('wiki wikipedia', 'wiki');
-classifier.addDocument('wiki wikipedia', 'wiki');
-classifier.addDocument('wiki wikipedia', 'wiki');
-classifier.addDocument('wiki wikipedia', 'wiki');
 
 classifier.train();
-
-console.log(classifier.classify('Hi !'));
 
 const customize = (customizationData) => {
   // console.log(JSON.stringify(customizationData, null, 2));
@@ -869,7 +805,6 @@ app.get('/', (req, res) => {
       let welcomeMsg = new Reply(`Hi ! I'm ${bot.name}, how can I help you ?`).send();
 
       io.on('chat msg', msg => {
-        console.log(1, classifier.getClassifications(msg.content));
         const getWeatherForecast = (msg) => {
           // Strip accents and diacritics
           let location = msg.normalize('NFD');
@@ -947,94 +882,95 @@ app.get('/', (req, res) => {
             }
           });
         }
+        if (classifier.getClassifications(msg.content)[0].value > 0.5) {
+          if (replyType === 'generic') {
+            if (classifier.classify(msg.content) === 'greetings') {
+              revertGreetings(msg);
+            } else if (classifier.classify(msg.content) === 'weather') {
+              reply = `Which city do you want to get the forecast for ?`;
+              replyType = 'forecast';
+              msgTheme = 'weather';
+            } else if (classifier.classify(msg.content) === 'news') {
+              revertGreetings(msg);
+            } else if (classifier.classify(msg.content) === 'activity') {
+              reply = `I'm just talking to you ${msg.author}.`;
+              msgTheme = 'activity';
+            } else if (classifier.classify(msg.content) === 'love') {
+              reply = `Sorry ${msg.author}, I don't think human and robots can love each other...`;
+              msgTheme = 'love';
+            } else if (classifier.classify(msg.content) === 'gross') {
+              reply = `Don't be so gross ${msg.author} !`;
+              msgTheme = 'gross';
+            } else if (classifier.classify(msg.content) === 'insults') {
+              reply = `Didn't you Mother teach you politeness ?`;
+              msgTheme = 'insults';
+            } else if (classifier.classify(msg.content) === 'thanks') {
+              reply = `You're welcome ${msg.author} !`;
+              msgTheme = 'thanks';
+            } else if (classifier.classify(msg.content) === 'joke') {
+              reply = `I don't have any jokes for now...`;
+              msgTheme = 'joke';
+            } else if (classifier.classify(msg.content) === 'wiki') {
+              let args = msg.content.split(' ');
+              msgTheme = 'wiki';
 
-        if (replyType === 'generic') {
-          if (classifier.classify(msg.content) === 'greetings') {
-            revertGreetings(msg);
-          } else if (classifier.classify(msg.content) === 'weather') {
-            reply = `Which city do you want to get the forecast for ?`;
-            replyType = 'forecast';
-            msgTheme = 'weather';
-          } else if (classifier.classify(msg.content) === 'news') {
-            revertGreetings(msg);
-          } else if (classifier.classify(msg.content) === 'activity') {
-            reply = `I'm just talking to you ${msg.author}.`;
-            msgTheme = 'activity';
-          } else if (classifier.classify(msg.content) === 'love') {
-            reply = `Sorry ${msg.author}, I don't think human and robots can love each other...`;
-            msgTheme = 'love';
-          } else if (classifier.classify(msg.content) === 'gross') {
-            reply = `Don't be so gross ${msg.author} !`;
-            msgTheme = 'gross';
-          } else if (classifier.classify(msg.content) === 'insults') {
-            reply = `Didn't you Mother teach you politeness ?`;
-            msgTheme = 'insults';
-          } else if (classifier.classify(msg.content) === 'thanks') {
-            reply = `You're welcome ${msg.author} !`;
-            msgTheme = 'thanks';
-          } else if (classifier.classify(msg.content) === 'joke') {
-            reply = `I don't have any jokes for now...`;
-            msgTheme = 'joke';
-          } else if (classifier.classify(msg.content) === 'wiki') {
-            let args = msg.content.split(' ');
-            msgTheme = 'wiki';
-
-            if (msg.content.match(/^define/i)) {
-              args.shift();
-              searchWiki(args, msg);
-            } else if (msg.content.match(/^search for/i)) {
-              args.splice(0, 2);
-              searchWiki(args, msg);
-            } else {
-              reply = `Sorry ${msg.author}, I couldn't understand... What are you searching for ?`;
-              replyType = 'wiki';
+              if (msg.content.match(/^define/i)) {
+                args.shift();
+                searchWiki(args, msg);
+              } else if (msg.content.match(/^search for/i)) {
+                args.splice(0, 2);
+                searchWiki(args, msg);
+              } else {
+                reply = `Sorry ${msg.author}, I couldn't understand... What are you searching for ?`;
+                replyType = 'wiki';
+              }
             }
           } else {
-            reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
+            msgTheme = 'function';
+
+            if (replyType === 'forecast') {
+              reply = getWeatherForecast(msg.content);
+            } else if (replyType === 'news') {
+              replyType = 'generic';
+              msgTheme = 'news';
+
+              let answers = [
+                'Nice to hear !',
+                'Great !'
+              ];
+
+              reply = answers[Math.floor(Math.random() * answers.length)];
+            } else if (replyType === 'wiki') {
+              let args = msg.content.split(' ');
+
+              searchWiki(args, msg);
+            }
+          }
+
+          // Check if the reply is not empty before sending it
+          if (reply !== '') {
+            // Send the reply if it is not part of a function
+            if (msgTheme !== 'function') {
+              let answer = new Reply(reply).send();
+
+              let content = tokenizer.tokenize(msg.content);
+
+              // Add the last user message to classifier and train the bot with it
+              classifier.addDocument(content, msgTheme);
+              classifier.train();
+
+              console.log(2, classifier.getClassifications(msg.content));
+
+              // Save the classifier for further usage
+              classifier.save('classifier.json', function(err, classifier) {
+                if (err) {
+                  console.log(`Error saving changes to the classifier : ${err}`);
+                }
+              });
+            }
           }
         } else {
-          msgTheme = 'function';
-
-          if (replyType === 'forecast') {
-            reply = getWeatherForecast(msg.content);
-          } else if (replyType === 'news') {
-            replyType = 'generic';
-            msgTheme = 'news';
-
-            let answers = [
-              'Nice to hear !',
-              'Great !'
-            ];
-
-            reply = answers[Math.floor(Math.random() * answers.length)];
-          } else if (replyType === 'wiki') {
-            let args = msg.content.split(' ');
-
-            searchWiki(args, msg);
-          }
-        }
-
-        // Check if the reply is not empty before sending it
-        if (reply !== '') {
-          // Send the reply if it is not part of a function
-          if (msgTheme !== 'function') {
-            let answer = new Reply(reply).send();
-
-            let content = tokenizer.tokenize(msg.content);
-
-            // Add the last user message to classifier and train the bot with it
-            classifier.addDocument(content, msgTheme);
-            classifier.train();
-
-            console.log(2, classifier.getClassifications(msg.content));
-
-            // Save the classifier for further usage
-            classifier.save('classifier.json', function(err, classifier) {
-              if (err) {
-                console.log(`Error saving changes to the classifier : ${err}`);
-              }
-            });
-          }
+          reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
         }
       });
     })
