@@ -20,9 +20,7 @@ const socket = io();
 let headStyle = '';
 
 // Store the last created element number for each content container
-let lastContent1 = 1;
-let lastContent2 = 1;
-let lastContent3 = 1;
+let lastContent = {};
 
 // Get the background image from the settings and add it to the page
 $.ajax({
@@ -65,15 +63,27 @@ $.ajax({
       });
   }
 
-  const retrieveLastElementNumber = (number) => {
-    if (settings.elements[number].elements.length > 0) {
-      lastContent1 = settings.elements[number].elements[settings.elements[number].elements.length - 1].element.substring(8, 9);
+  const retrieveLastElementNumber = () => {
+    if (settings.elements[0].elements.length > 0) {
+      lastContent.content1 = Number(settings.elements[0].elements[settings.elements[0].elements.length - 1].element.substring(8, 9));
+    } else {
+      lastContent.content1 = 0;
+    }
+
+    if (settings.elements[1].elements.length > 0) {
+      lastContent.content2 = Number(settings.elements[1].elements[settings.elements[1].elements.length - 1].element.substring(8, 9));
+    } else {
+      lastContent.content2 = 0;
+    }
+
+    if (settings.elements[2].elements.length > 0) {
+      lastContent.content3 = Number(settings.elements[2].elements[settings.elements[2].elements.length - 1].element.substring(8, 9));
+    } else {
+      lastContent.content3 = 0;
     }
   }
 
-  retrieveLastElementNumber(0);
-  retrieveLastElementNumber(1);
-  retrieveLastElementNumber(2);
+  retrieveLastElementNumber();
 
   if (settings.owmToken !== undefined) {
     owmToken = settings.owmToken;

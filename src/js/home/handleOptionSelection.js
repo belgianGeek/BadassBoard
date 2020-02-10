@@ -2,7 +2,7 @@ const handleOptionSelection = (parent, child) => {
   let newContentClass = '';
   let elementsObject = {};
 
-  let iNewElt;
+  let iNewElt = 2;
 
   const hideSiblings = (selector) => {
 
@@ -20,8 +20,12 @@ const handleOptionSelection = (parent, child) => {
 
   const updateClass = () => {
     // Toggle classes to match a regular pattern
-    if ($(`${parent} ${child}`).prev().attr('class') !== undefined) {
-      iNewElt = Number($(`${parent} ${child}`).prev().attr('id').substring(7, 9)) + 1;
+    if (parent === '.content1__container') {
+      iNewElt = lastContent.content1 + 1;
+    } else if (parent === '.content2__container') {
+      iNewElt = lastContent.content2 + 1;
+    } else if (parent === '.content3__container') {
+      iNewElt = lastContent.content3 + 1;
     }
 
     $(`${parent} .newContent`)
@@ -152,23 +156,23 @@ const handleOptionSelection = (parent, child) => {
                 }
               }
 
-                let count = forecast.count;
+              let count = forecast.count;
 
-                if (count !== 0) {
-                  // Add content to the page
-                  parseContent();
+              if (count !== 0) {
+                // Add content to the page
+                parseContent();
 
-                  $(`${parent} ${element} .addContent`).hide();
+                $(`${parent} ${element} .addContent`).hide();
 
-                  // Send the changes to the server side
-                  socket.emit('add content', [elementsObject]);
-                } else {
-                  printError({
-                    type: 'weather',
-                    msg: 'Sorry homie, it seems this location doesn\'t exist...',
-                    element: `${parent} ${child}`
-                  });
-                }
+                // Send the changes to the server side
+                socket.emit('add content', [elementsObject]);
+              } else {
+                printError({
+                  type: 'weather',
+                  msg: 'Sorry homie, it seems this location doesn\'t exist...',
+                  element: `${parent} ${child}`
+                });
+              }
             })
           }
         })
