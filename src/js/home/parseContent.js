@@ -361,8 +361,8 @@ const parseContent = () => {
         }
 
         $(fullElementClassName).ready(function() {
-          if ($(`${$(this)} section`).length) {
-            $(`${$(this)} .blank`).addClass('invisible');
+          if ($(`${fullElementClassName} section`).length) {
+            $(`${fullElementClassName} .blank`).addClass('invisible');
           }
         });
       });

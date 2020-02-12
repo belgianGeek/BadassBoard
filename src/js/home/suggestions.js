@@ -242,5 +242,10 @@ const suggestions = [
     desc: 'Youtube',
     icon: './src/scss/icons/suggestions/yt.ico',
     url: 'https://www.youtube.com/results?search_query='
+  },{
+    label: '!bbc',
+    desc: 'BBC News',
+    icon: './src/scss/icons/suggestions/bbc.png',
+    url: 'https://www.bbc.co.uk/search?q='
   }
 ];

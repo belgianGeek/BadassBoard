@@ -17,7 +17,7 @@ const buildRssContainer = (feed, callback) => {
       let link = $('<a></a>')
         .addClass('link')
         .attr('href', feed[i].link)
-        .text(feed[i].title)
+        .append(`<span>${feed[i].title}</span>`)
         .appendTo(article);
 
 

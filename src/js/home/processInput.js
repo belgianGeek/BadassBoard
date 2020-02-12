@@ -146,6 +146,12 @@ const processInput = (msg) => {
                 type: 'generic',
                 msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
               });
+            },
+            502: (res) => {
+              printError({
+                type: 'generic',
+                msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
+              });
             }
           }
         });
