@@ -45,7 +45,7 @@ let classifier = new nlp.LogisticRegressionClassifier();
 const stemmer = nlp.PorterStemmer.attach();
 const tokenizer = new nlp.WordTokenizer();
 
-nlp.BayesClassifier.load('classifier.json', null, function(err, loadedClassifier) {
+nlp.LogisticRegressionClassifier.load('classifier.json', null, function(err, loadedClassifier) {
   if (!err) {
     console.log('Classifier successfully loaded !');
     classifier = loadedClassifier;
@@ -882,7 +882,10 @@ app.get('/', (req, res) => {
             }
           });
         }
-        if (classifier.getClassifications(msg.content)[0].value > 0.5) {
+
+        console.log(classifier.getClassifications(msg.content));
+
+      //  if (classifier.getClassifications(msg.content)[0].value > 0.5) {
           if (replyType === 'generic') {
             if (classifier.classify(msg.content) === 'greetings') {
               revertGreetings(msg);
@@ -969,9 +972,9 @@ app.get('/', (req, res) => {
               });
             }
           }
-        } else {
+        /*} else {
           reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
-        }
+        }*/
       });
     })
   })
