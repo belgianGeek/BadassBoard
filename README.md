@@ -31,7 +31,7 @@ Once Node.js is installed, open a terminal/console in the project's root directo
 
 # How to use it ?
 
-First, make sure you are in the project's root directory. Then, you can launch the app by running the command `node run start` or `yarn start` in your console.
+First, make sure you are in the project's root directory. Then, you can launch the app by running the command `npm run start` or `yarn start` in your console.
 
 If you are connected to the Internet, you should get a nice message in your console, saying that you can connect to the app by typing `http://<your_IP>:8080` or `http://<your_hostname>:8080`in your web browser.
 
