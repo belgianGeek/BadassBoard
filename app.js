@@ -562,8 +562,7 @@ app.get('/', (req, res) => {
           id,
           '--youtube-skip-dash-manifest',
           '--embed-thumbnail',
-          '--add-metadata',
-          '--verbose'
+          '--add-metadata'
         ];
 
         const manualAudioDownload = () => {
@@ -621,6 +620,8 @@ app.get('/', (req, res) => {
               } else if (os.platform() === 'linux') {
                 downloadedFile.path = `${__dirname}${filename}`;
               }
+
+              console.log(downloadedFile.path);
 
               downloadedFile.name = filename;
 
@@ -984,9 +985,22 @@ app.get('/', (req, res) => {
 
   // Prompt the user to download the file
   .get('/download', (req, res) => {
-    res.download(downloadedFile.path, downloadedFile.name, (err) => {
-      if (err) throw err;
-    });
+    if (downloadedFile.path !== undefined) {
+      res.download(downloadedFile.path, downloadedFile.name, (err) => {
+        if (err) {
+          console.log(`Error downloading file : ${JSON.stringify(err, null, 2)}`);
+          io.emit('errorMsg', {
+            type: 'generic',
+            msg: 'An error occurred while downloading... Check the logs for details.'
+          })
+        }
+      });
+    } else {
+      io.emit('errorMsg', {
+        type: 'generic',
+        msg: 'Sorry, the filename couln\'t be retrieved...'
+      })
+    }
   })
 
   .post('/upload', (req, res) => {
