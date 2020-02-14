@@ -752,8 +752,12 @@
       flex: 1;
       overflow-y: auto;
 
-      a:visited {
+      .link:visited {
         color: grey;
+
+        & span {
+          color: grey;
+        }
       }
 
       .article {

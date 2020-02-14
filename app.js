@@ -67,7 +67,8 @@ classifier.addDocument('Hey', 'greetings');
 classifier.addDocument('Hello', 'greetings');
 
 // News
-classifier.addDocument('How are you u ?', 'news');
+classifier.addDocument('How are u ?', 'news');
+classifier.addDocument('How are you ?', 'news');
 classifier.addDocument('What\'s up ?', 'news');
 classifier.addDocument('Hello how are you ?', 'news');
 classifier.addDocument('hi how are you ?', 'news');
@@ -108,8 +109,6 @@ classifier.addDocument('search for', 'wiki');
 classifier.addDocument('Wiki Wikipedia', 'wiki');
 
 classifier.train();
-
-console.log(classifier.getClassifications('Can u give me some info ?'));
 
 const customize = (customizationData) => {
   // console.log(JSON.stringify(customizationData, null, 2));
@@ -967,8 +966,6 @@ app.get('/', (req, res) => {
             if (classifier.getClassifications(msg.content)[0].value !== 'none') {
               classifier.addDocument(content, msgTheme);
               classifier.train();
-
-              console.log(2, classifier.getClassifications(msg.content));
 
               // Save the classifier for further usage
               classifier.save('classifier.json', function(err, classifier) {
