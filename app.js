@@ -609,19 +609,16 @@ app.get('/', (req, res) => {
           });
 
           download.on('close', () => {
-
-            if (downloadLog !== undefined) {
+            if (downloadLog !== null) {
               filename = downloadLog
-                .match(/((.|)(\/|\\|)tmp(\/|\\)\w.+\.mp3)/i)[1]
-                .substring(1, 100);
+                .match(/(tmp\\|tmp\/)\w.+(.mp3)/i)[0]
+                .substring(4, 100);
 
-              if (os.platform() === 'Win32') {
-                downloadedFile.path = `${__dirname}\\${filename}`;
+              if (os.platform() === 'win32') {
+                downloadedFile.path = `${__dirname}\\tmp\\${filename}`;
               } else if (os.platform() === 'linux') {
-                downloadedFile.path = `${__dirname}${filename}`;
+                downloadedFile.path = `${__dirname}tmp/${filename}`;
               }
-
-              console.log(downloadedFile.path);
 
               downloadedFile.name = filename;
 
@@ -887,7 +884,7 @@ app.get('/', (req, res) => {
 
         console.log(classifier.getClassifications(msg.content));
 
-       if (classifier.getClassifications(msg.content)[0].value > 0.5) {
+        if (classifier.getClassifications(msg.content)[0].value > 0.5) {
           if (replyType === 'generic') {
             if (classifier.classify(msg.content) === 'greetings') {
               revertGreetings(msg);
@@ -985,7 +982,7 @@ app.get('/', (req, res) => {
 
   // Prompt the user to download the file
   .get('/download', (req, res) => {
-    if (downloadedFile.path !== undefined) {
+    if (downloadedFile.path !== null) {
       res.download(downloadedFile.path, downloadedFile.name, (err) => {
         if (err) {
           console.log(`Error downloading file : ${JSON.stringify(err, null, 2)}`);
