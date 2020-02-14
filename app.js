@@ -109,6 +109,8 @@ classifier.addDocument('Wiki Wikipedia', 'wiki');
 
 classifier.train();
 
+console.log(classifier.getClassifications('Can u give me some info ?'));
+
 const customize = (customizationData) => {
   // console.log(JSON.stringify(customizationData, null, 2));
 
@@ -885,7 +887,7 @@ app.get('/', (req, res) => {
 
         console.log(classifier.getClassifications(msg.content));
 
-      //  if (classifier.getClassifications(msg.content)[0].value > 0.5) {
+       if (classifier.getClassifications(msg.content)[0].value > 0.5) {
           if (replyType === 'generic') {
             if (classifier.classify(msg.content) === 'greetings') {
               revertGreetings(msg);
@@ -949,16 +951,20 @@ app.get('/', (req, res) => {
               searchWiki(args, msg);
             }
           }
+        } else if (classifier.getClassifications(msg.content)[0].value === 0.5) {
+          reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
+        }
 
-          // Check if the reply is not empty before sending it
-          if (reply !== '') {
-            // Send the reply if it is not part of a function
-            if (msgTheme !== 'function') {
-              let answer = new Reply(reply).send();
+        // Check if the reply is not empty before sending it
+        if (reply !== '') {
+          // Send the reply if it is not part of a function
+          if (msgTheme !== 'function') {
+            let answer = new Reply(reply).send();
 
-              let content = tokenizer.tokenize(msg.content);
+            let content = tokenizer.tokenize(msg.content);
 
-              // Add the last user message to classifier and train the bot with it
+            // Add the last user message to classifier and train the bot with it
+            if (classifier.getClassifications(msg.content)[0].value !== 'none') {
               classifier.addDocument(content, msgTheme);
               classifier.train();
 
@@ -970,11 +976,11 @@ app.get('/', (req, res) => {
                   console.log(`Error saving changes to the classifier : ${err}`);
                 }
               });
+            } else {
+              console.log('not classified');
             }
           }
-        /*} else {
-          reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
-        }*/
+        }
       });
     })
   })
