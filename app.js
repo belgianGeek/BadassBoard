@@ -884,8 +884,8 @@ app.get('/', (req, res) => {
 
         console.log(classifier.getClassifications(msg.content));
 
-        if (classifier.getClassifications(msg.content)[0].value > 0.5) {
-          if (replyType === 'generic') {
+        if (replyType === 'generic') {
+          if (classifier.getClassifications(msg.content)[0].value > 0.5) {
             if (classifier.classify(msg.content) === 'greetings') {
               revertGreetings(msg);
             } else if (classifier.classify(msg.content) === 'weather') {
@@ -927,29 +927,29 @@ app.get('/', (req, res) => {
                 replyType = 'wiki';
               }
             }
-          } else {
-            msgTheme = 'function';
-
-            if (replyType === 'forecast') {
-              reply = getWeatherForecast(msg.content);
-            } else if (replyType === 'news') {
-              replyType = 'generic';
-              msgTheme = 'news';
-
-              let answers = [
-                'Nice to hear !',
-                'Great !'
-              ];
-
-              reply = answers[Math.floor(Math.random() * answers.length)];
-            } else if (replyType === 'wiki') {
-              let args = msg.content.split(' ');
-
-              searchWiki(args, msg);
-            }
+          } else if (classifier.getClassifications(msg.content)[0].value === 0.5) {
+            reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
           }
-        } else if (classifier.getClassifications(msg.content)[0].value === 0.5) {
-          reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
+        } else {
+          msgTheme = 'function';
+
+          if (replyType === 'forecast') {
+            reply = getWeatherForecast(msg.content);
+          } else if (replyType === 'news') {
+            replyType = 'generic';
+            msgTheme = 'news';
+
+            let answers = [
+              'Nice to hear !',
+              'Great !'
+            ];
+
+            reply = answers[Math.floor(Math.random() * answers.length)];
+          } else if (replyType === 'wiki') {
+            let args = msg.content.split(' ');
+
+            searchWiki(args, msg);
+          }
         }
 
         // Check if the reply is not empty before sending it
