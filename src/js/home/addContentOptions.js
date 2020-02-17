@@ -112,14 +112,6 @@ const addContentOptions = (element) => {
               addContentOptions(parsedElt);
 
               displayArticleSummary();
-
-              $(`${parsedElt} .rssContainer__header`)
-                .mouseenter(() => {
-                  $(`${parsedElt} .contentOptions`).addClass('flex');
-                })
-                .mouseleave(() => {
-                  $(`${parsedElt} .contentOptions`).addClass('flex');
-                });
             });
           });
         } else if (element.match(/forecast/i)) {
