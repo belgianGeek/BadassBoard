@@ -61,54 +61,10 @@ const rottenParser = require('./modules/rottenParser');
 //   console.log(data.title, data.rating);
 // });
 
-// Greetings
-classifier.addDocument('Hi', 'greetings');
-classifier.addDocument('Hey', 'greetings');
-classifier.addDocument('Hello', 'greetings');
+const botTraining = require('./modules/nlp');
+botTraining.botTraining(classifier);
 
-// News
-classifier.addDocument('How are u ?', 'news');
-classifier.addDocument('How are you ?', 'news');
-classifier.addDocument('What\'s up ?', 'news');
-classifier.addDocument('Hello how are you ?', 'news');
-classifier.addDocument('hi how are you ?', 'news');
-classifier.addDocument('Hey how are you ?', 'news');
-classifier.addDocument('Hi what\'s up ?', 'news');
-classifier.addDocument('Hey what\'s up ?', 'news');
-classifier.addDocument('Hello what\'s up ?', 'news');
-
-// Activities
-classifier.addDocument('what are you doing ?', 'activity');
-classifier.addDocument('what are u doing ?', 'activity');
-classifier.addDocument('Hey what are you doing ?', 'activity');
-classifier.addDocument('Hi what are u doing ?', 'activity');
-
-
-// Insults
-classifier.addDocument('suck me', 'gross');
-classifier.addDocument(`shut up`, 'insults');
-classifier.addDocument(`fuck you bitch !`, 'insults');
-classifier.addDocument(`go fuck yourself`, 'insults');
-
-// Love
-classifier.addDocument(`I love you u`, 'love');
-
-// Weather
-classifier.addDocument('weather forecast', 'weather');
-
-// Thanks
-classifier.addDocument('thank u thanks you', 'thanks');
-
-// Jokes
-classifier.addDocument('tell me a joke', 'joke');
-classifier.addDocument('Make me laugh', 'joke');
-
-// Wikipedia
-classifier.addDocument('define', 'wiki');
-classifier.addDocument('search for', 'wiki');
-classifier.addDocument('Wiki Wikipedia', 'wiki');
-
-classifier.train();
+const functions = require('./modules/functions');
 
 const customize = (customizationData) => {
   // console.log(JSON.stringify(customizationData, null, 2));
@@ -258,27 +214,6 @@ const readSettings = () => {
   });
 }
 
-const existPath = (path, callback) => {
-  fs.stat(path, (err, stats) => {
-    if (err) {
-      if (path.match(/\w.+\/$/)) {
-        fs.mkdir(path, (err) => {
-          if (err) throw err;
-        });
-      } else {
-        fs.writeFile(path, data, 'utf-8', (err) => {
-          if (err) throw err;
-        });
-      }
-    }
-
-    // Only execute the callback if it is defined
-    if (callback) {
-      callback();
-    }
-  });
-}
-
 // Get current the logged in user name
 let username = os.userInfo().username;
 
@@ -310,9 +245,9 @@ let downloadedFile = {
 }
 
 // Check if folders exist
-existPath('upload/');
-existPath('tmp/');
-existPath('settings/');
+functions.existPath('../upload/');
+functions.existPath('../tmp/');
+functions.existPath('../settings/');
 
 app.use("/src", express.static(__dirname + "/src"))
   .use("/upload", express.static(__dirname + "/upload"))
@@ -326,21 +261,7 @@ if (!ip.address().match(/169.254/) || !ip.address().match(/127.0/)) {
 }
 
 // Clear the temp folder every 15 minutes
-setInterval(() => {
-  fs.readdir('./tmp', (err, files) => {
-    if (!err) {
-      for (const file of files) {
-        fs.unlink(`./tmp/${file}`, (err) => {
-          if (err) {
-            console.log(`Error deleting "${file}" from the temp folder :\n${err}`);
-          }
-        });
-      }
-    } else {
-      console.log(`Error cleaning the temp folder:\n${err}`);
-    }
-  });
-}, 900000);
+functions.clearTemp();
 
 app.get('/', (req, res) => {
     res.render('home.ejs');
