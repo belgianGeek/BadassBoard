@@ -360,11 +360,7 @@ const parseContent = () => {
           $(fullElementClassName).addClass('subRow');
         }
 
-        $(fullElementClassName).ready(function() {
-          if ($(`${fullElementClassName} section`).length) {
-            $(`${fullElementClassName} .blank`).addClass('invisible');
-          }
-        });
+        $(`${fullElementClassName} .blank`).addClass('invisible');
       });
     }
   });
