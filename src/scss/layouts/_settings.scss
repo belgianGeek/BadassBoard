@@ -125,11 +125,10 @@
       }
 
       &__Switch {
-        position: absolute;
+        position: relative;
         display: inline-block;
-        width: auto;
-        height: 100%;
-        left: 86%;
+        width: 3em;
+        height: 1em;
       }
 
       &__Slider {
