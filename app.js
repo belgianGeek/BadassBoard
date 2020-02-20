@@ -66,152 +66,122 @@ botTraining.botTraining(classifier);
 
 const functions = require('./modules/functions');
 
+// Settings object to be written in the settings file if it doesn't exist
+let settings = settingsTemplate = {
+  "RSS": true,
+  "elements": [{
+      "elements": []
+    },
+    {
+      "elements": []
+    },
+    {
+      "elements": []
+    }
+  ],
+  "owmToken": "9b013a34970de2ddd85f46ea9185dbc5",
+  "searchEngine": {
+    "label": "DuckDuckGo",
+    "url": "https://duckduckgo.com/?q="
+  }
+}
+
+// Read the settings file or create it if it doesn't exist
+fs.stat(settingsPath, (err) => {
+  const getSettings = () => {
+    fs.readFile(settingsPath, 'utf-8', (err, data) => {
+      if (!err) {
+        if (data !== undefined) {
+          return settings = JSON.parse(data);
+        }
+      } else {
+        console.log(`Error retrieving settings : ${err}`);
+      }
+    });
+  }
+
+  if (err === null) {
+    getSettings();
+  } else if (err.code === 'ENOENT') {
+    fs.writeFile(settingsPath, JSON.stringify(settingsTemplate, null, 2), 'utf-8', (err) => {
+      if (err) {
+        console.log(`Error creating the settings file : ${err}`);
+      } else {
+        getSettings();
+      }
+    });
+  }
+});
+
 const customize = (customizationData) => {
   // console.log(JSON.stringify(customizationData, null, 2));
 
-  fs.readFile(settingsPath, 'utf-8', (err, data) => {
-    if (err) throw err;
-    let settings;
-    if (data !== undefined) {
-      settings = JSON.parse(data);
+  if (customizationData.backgroundImage !== null && customizationData.backgroundImage !== undefined) {
+    if (!customizationData.backgroundImage.match(/^http/)) {
 
-      const processNewSettings = (callback) => {
-        if (customizationData.backgroundImage !== null && customizationData.backgroundImage !== undefined) {
-          if (!customizationData.backgroundImage.match(/^http/)) {
-
-            const renamePicture = () => {
-              if (customizationData.backgroundImage.match(' ')) {
-                let newFilename = customizationData.backgroundImage.split(' ').join('_');
-                fs.rename(customizationData.backgroundImage, newFilename, (err) => {
-                  if (!err) {
-                    settings.backgroundImage = newFilename;
-                  } else {
-                    // Avoid errors saying the path does not exist after renaming
-                    if (err.code !== 'ENOENT') {
-                      console.log(`Error renaming background-image : ${err}`);
-                    }
-                  }
-                });
-              } else {
-                settings.backgroundImage = customizationData.backgroundImage;
+      const renamePicture = () => {
+        if (customizationData.backgroundImage.match(' ')) {
+          let newFilename = customizationData.backgroundImage.split(' ').join('_');
+          fs.rename(customizationData.backgroundImage, newFilename, (err) => {
+            if (!err) {
+              settings.backgroundImage = newFilename;
+            } else {
+              // Avoid errors saying the path does not exist after renaming
+              if (err.code !== 'ENOENT') {
+                console.log(`Error renaming background-image : ${err}`);
               }
             }
-
-            if (settings.backgroundImage !== undefined) {
-              fs.stat(settings.backgroundImage, (err, stats) => {
-                if (!err) {
-                  // Remove the old wallpaper and rename the new
-                  fs.unlink(settings.backgroundImage, (err) => {
-                    if (!err || err.code === 'ENOENT') {
-                      renamePicture();
-                    } else {
-                      console.log(`Error deleting the previous background image : ${err}`);
-                    }
-                  });
-                } else {
-                  renamePicture();
-                }
-              });
-            } else {
-              renamePicture();
-            }
-          } else {
-            settings.backgroundImage = customizationData.backgroundImage;
-          }
+          });
+        } else {
+          settings.backgroundImage = customizationData.backgroundImage;
         }
 
-        if (customizationData.RSS !== null && customizationData.RSS !== undefined) {
-          settings.RSS = customizationData.RSS;
-        }
-
-        if (customizationData.owmToken !== null && customizationData.owmToken !== undefined) {
-          settings.owmToken = customizationData.owmToken;
-        }
-
-        // console.log(JSON.stringify(customizationData, null, 2));
-
-        if (customizationData.searchEngine !== null && customizationData.searchEngine !== undefined) {
-          settings.searchEngine = customizationData.searchEngine;
-        }
-
-        setTimeout(() => {
-          callback();
-        }, 500);
+        io.emit('server settings updated', {
+          backgroundImage: settings.backgroundImage
+        });
       }
 
-      processNewSettings(() => {
-        fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
+      if (settings.backgroundImage !== undefined) {
+        fs.stat(settings.backgroundImage, (err, stats) => {
           if (!err) {
-            if (settings.backgroundImage !== null && settings.backgroundImage !== undefined) {
-              io.emit('server settings updated', {
-                backgroundImage: settings.backgroundImage
-              });
-            }
+            // Remove the old wallpaper and rename the new
+            fs.unlink(settings.backgroundImage, (err) => {
+              if (!err || err.code === 'ENOENT') {
+                renamePicture();
+              } else {
+                console.log(`Error deleting the previous background image : ${err}`);
+              }
+            });
           } else {
-            console.log(`Error updating settings after customization : ${err}`);
+            renamePicture();
           }
         });
-      });
-    } else {
-      console.log(`Settings file content is undefined !`);
-    }
-  });
-}
-
-const readSettings = () => {
-  fs.readFile(settingsPath, 'utf-8', (err, data) => {
-    if (err) throw err;
-    let settings;
-    if (data !== undefined) {
-      settings = JSON.parse(data);
-      let elements = settings.elements;
-      var eltsArray = [];
-      if (settings.RSS === true) {
-        io.emit('RSS status retrieved', settings.RSS);
-        var bigI, i;
-        // let iArray = 0;
-        let totalLength = 0;
-        for (const [bigI, value] of elements.entries()) {
-          var subElts = value.elements;
-          totalLength += value.elements.length;
-          for (const [i, subEltsValue] of subElts.entries()) {
-            const sendData = () => {
-              if (eltsArray.length === totalLength) {
-                // console.log(`Array : ${JSON.stringify(eltsArray.length, null, 2)}`);
-                io.emit('parse content', eltsArray);
-              }
-            }
-
-            if (subEltsValue.type === 'rss') {
-              let elt = subEltsValue;
-              feedparser.parse(subEltsValue.url)
-                .then(items => {
-                  elt.feed = items;
-                  eltsArray.push(elt);
-                  // console.log(`RSS : bigI : ${bigI}`, `elements : ${eltsArray.length}`, `totalLength : ${totalLength}`);
-                  sendData();
-                })
-                .catch((err) => {
-                  if (err == 'Error: Not a feed') {
-                    io.emit('errorMsg', {
-                      type: 'rss verification',
-                      element: `${subEltsValue.parent} ${subEltsValue.element}`,
-                      msg: `${subEltsValue.url} is not a valid RSS feed`
-                    });
-                  }
-                });
-            } else if (subEltsValue.type === 'weather' || subEltsValue.type === 'youtube search') {
-              eltsArray.push(subEltsValue);
-              // console.log(`WEATHER : bigI : ${bigI}`, `elements : ${elements.length}`, `totalLength : ${totalLength}`);
-              sendData();
-            }
-          }
-        }
+      } else {
+        renamePicture();
       }
     } else {
-      console.log(`File content is undefined !`);
+      settings.backgroundImage = customizationData.backgroundImage;
+
+      io.emit('server settings updated', {
+        backgroundImage: settings.backgroundImage
+      });
     }
-  });
+  }
+  console.log(settings.backgroundImage);
+
+  if (customizationData.RSS !== null && customizationData.RSS !== undefined) {
+    settings.RSS = customizationData.RSS;
+  }
+
+  if (customizationData.owmToken !== null && customizationData.owmToken !== undefined) {
+    settings.owmToken = customizationData.owmToken;
+  }
+
+  // console.log(JSON.stringify(customizationData, null, 2));
+
+  if (customizationData.searchEngine !== null && customizationData.searchEngine !== undefined) {
+    settings.searchEngine = customizationData.searchEngine;
+  }
 }
 
 // Get current the logged in user name
@@ -268,40 +238,58 @@ app.get('/', (req, res) => {
 
     // Open only one socket connection, to avoid memory leaks
     io.once('connection', (io) => {
-      // Settings object to be written in the settings file if it doesn't exist
-      let settings = {
-        "RSS": true,
-        "elements": [{
-            "elements": []
-          },
-          {
-            "elements": []
-          },
-          {
-            "elements": []
+      const parseSettings = () => {
+        let elements = settings.elements;
+        var eltsArray = [];
+        if (settings.RSS === true) {
+          io.emit('RSS status retrieved', settings.RSS);
+          var bigI, i;
+          // let iArray = 0;
+          let totalLength = 0;
+          for (const [bigI, value] of elements.entries()) {
+            var subElts = value.elements;
+            totalLength += value.elements.length;
+            for (const [i, subEltsValue] of subElts.entries()) {
+              const sendData = () => {
+                if (eltsArray.length === totalLength) {
+                  // console.log(`Array : ${JSON.stringify(eltsArray.length, null, 2)}`);
+                  io.emit('parse content', eltsArray);
+                }
+              }
+
+              if (subEltsValue.type === 'rss') {
+                let elt = subEltsValue;
+                feedparser.parse(subEltsValue.url)
+                  .then(items => {
+                    elt.feed = items;
+                    eltsArray.push(elt);
+                    // console.log(`RSS : bigI : ${bigI}`, `elements : ${eltsArray.length}`, `totalLength : ${totalLength}`);
+                    sendData();
+                  })
+                  .catch((err) => {
+                    if (err == 'Error: Not a feed') {
+                      io.emit('errorMsg', {
+                        type: 'rss verification',
+                        element: `${subEltsValue.parent} ${subEltsValue.element}`,
+                        msg: `${subEltsValue.url} is not a valid RSS feed`
+                      });
+                    }
+                  });
+              } else if (subEltsValue.type === 'weather' || subEltsValue.type === 'youtube search') {
+                eltsArray.push(subEltsValue);
+                // console.log(`WEATHER : bigI : ${bigI}`, `elements : ${elements.length}`, `totalLength : ${totalLength}`);
+                sendData();
+              }
+            }
           }
-        ],
-        "owmToken": "9b013a34970de2ddd85f46ea9185dbc5",
-        "searchEngine": {
-          "label": "DuckDuckGo",
-          "url": "https://duckduckgo.com/?q="
+        }
+
+        // Do not send the default wallpaper
+        if (settings.backgroundImage !== undefined) {
+          io.emit('wallpaper', settings.backgroundImage);
         }
       }
-
-      // Read the settings file or create it if it doesn't exist
-      fs.stat(settingsPath, (err) => {
-        if (err === null) {
-          readSettings();
-        } else if (err.code === 'ENOENT') {
-          fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
-            if (err) {
-              console.log(`Error creating the settings file : ${err}`);
-            } else {
-              readSettings();
-            }
-          });
-        }
-      });
+      parseSettings();
 
       io.on('add content', (feedData) => {
         // console.log(`feedData : ${JSON.stringify(feedData, null, 2)}`);

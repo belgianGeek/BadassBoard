@@ -22,47 +22,12 @@ let headStyle = '';
 // Store the last created element number for each content container
 let lastContent = {};
 
-// Get the background image from the settings and add it to the page
+// Add the user data to the page
 $.ajax({
   url: './settings/settings.json',
   method: 'GET',
   dataType: 'json'
 }).done(settings => {
-  if (settings.backgroundImage !== undefined) {
-    const handle404ImageError = () => {
-      headStyle = `<style>.formContainer__container::before {background-image: url('./src/scss/wallpaper.png');}</style>`;
-      $('head').append(headStyle);
-
-      $('.msgContainer').text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
-      fade('.msgContainer');
-
-      $('.backgroundImage').css('backgroundImage', '');
-    }
-
-    $.ajax({
-        url: settings.backgroundImage,
-        method: 'GET',
-        dataType: '',
-        statusCode: {
-          200: () => {
-            headStyle = `<style>.formContainer__container::before {background-image: url(${settings.backgroundImage});}</style>`;
-            $('head').append(headStyle);
-
-            $('.backgroundImage').css('backgroundImage', `url(${settings.backgroundImage})`);
-          },
-          404: () => {
-            handle404ImageError();
-          }
-        }
-      })
-      .fail(err => {
-        // CORS error handling
-        if (err.statusText === 'error' && err.readyState === 0) {
-          handle404ImageError();
-        }
-      });
-  }
-
   const retrieveLastElementNumber = () => {
     if (settings.elements[0].elements.length > 0) {
       lastContent.content1 = Number(settings.elements[0].elements[settings.elements[0].elements.length - 1].element.substring(8, 9));
@@ -106,6 +71,41 @@ $.ajax({
     // Send the search engine to the server
     socket.emit('customization', searchEngine);
   }
+});
+
+socket.on('wallpaper', wallpaper => {
+  const handle404ImageError = () => {
+    headStyle = `<style>.formContainer__container::before {background-image: url('./src/scss/wallpaper.png');}</style>`;
+    $('head').append(headStyle);
+
+    $('.msgContainer').text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
+    fade('.msgContainer');
+
+    $('.backgroundImage').css('backgroundImage', '');
+  }
+
+  $.ajax({
+      url: wallpaper,
+      method: 'GET',
+      dataType: '',
+      statusCode: {
+        200: () => {
+          headStyle = `<style>.formContainer__container::before {background-image: url(${wallpaper});}</style>`;
+          $('head').append(headStyle);
+
+          $('.backgroundImage').css('backgroundImage', `url(${wallpaper})`);
+        },
+        404: () => {
+          handle404ImageError();
+        }
+      }
+    })
+    .fail(err => {
+      // CORS error handling
+      if (err.statusText === 'error' && err.readyState === 0) {
+        handle404ImageError();
+      }
+    });
 });
 
 $(document).ready(() => {
