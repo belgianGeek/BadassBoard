@@ -237,7 +237,7 @@ app.get('/', (req, res) => {
     res.render('home.ejs');
 
     // Open only one socket connection, to avoid memory leaks
-    io.once('connection', (io) => {
+    io.once('connection', io => {
       const parseSettings = () => {
         let elements = settings.elements;
         var eltsArray = [];
@@ -291,170 +291,139 @@ app.get('/', (req, res) => {
       }
       parseSettings();
 
-      io.on('add content', (feedData) => {
-        // console.log(`feedData : ${JSON.stringify(feedData, null, 2)}`);
-        let element;
+      io.on('add content', feedData => {
+        console.log('add content !');
+        console.log(`feedData : ${JSON.stringify(feedData, null, 2)}`);
 
-        if (feedData !== undefined && feedData !== null) {
-          fs.readFile(settingsPath, 'utf-8', (err, data) => {
-            if (err) throw err;
-            let settings;
-            settings = JSON.parse(data);
-            var elements = settings.elements;
-            if (settings === undefined) {
-              console.log(`The settings file content is undefined...`);
-            } else {
-              settings.RSS = true;
+        var elements = settings.elements;
 
-              // Check if feedData is an array
-              if (Array.isArray(feedData)) {
-                // console.log(JSON.stringify(feedData, null, 2));
-                let newElt = {};
+        settings.RSS = true;
+        
+        let newElt = {};
 
-                for (let i = 0; i < feedData.length; i++) {
-                  // Store the parent element number
-                  let iParent = Number(feedData[i].parent.match(/\d/)) - 1;
+        // Define a counter to prevent multiple addings
+        let iAddElt = 0;
 
-                  // Define a counter to prevent multiple addings
-                  let iAddElt = 0;
+        // Store the parent element number
+        let iParent = Number(feedData.parent.match(/\d/)) - 1;
 
-                  for (const [j, value] of elements.entries()) {
-                    // console.log(`j : ${j}\nValue : ${JSON.stringify(value.elements, null, 2)}\n${feedData[i].parent}`);
+        const processData = (callback) => {
+          // console.log(i);
+          if (feedData.type === 'rss') {
+            request
+              .get(feedData.url)
+              .on('response', (res) => {
+                if (res.headers['content-type'].match(/xml/gi) || res.headers['content-type'].match(/rss/gi)) {
+                  // console.log(res.headers['content-type']);
+                  newElt.element = feedData.element;
+                  newElt.parent = feedData.parent;
+                  newElt.url = feedData.url;
+                  newElt.type = feedData.type;
 
-                    const processData = (callback) => {
-                      // console.log(i);
-                      if (feedData[i].type === 'rss') {
-                        request
-                          .get(feedData[i].url)
-                          .on('response', (res) => {
-                            if (res.headers['content-type'].match(/xml/gi) || res.headers['content-type'].match(/rss/gi)) {
-                              // console.log(res.headers['content-type']);
-                              newElt.element = feedData[i].element;
-                              newElt.parent = feedData[i].parent;
-                              newElt.url = feedData[i].url;
-                              newElt.type = feedData[i].type;
+                  feedparser.parse(feedData.url)
+                    .then(items => {
+                      console.log('send data to client');
+                      io.emit('parse content', [{
+                        feed: items,
+                        element: feedData.element,
+                        parent: feedData.parent,
+                        type: feedData.type
+                      }]);
 
-                              feedparser.parse(feedData[i].url)
-                                .then(items => {
-                                  io.emit('parse content', [{
-                                    feed: items,
-                                    element: feedData[i].element,
-                                    parent: feedData[i].parent,
-                                    type: feedData[i].type
-                                  }]);
-
-                                  callback();
-                                })
-                                .catch((err) => {
-                                  if (err == 'Error: Not a feed') {
-                                    console.log('Invalid feed URL');
-                                    io.emit('errorMsg', {
-                                      type: 'rss verification',
-                                      element: `${feedData[i].parent} ${feedData[i].element}`,
-                                      msg: `${feedData[i].url} is not a valid RSS feed`
-                                    });
-                                  }
-                                });
-
-                              if (i === feedData.length - 1) {
-                                fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), (err) => {
-                                  if (err) throw err;
-                                });
-                              }
-                            } else {
-                              newElt = {};
-                              // console.log(1, newElt);
-
-                              io.emit('errorMsg', {
-                                type: 'rss verification',
-                                element: `${feedData[i].parent} ${feedData[i].element}`,
-                                msg: `${feedData[i].url} is not a valid RSS feed`
-                              });
-                            }
-                          })
-                          .on('error', (err) => {
-                            console.log(`Error parsing feed : ${err}`);
-                            io.emit('errorMsg', {
-                              type: 'rss verification',
-                              element: `${feedData[i].parent} ${feedData[i].element}`,
-                              msg: `${feedData[i].url} is not a valid RSS feed`
-                            });
-                          });
-
-                      } else if (feedData[i].type === 'weather') {
-                        newElt.element = feedData[i].element;
-                        newElt.parent = feedData[i].parent;
-                        newElt.location = feedData[i].location;
-                        newElt.type = feedData[i].type;
-
-                        io.emit('parse content', [{
-                          type: 'weather',
-                          element: feedData[i].element,
-                          parent: feedData[i].parent,
-                          location: feedData[i].location
-                        }]);
-
-                        callback();
-                      } else if (feedData[i].type === 'youtube search') {
-                        newElt.element = feedData[i].element;
-                        newElt.parent = feedData[i].parent;
-                        newElt.type = feedData[i].type;
-
-                        io.emit('parse content', [{
-                          type: 'youtube search',
-                          element: feedData[i].element,
-                          parent: feedData[i].parent,
-                        }]);
-
-                        callback();
-                      }
-                    }
-
-                    processData(() => {
-                      // console.log(2, newElt);
-                      if (newElt !== {}) {
-                        if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
-                          for (const [k, kValue] of value.elements.entries()) {
-                            if (kValue.element === feedData[i].element && kValue.parent === feedData[i].parent) {
-                              // console.log(1);
-                              value.elements.splice(k, 1, newElt);
-                              iAddElt++;
-                            } else if (kValue.element !== feedData[i].element && kValue.parent === feedData[i].parent) {
-                              if (iAddElt === 0) {
-                                // console.log(2);
-                                value.elements.push(newElt);
-                                iAddElt++;
-                              }
-                              // console.log(JSON.stringify(value.elements[k], null, 2));
-                            }
-                          }
-                        } else if (value.elements[0] === undefined && iParent === j) {
-                          // console.log(3);
-                          // Append the new element to the "elements" settings array
-                          value.elements.push(newElt);
-                          iAddElt++;
-                        }
-
-                        fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
-                          if (err) throw err;
-
-                          // Reset the addings counter
-                          iAddElt = 0;
+                      callback();
+                    })
+                    .catch((err) => {
+                      if (err == 'Error: Not a feed') {
+                        console.log('Invalid feed URL');
+                        io.emit('errorMsg', {
+                          type: 'rss verification',
+                          element: `${feedData.parent} ${feedData.element}`,
+                          msg: `${feedData.url} is not a valid RSS feed`
                         });
                       }
                     });
+                } else {
+                  newElt = {};
+                  // console.log(1, newElt);
+
+                  io.emit('errorMsg', {
+                    type: 'rss verification',
+                    element: `${feedData.parent} ${feedData.element}`,
+                    msg: `${feedData.url} is not a valid RSS feed`
+                  });
+                }
+              })
+              .on('error', (err) => {
+                console.log(`Error parsing feed : ${err}`);
+                io.emit('errorMsg', {
+                  type: 'rss verification',
+                  element: `${feedData.parent} ${feedData.element}`,
+                  msg: `${feedData.url} is not a valid RSS feed`
+                });
+              });
+
+          } else if (feedData.type === 'weather') {
+            newElt.element = feedData.element;
+            newElt.parent = feedData.parent;
+            newElt.location = feedData.location;
+            newElt.type = feedData.type;
+
+            io.emit('parse content', [{
+              type: 'weather',
+              element: feedData.element,
+              parent: feedData.parent,
+              location: feedData.location
+            }]);
+
+            callback();
+          } else if (feedData.type === 'youtube search') {
+            newElt.element = feedData.element;
+            newElt.parent = feedData.parent;
+            newElt.type = feedData.type;
+
+            io.emit('parse content', [{
+              type: 'youtube search',
+              element: feedData.element,
+              parent: feedData.parent,
+            }]);
+
+            callback();
+          }
+        }
+
+        processData(() => {
+          // console.log(2, newElt);
+          for (const [j, value] of elements.entries()) {
+            if (newElt !== {}) {
+              if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
+                for (const [k, kValue] of value.elements.entries()) {
+                  if (kValue.element === feedData.element && kValue.parent === feedData.parent) {
+                    // console.log(1);
+                    value.elements.splice(k, 1, newElt);
+                    iAddElt++;
+                  } else if (kValue.element !== feedData.element && kValue.parent === feedData.parent) {
+                    if (iAddElt === 0) {
+                      // console.log(2);
+                      value.elements.push(newElt);
+                      iAddElt++;
+                    }
+                    // console.log(JSON.stringify(value.elements[k], null, 2));
                   }
                 }
+              } else if (value.elements[0] === undefined && iParent === j) {
+                // console.log(3);
+                // Append the new element to the "elements" settings array
+                value.elements.push(newElt);
+                iAddElt++;
               }
             }
-          });
-        } else if (feedData === undefined || feedData === null) {
-          io.emit('errorMsg', {
-            msg: `Sorrry, RSS feed couldn't be added. Intense reflexion.`,
-            type: 'generic'
-          });
-          console.log(`Error adding feed : feedData is ${feedData}`);
-        }
+          }
+
+          console.log('file written 2');
+
+          // Reset the addings counter
+          iAddElt = 0;
+        });
       });
 
       io.on('customization', (customizationData) => {
@@ -494,8 +463,6 @@ app.get('/', (req, res) => {
               .pipe(audioFile);
 
             stream.on('close', () => {
-              // console.log(`I finished downloading ${filename} !`);
-
               downloadedFile.path = path;
               downloadedFile.name = filename;
 
@@ -601,7 +568,6 @@ app.get('/', (req, res) => {
       });
 
       io.on('update feed', (feed2update) => {
-        // console.log(JSON.stringify(feed2update, null, 2));
         fs.readFile(settingsPath, 'utf-8', (err, data) => {
           try {
             let settings = JSON.parse(data);
@@ -611,7 +577,6 @@ app.get('/', (req, res) => {
                 let eltRegex = new RegExp(j.element, 'gi');
                 let parentRegex = new RegExp(j.parent, 'gi');
                 if (feed2update.element.match(eltRegex) && feed2update.parent.match(parentRegex)) {
-                  // console.log('ok');
                   feedparser.parse(j.url)
                     .then(items => {
                       // Parse rss
@@ -912,12 +877,10 @@ app.get('/', (req, res) => {
   .post('/upload', (req, res) => {
     upload(req, res, (err) => {
       if (req.file !== undefined) {
-        // console.log(req.file);
         let data = {
           backgroundImage: `${req.file.destination}/${req.file.filename}`
         };
 
-        // console.log(`customize : ${data.backgroundImage}`);
         if (err) {
           res.render('home.ejs', {
             msg: err
@@ -928,7 +891,6 @@ app.get('/', (req, res) => {
           });
         }
       } else if (err) {
-        // console.log(JSON.stringify(req.file, null, 2));
         console.log(`Error uploading file :(( :\n${err}`);
       }
     });

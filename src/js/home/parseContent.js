@@ -1,7 +1,7 @@
-// Add content of other types than RSS
 const parseContent = () => {
+  console.log('client parsing !');
   socket.on('parse content', (parsedData) => {
-
+    console.log('server parsing');
     // console.log(JSON.stringify(parsedData, null, 2));
     for (const [i, value] of parsedData.entries()) {
 
@@ -66,6 +66,7 @@ const parseContent = () => {
               $(svg).hide();
 
               $(`${parent} .newContent .addContent`).ready(() => {
+                console.log(`${parent} .newContent .addContent is ready !`);
                 handleOptionSelection(parent, '.newContent');
               });
             });

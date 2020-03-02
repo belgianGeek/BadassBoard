@@ -82,12 +82,9 @@ const handleOptionSelection = (parent, child) => {
           if ($(`${btnClass} .addContent__feed__input`).val() !== null && $(`${btnClass} .addContent__feed__input`).val() !== undefined && $(`${btnClass} .addContent__feed__input`).val().match(/^http/i)) {
 
             // Ask the server to parse the feed
-            socket.emit('add content', [elementsObject]);
+            socket.emit('add content', elementsObject);
 
             $(`${btnClass} .addContent`).hide();
-
-            // Add content to the page
-            parseContent();
           } else {
             printError({
               type: 'rss',
@@ -159,13 +156,10 @@ const handleOptionSelection = (parent, child) => {
               let count = forecast.count;
 
               if (count !== 0) {
-                // Add content to the page
-                parseContent();
-
                 $(`${parent} ${element} .addContent`).hide();
 
                 // Send the changes to the server side
-                socket.emit('add content', [elementsObject]);
+                socket.emit('add content', elementsObject);
               } else {
                 printError({
                   type: 'weather',
@@ -198,22 +192,19 @@ const handleOptionSelection = (parent, child) => {
 
         if (child !== '.newContent') {
           // Send the changes to the server side
-          socket.emit('add content', [{
+          socket.emit('add content', {
             element: child,
             parent: parent,
             type: 'youtube search'
-          }]);
+          });
         } else {
           // Send the changes to the server side
-          socket.emit('add content', [{
+          socket.emit('add content', {
             element: element,
             parent: parent,
             type: 'youtube search'
-          }]);
+          });
         }
-
-        // Add content to the page
-        parseContent();
 
         $(`${parent} ${element} .addContent`).hide();
       });

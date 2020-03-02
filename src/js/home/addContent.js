@@ -4,26 +4,24 @@ const addContent = (parent, element) => {
 
   $(element, svg).off();
 
-  setTimeout(() => {
-    if (!$(`${parent} ${element} section`).length) {
-      $(svg).removeClass('invisible');
-    }
+  if (!$(`${parent} ${element} section`).length) {
+    $(svg).removeClass('invisible');
+  }
 
-    // Show the "addContent" form on svg click
-    $(svg).click(() => {
-      $(element).css('padding', '0');
+  // Show the "addContent" form on svg click
+  $(svg).click(() => {
+    $(element).css('padding', '0');
 
-      $(`${parent} ${element} .addContent`)
-        .css('display', '')
-        .addClass('flex');
+    $(`${parent} ${element} .addContent`)
+      .css('display', '')
+      .addClass('flex');
 
-      $(svg).hide();
+    $(svg).hide();
 
-      $(`${parent} ${element} .addContent`).ready(() => {
+    $(`${parent} ${element} .addContent`).ready(() => {
 
-        // Handle option selection
-        handleOptionSelection(parent, element);
-      });
+      // Handle option selection
+      handleOptionSelection(parent, element);
     });
-  }, 3000);
+  });
 }
