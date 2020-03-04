@@ -88,29 +88,29 @@ let settings = settingsTemplate = {
 
 // Read the settings file or create it if it doesn't exist
 fs.stat(settingsPath, (err) => {
-  const getSettings = () => {
+  const getSettings = (callback) => {
     fs.readFile(settingsPath, 'utf-8', (err, data) => {
-      if (!err) {
-        if (data !== undefined) {
-          return settings = JSON.parse(data);
+      if (err) {
+        if (err.code === 'ENOENT') {
+          fs.writeFile(settingsPath, JSON.stringify(settingsTemplate, null, 2), 'utf-8', (err) => {
+            if (err) {
+              console.log(`Error creating the settings file : ${err}`);
+            }
+          });
+        } else {
+          console.log(`Error retrieving settings : ${err}`);
         }
       } else {
-        console.log(`Error retrieving settings : ${err}`);
+        let content = JSON.parse(data);
+        callback(content);
       }
     });
   }
 
-  if (err === null) {
-    getSettings();
-  } else if (err.code === 'ENOENT') {
-    fs.writeFile(settingsPath, JSON.stringify(settingsTemplate, null, 2), 'utf-8', (err) => {
-      if (err) {
-        console.log(`Error creating the settings file : ${err}`);
-      } else {
-        getSettings();
-      }
-    });
-  }
+  getSettings(content => {
+    settings = content;
+    console.log(JSON.stringify(settings, null, 2));
+  });
 });
 
 const customize = (customizationData) => {
@@ -215,9 +215,9 @@ let downloadedFile = {
 }
 
 // Check if folders exist
-functions.existPath('../upload/');
-functions.existPath('../tmp/');
-functions.existPath('../settings/');
+functions.existPath('./upload/');
+functions.existPath('./tmp/');
+functions.existPath('./settings/');
 
 app.use("/src", express.static(__dirname + "/src"))
   .use("/upload", express.static(__dirname + "/upload"))
@@ -236,7 +236,7 @@ functions.clearTemp();
 app.get('/', (req, res) => {
     res.render('home.ejs');
 
-    // Open only one socket connection, to avoid memory leaks
+    // Open only one socket connection to avoid memory leaks
     io.once('connection', io => {
       const parseSettings = () => {
         let elements = settings.elements;
@@ -252,19 +252,17 @@ app.get('/', (req, res) => {
             for (const [i, subEltsValue] of subElts.entries()) {
               const sendData = () => {
                 if (eltsArray.length === totalLength) {
-                  // console.log(`Array : ${JSON.stringify(eltsArray.length, null, 2)}`);
+                  // Send data to the client
+                  console.log('server initiated parsing !');
                   io.emit('parse content', eltsArray);
                 }
               }
 
               if (subEltsValue.type === 'rss') {
-                let elt = subEltsValue;
                 feedparser.parse(subEltsValue.url)
                   .then(items => {
-                    elt.feed = items;
-                    eltsArray.push(elt);
-                    // console.log(`RSS : bigI : ${bigI}`, `elements : ${eltsArray.length}`, `totalLength : ${totalLength}`);
-                    sendData();
+                    subEltsValue.feed = items;
+                    eltsArray.push(subEltsValue);
                   })
                   .catch((err) => {
                     if (err == 'Error: Not a feed') {
@@ -277,9 +275,9 @@ app.get('/', (req, res) => {
                   });
               } else if (subEltsValue.type === 'weather' || subEltsValue.type === 'youtube search') {
                 eltsArray.push(subEltsValue);
-                // console.log(`WEATHER : bigI : ${bigI}`, `elements : ${elements.length}`, `totalLength : ${totalLength}`);
-                sendData();
               }
+
+              sendData();
             }
           }
         }
@@ -292,13 +290,13 @@ app.get('/', (req, res) => {
       parseSettings();
 
       io.on('add content', feedData => {
+        console.log(JSON.stringify(settings, null, 2));
         console.log('add content !');
-        console.log(`feedData : ${JSON.stringify(feedData, null, 2)}`);
 
         var elements = settings.elements;
 
         settings.RSS = true;
-        
+
         let newElt = {};
 
         // Define a counter to prevent multiple addings
@@ -308,13 +306,11 @@ app.get('/', (req, res) => {
         let iParent = Number(feedData.parent.match(/\d/)) - 1;
 
         const processData = (callback) => {
-          // console.log(i);
           if (feedData.type === 'rss') {
             request
               .get(feedData.url)
               .on('response', (res) => {
                 if (res.headers['content-type'].match(/xml/gi) || res.headers['content-type'].match(/rss/gi)) {
-                  // console.log(res.headers['content-type']);
                   newElt.element = feedData.element;
                   newElt.parent = feedData.parent;
                   newElt.url = feedData.url;
@@ -322,7 +318,6 @@ app.get('/', (req, res) => {
 
                   feedparser.parse(feedData.url)
                     .then(items => {
-                      console.log('send data to client');
                       io.emit('parse content', [{
                         feed: items,
                         element: feedData.element,
@@ -334,7 +329,8 @@ app.get('/', (req, res) => {
                     })
                     .catch((err) => {
                       if (err == 'Error: Not a feed') {
-                        console.log('Invalid feed URL');
+                        console.log(`${feedData.url} is not a valid feed URL...`);
+
                         io.emit('errorMsg', {
                           type: 'rss verification',
                           element: `${feedData.parent} ${feedData.element}`,
@@ -344,7 +340,6 @@ app.get('/', (req, res) => {
                     });
                 } else {
                   newElt = {};
-                  // console.log(1, newElt);
 
                   io.emit('errorMsg', {
                     type: 'rss verification',
@@ -354,7 +349,8 @@ app.get('/', (req, res) => {
                 }
               })
               .on('error', (err) => {
-                console.log(`Error parsing feed : ${err}`);
+                console.log(`Error parsing feed ${feedData.url} : ${err}`);
+
                 io.emit('errorMsg', {
                   type: 'rss verification',
                   element: `${feedData.parent} ${feedData.element}`,
@@ -392,26 +388,22 @@ app.get('/', (req, res) => {
         }
 
         processData(() => {
-          // console.log(2, newElt);
           for (const [j, value] of elements.entries()) {
             if (newElt !== {}) {
               if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
                 for (const [k, kValue] of value.elements.entries()) {
                   if (kValue.element === feedData.element && kValue.parent === feedData.parent) {
-                    // console.log(1);
+                    console.log(1);
                     value.elements.splice(k, 1, newElt);
                     iAddElt++;
                   } else if (kValue.element !== feedData.element && kValue.parent === feedData.parent) {
-                    if (iAddElt === 0) {
-                      // console.log(2);
-                      value.elements.push(newElt);
-                      iAddElt++;
-                    }
-                    // console.log(JSON.stringify(value.elements[k], null, 2));
+                    console.log(2);
+                    value.elements.push(newElt);
+                    iAddElt++;
                   }
                 }
               } else if (value.elements[0] === undefined && iParent === j) {
-                // console.log(3);
+                console.log(3);
                 // Append the new element to the "elements" settings array
                 value.elements.push(newElt);
                 iAddElt++;
@@ -419,10 +411,10 @@ app.get('/', (req, res) => {
             }
           }
 
-          console.log('file written 2');
-
-          // Reset the addings counter
-          iAddElt = 0;
+          fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', () => {
+            // Reset the addings counter
+            iAddElt = 0;
+          });
         });
       });
 
@@ -622,6 +614,8 @@ app.get('/', (req, res) => {
                   msg: 'Invalid playlist reference :((',
                   type: 'generic'
                 });
+              } else {
+                console.log(result.error);
               }
             } catch (e) {
               console.log(`Error parsing playlist : ${e}`);

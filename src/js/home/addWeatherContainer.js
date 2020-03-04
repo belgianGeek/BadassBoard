@@ -1,4 +1,4 @@
-const addWeatherContainer = (forecast, fullElementClassName, addNewContentContainer) => {
+const addWeatherContainer = (forecast, fullElementClassName) => {
   if ($(`${fullElementClassName} .addContent:visible`).length) {
     $(`${fullElementClassName} .addContent`).hide();
   }
@@ -140,7 +140,5 @@ const addWeatherContainer = (forecast, fullElementClassName, addNewContentContai
       .appendTo(contentOptions);
 
     addContentOptions(fullElementClassName);
-
-    addNewContentContainer();
   }
 }

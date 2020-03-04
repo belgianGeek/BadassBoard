@@ -1,10 +1,10 @@
 const fs = require('fs');
 
 module.exports = {
-  existPath: (path, callback) => {
+  existPath: (path, data, callback) => {
     fs.stat(path, (err, stats) => {
       if (err) {
-        if (path.match(/\.\.\/\w.+\/$/)) {
+        if (path.match(/\.\/\w.+\/$/)) {
           fs.mkdir(path, (err) => {
             if (err) throw err;
           });
@@ -23,10 +23,10 @@ module.exports = {
   },
   clearTemp: () => {
     setInterval(() => {
-      fs.readdir('../tmp', (err, files) => {
+      fs.readdir('./tmp', (err, files) => {
         if (!err) {
           for (const file of files) {
-            fs.unlink(`../tmp/${file}`, (err) => {
+            fs.unlink(`./tmp/${file}`, (err) => {
               if (err) {
                 console.log(`Error deleting "${file}" from the temp folder :\n${err}`);
               }

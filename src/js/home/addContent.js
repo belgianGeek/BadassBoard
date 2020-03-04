@@ -10,6 +10,7 @@ const addContent = (parent, element) => {
 
   // Show the "addContent" form on svg click
   $(svg).click(() => {
+    console.log('click !');
     $(element).css('padding', '0');
 
     $(`${parent} ${element} .addContent`)
@@ -22,6 +23,7 @@ const addContent = (parent, element) => {
 
       // Handle option selection
       handleOptionSelection(parent, element);
+      console.log('first containers ready, handling content selection...');
     });
   });
 }

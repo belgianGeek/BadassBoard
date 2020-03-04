@@ -108,86 +108,84 @@ socket.on('wallpaper', wallpaper => {
     });
 });
 
-$(document).ready(() => {
-  $('.credits').hide();
+$('.credits').hide();
 
-  socket.on('RSS status retrieved', rssStatus => {
-    checkRSSstatus(rssStatus);
+socket.on('RSS status retrieved', rssStatus => {
+  checkRSSstatus(rssStatus);
+});
+
+if (!$('.subRow').length) {
+  $('footer').css({
+    position: 'absolute',
+    top: '90%'
   });
+}
 
-  if (!$('.subRow').length) {
-    $('footer').css({
-      position: 'absolute',
-      top: '90%'
+checkForUpdates();
+
+// Show settings on button click
+showSettings();
+
+// Display the units converter on button click
+showConverter();
+
+// Add containers on startup
+parseContent();
+
+socket.on('refresh app', () => {
+  location.reload();
+});
+
+socket.on('errorMsg', (err) => {
+  printError(err);
+});
+
+socket.on('server settings updated', (data) => {
+  if (data !== null && data !== undefined) {
+    $('.backgroundImage').css('background-image', `url(${data.backgroundImage})`);
+
+    headStyle = `<style>.formContainer__container::before {background-image: url(${data.backgroundImage});}</style>`;
+    $('head').append(headStyle);
+  }
+});
+
+// Autocomplete
+$('.questionBox').on('input', () => {
+  autocomplete($('.questionBox').val());
+});
+
+$('.form').keypress((event) => {
+  if (event.keyCode === 13) {
+    questionBoxSubmit();
+    $('.formContainer').css({
+      padding: '0.5% 1%'
     });
   }
+});
 
-  checkForUpdates();
+//Submit form on svg icon click
+$('.formSubmit').click(() => {
+  questionBoxSubmit();
+});
 
-  // Show settings on button click
-  showSettings();
+// If the msgContainer is empty, hide it
+if (!$('.msgContainer').text().match(/\w.+/)) {
+  $('.msgContainer').hide();
+} else {
+  fade('.msgContainer');
+}
 
-  // Display the units converter on button click
-  showConverter();
+// Get current mouse position
+getMousePosition();
 
-  // Add containers on startup
-  parseContent();
+// Redirect to the chat page
+$('.header__chatBtn').click(() => {
+  window.open('/chat');
+});
 
-  socket.on('refresh app', () => {
-    location.reload();
-  });
-
-  socket.on('errorMsg', (err) => {
-    printError(err);
-  });
-
-  socket.on('server settings updated', (data) => {
-    if (data !== null && data !== undefined) {
-      $('.backgroundImage').css('background-image', `url(${data.backgroundImage})`);
-
-      headStyle = `<style>.formContainer__container::before {background-image: url(${data.backgroundImage});}</style>`;
-      $('head').append(headStyle);
-    }
-  });
-
-  // Autocomplete
-  $('.questionBox').on('input', () => {
-    autocomplete($('.questionBox').val());
-  });
-
-  $('.form').keypress((event) => {
-    if (event.keyCode === 13) {
-      questionBoxSubmit();
-      $('.formContainer').css({
-        padding: '0.5% 1%'
-      });
-    }
-  });
-
-  //Submit form on svg icon click
-  $('.formSubmit').click(() => {
-    questionBoxSubmit();
-  });
-
-  // If the msgContainer is empty, hide it
-  if (!$('.msgContainer').text().match(/\w.+/)) {
-    $('.msgContainer').hide();
-  } else {
-    fade('.msgContainer');
-  }
-
-  // Get current mouse position
-  getMousePosition();
-
-  // Redirect to the chat page
-  $('.header__chatBtn').click(() => {
-    window.open('/chat');
-  });
-
-  // Dynamically show the footer
-  $('.footer').mouseenter(() => {
-    $('.credits').fadeIn();
-  }).mouseleave(() => {
-    $('.credits').fadeOut();
-  });
+// Dynamically show the footer
+$('.footer').mouseenter(() => {
+  $('.credits').fadeIn();
+}).mouseleave(() => {
+  $('.credits').fadeOut();
 });

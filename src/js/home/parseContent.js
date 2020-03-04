@@ -1,7 +1,6 @@
 const parseContent = () => {
-  console.log('client parsing !');
   socket.on('parse content', (parsedData) => {
-    console.log('server parsing');
+    console.log('client is parsing...');
     // console.log(JSON.stringify(parsedData, null, 2));
     for (const [i, value] of parsedData.entries()) {
 
@@ -66,7 +65,6 @@ const parseContent = () => {
               $(svg).hide();
 
               $(`${parent} .newContent .addContent`).ready(() => {
-                console.log(`${parent} .newContent .addContent is ready !`);
                 handleOptionSelection(parent, '.newContent');
               });
             });
@@ -115,7 +113,7 @@ const parseContent = () => {
 
                     // 404 errors handling (forecast.count can't be equals to 0)
                     if (count !== 0) {
-                      addWeatherContainer(forecast, fullElementClassName, addNewContentContainer);
+                      addWeatherContainer(forecast, fullElementClassName);
                     } else {
                       printError({
                         type: 'weather',
@@ -174,8 +172,6 @@ const parseContent = () => {
               displayArticleSummary();
 
               addContentOptions(fullElementClassName);
-
-              addNewContentContainer();
             });
           }
         }
@@ -228,8 +224,6 @@ const parseContent = () => {
               .appendTo(contentOptions);
 
             addContentOptions(fullElementClassName);
-
-            addNewContentContainer();
           }
 
           $('.youtubeSearchContainer *').keypress((event) => {
@@ -355,6 +349,8 @@ const parseContent = () => {
           });
 
         }
+
+        addNewContentContainer();
 
         // Add a margin to the dynamicaly created divs
         if (!parent.match(iElement)) {
