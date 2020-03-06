@@ -620,33 +620,18 @@ app.get('/', (req, res) => {
       });
 
       io.on('remove content', (content2remove) => {
-        fs.readFile(settingsPath, 'utf-8', (err, data) => {
-          if (!err) {
-            let settings = JSON.parse(data);
-
-            for (const [i, settingsElts] of settings.elements.entries()) {
-              // Set a variable to stop the loop as soon as the element is removed
-              let found = false;
-              for (const [j, settingsElt] of settingsElts.elements.entries()) {
-                if (found !== true) {
-                  if (content2remove.parent === settingsElt.parent && content2remove.element === settingsElt.element) {
-                    settingsElts.elements.splice(j, 1);
-
-                    fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), (err) => {
-                      if (!err) {
-                        found = true;
-                      } else {
-                        console.log(`Error updating settings : ${err}`);
-                      }
-                    });
-                  }
-                }
+        for (const [i, settingsElts] of settings.elements.entries()) {
+          // Set a variable to stop the loop as soon as the element is removed
+          let found = false;
+          for (const [j, settingsElt] of settingsElts.elements.entries()) {
+            if (found !== true) {
+              if (content2remove.parent === settingsElt.parent && content2remove.element === settingsElt.element) {
+                settingsElts.elements.splice(j, 1);
+                found = true;
               }
             }
-          } else {
-            console.log(`Error reading settings : ${err}`);
           }
-        });
+        }
       });
     });
   })
