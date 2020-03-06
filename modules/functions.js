@@ -21,6 +21,21 @@ module.exports = {
       }
     });
   },
+  createSettingsFile: (settingsPath, settingsTemplate) => {
+    fs.stat(settingsPath, (err) => {
+      if (err) {
+        if (err.code === 'ENOENT') {
+          fs.writeFile(settingsPath, JSON.stringify(settingsTemplate, null, 2), 'utf-8', (err) => {
+            if (err) {
+              console.log(`Error creating the settings file : ${err}`);
+            }
+          });
+        } else {
+          console.log(`Error retrieving settings : ${err}`);
+        }
+      }
+    });
+  },
   clearTemp: () => {
     setInterval(() => {
       fs.readdir('./tmp', (err, files) => {

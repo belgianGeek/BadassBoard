@@ -86,33 +86,6 @@ let settings = settingsTemplate = {
   }
 }
 
-// Read the settings file or create it if it doesn't exist
-fs.stat(settingsPath, (err) => {
-  const getSettings = (callback) => {
-    fs.readFile(settingsPath, 'utf-8', (err, data) => {
-      if (err) {
-        if (err.code === 'ENOENT') {
-          fs.writeFile(settingsPath, JSON.stringify(settingsTemplate, null, 2), 'utf-8', (err) => {
-            if (err) {
-              console.log(`Error creating the settings file : ${err}`);
-            }
-          });
-        } else {
-          console.log(`Error retrieving settings : ${err}`);
-        }
-      } else {
-        let content = JSON.parse(data);
-        callback(content);
-      }
-    });
-  }
-
-  getSettings(content => {
-    settings = content;
-    console.log(JSON.stringify(settings, null, 2));
-  });
-});
-
 const customize = (customizationData) => {
   // console.log(JSON.stringify(customizationData, null, 2));
 
@@ -233,61 +206,79 @@ if (!ip.address().match(/169.254/) || !ip.address().match(/127.0/)) {
 // Clear the temp folder every 15 minutes
 functions.clearTemp();
 
+// Create the settings file if it doesn't exist
+functions.createSettingsFile(settingsPath, settingsTemplate);
+const updateSettings = () => {
+  // Update the settings variable with the new data
+  settings = fs.readFileSync(settingsPath, 'utf-8');
+  settings = JSON.parse(settings);
+  JSON.stringify(settings, null, 2);
+}
+
+updateSettings();
+
+// Repeat the process every 5 minutes
+setInterval(() => {
+  functions.createSettingsFile(settingsPath, settingsTemplate);
+  updateSettings();
+}, 300000);
+
 app.get('/', (req, res) => {
     res.render('home.ejs');
 
     // Open only one socket connection to avoid memory leaks
     io.once('connection', io => {
-      const parseSettings = () => {
-        let elements = settings.elements;
-        var eltsArray = [];
-        if (settings.RSS === true) {
-          io.emit('RSS status retrieved', settings.RSS);
-          var bigI, i;
-          // let iArray = 0;
-          let totalLength = 0;
-          for (const [bigI, value] of elements.entries()) {
-            var subElts = value.elements;
-            totalLength += value.elements.length;
-            for (const [i, subEltsValue] of subElts.entries()) {
-              const sendData = () => {
-                if (eltsArray.length === totalLength) {
-                  // Send data to the client
-                  console.log('server initiated parsing !');
-                  io.emit('parse content', eltsArray);
-                }
-              }
+      let elements = settings.elements;
+      var eltsArray = [];
+      if (settings.RSS === true) {
+        io.emit('RSS status retrieved', settings.RSS);
+        var bigI, i;
 
-              if (subEltsValue.type === 'rss') {
-                feedparser.parse(subEltsValue.url)
-                  .then(items => {
-                    subEltsValue.feed = items;
-                    eltsArray.push(subEltsValue);
-                  })
-                  .catch((err) => {
-                    if (err == 'Error: Not a feed') {
-                      io.emit('errorMsg', {
-                        type: 'rss verification',
-                        element: `${subEltsValue.parent} ${subEltsValue.element}`,
-                        msg: `${subEltsValue.url} is not a valid RSS feed`
-                      });
-                    }
-                  });
-              } else if (subEltsValue.type === 'weather' || subEltsValue.type === 'youtube search') {
-                eltsArray.push(subEltsValue);
+        let totalLength = 0;
+        for (const [bigI, value] of elements.entries()) {
+          var subElts = value.elements;
+          totalLength += value.elements.length;
+          console.log(`totalLength : ${value.elements.length}`);
+          for (const [i, subEltsValue] of subElts.entries()) {
+            const sendData = () => {
+              console.log(totalLength, eltsArray.length);
+              if (eltsArray.length === totalLength) {
+                // Send data to the client
+                console.log('server initiated parsing !', eltsArray);
+                io.emit('parse content', eltsArray);
               }
+            }
+
+            if (subEltsValue.type === 'rss') {
+              feedparser.parse(subEltsValue.url)
+                .then(items => {
+                  subEltsValue.feed = items;
+                  eltsArray.push(subEltsValue);
+
+                  sendData();
+                })
+                .catch((err) => {
+                  if (err == 'Error: Not a feed') {
+                    io.emit('errorMsg', {
+                      type: 'rss verification',
+                      element: `${subEltsValue.parent} ${subEltsValue.element}`,
+                      msg: `${subEltsValue.url} is not a valid RSS feed`
+                    });
+                  }
+                });
+            } else if (subEltsValue.type === 'weather' || subEltsValue.type === 'youtube search') {
+              eltsArray.push(subEltsValue);
 
               sendData();
             }
           }
         }
-
-        // Do not send the default wallpaper
-        if (settings.backgroundImage !== undefined) {
-          io.emit('wallpaper', settings.backgroundImage);
-        }
       }
-      parseSettings();
+
+      // Do not send the default wallpaper
+      if (settings.backgroundImage !== undefined) {
+        io.emit('wallpaper', settings.backgroundImage);
+      }
 
       io.on('add content', feedData => {
         console.log(JSON.stringify(settings, null, 2));
