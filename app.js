@@ -87,7 +87,6 @@ let settings = settingsTemplate = {
 }
 
 const customize = (customizationData) => {
-  // console.log(JSON.stringify(customizationData, null, 2));
 
   if (customizationData.backgroundImage !== null && customizationData.backgroundImage !== undefined) {
     if (!customizationData.backgroundImage.match(/^http/)) {
@@ -149,8 +148,6 @@ const customize = (customizationData) => {
   if (customizationData.owmToken !== null && customizationData.owmToken !== undefined) {
     settings.owmToken = customizationData.owmToken;
   }
-
-  // console.log(JSON.stringify(customizationData, null, 2));
 
   if (customizationData.searchEngine !== null && customizationData.searchEngine !== undefined) {
     settings.searchEngine = customizationData.searchEngine;
@@ -383,18 +380,19 @@ app.get('/', (req, res) => {
                 for (const [k, kValue] of value.elements.entries()) {
                   if (iAddElt === 0) {
                     if (kValue.element === feedData.element && kValue.parent === feedData.parent) {
-                      console.log(k, 1);
                       value.elements.splice(k, 1, newElt);
                       iAddElt++;
                     } else if (kValue.element !== feedData.element && kValue.parent === feedData.parent) {
-                      console.log(k, 2);
                       value.elements.push(newElt);
                       iAddElt++;
+
+                      for (const [i, setting] of settings.elements) {
+                        console.log(JSON.stringify(setting, null, 2));
+                      }
                     }
                   }
                 }
               } else if (value.elements[0] === undefined && iParent === j) {
-                console.log(3);
                 // Append the new element to the "elements" settings array
                 value.elements.push(newElt);
                 iAddElt++;
@@ -402,10 +400,8 @@ app.get('/', (req, res) => {
             }
           }
 
-          fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', () => {
-            // Reset the addings counter
-            iAddElt = 0;
-          });
+          // Reset the addings counter
+          iAddElt = 0;
         });
       });
 
@@ -551,33 +547,25 @@ app.get('/', (req, res) => {
       });
 
       io.on('update feed', (feed2update) => {
-        fs.readFile(settingsPath, 'utf-8', (err, data) => {
-          try {
-            let settings = JSON.parse(data);
-            for (const i of settings.elements) {
-              for (const j of i.elements) {
-                // console.log(JSON.stringify(j, null, 2));
-                let eltRegex = new RegExp(j.element, 'gi');
-                let parentRegex = new RegExp(j.parent, 'gi');
-                if (feed2update.element.match(eltRegex) && feed2update.parent.match(parentRegex)) {
-                  feedparser.parse(j.url)
-                    .then(items => {
-                      // Parse rss
-                      io.emit('feed updated', {
-                        feed: items,
-                        element: feed2update.element,
-                        parent: feed2update.parent,
-                        update: true
-                      });
-                    })
-                    .catch(console.error);
-                }
-              }
+        for (const i of settings.elements) {
+          for (const j of i.elements) {
+            let eltRegex = new RegExp(j.element, 'gi');
+            let parentRegex = new RegExp(j.parent, 'gi');
+            if (feed2update.element.match(eltRegex) && feed2update.parent.match(parentRegex)) {
+              feedparser.parse(j.url)
+                .then(items => {
+                  // Parse rss
+                  io.emit('feed updated', {
+                    feed: items,
+                    element: feed2update.element,
+                    parent: feed2update.parent,
+                    update: true
+                  });
+                })
+                .catch(console.error);
             }
-          } catch (err) {
-            console.log(`Error reading settings file : ${err}`);
           }
-        });
+        }
       });
 
       io.on('parse playlist', (playlistUrl) => {
@@ -646,6 +634,10 @@ app.get('/', (req, res) => {
       let replyType = 'generic';
 
       let welcomeMsg = new Reply(`Hi ! I'm ${bot.name}, how can I help you ?`).send();
+
+      if (settings.backgroundImage !== undefined) {
+        io.emit('wallpaper', settings.backgroundImage);
+      }
 
       io.on('chat msg', msg => {
         const getWeatherForecast = (msg) => {
@@ -870,19 +862,8 @@ app.get('/', (req, res) => {
   .use((req, res, next) => {
     res.status(404).render('404.ejs');
     io.once('connection', (io) => {
-      fs.readFile(settingsPath, 'utf-8', (err, data) => {
-        if (err) throw err;
-        let settings;
-        if (data !== undefined) {
-          try {
-            settings = JSON.parse(data);
-          } catch (err) {
-            // If parsing fail, throw an error
-            console.log(`Error parsing settings !\n${err}`);
-          }
-        } else {
-          console.log(`File content is undefined !`);
-        }
-      });
+      if (settings.backgroundImage !== undefined) {
+        io.emit('wallpaper', settings.backgroundImage);
+      }
     });
   });
