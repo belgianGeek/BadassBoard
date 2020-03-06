@@ -83,7 +83,10 @@ const handleOptionSelection = (parent, child) => {
           if ($(`${btnClass} .addContent__feed__input`).val() !== null && $(`${btnClass} .addContent__feed__input`).val() !== undefined && $(`${btnClass} .addContent__feed__input`).val().match(/^http/i)) {
 
             // Ask the server to parse the feed
-            socket.emit('add content', elementsObject);
+            if (iAddElt === 0) {
+              socket.emit('add content', elementsObject);
+              iAddElt++;
+            }
 
             console.log('RSS added !');
 
@@ -164,7 +167,10 @@ const handleOptionSelection = (parent, child) => {
                 console.log('weather added !');
 
                 // Send the changes to the server side
-                socket.emit('add content', elementsObject);
+                if (iAddElt === 0) {
+                  socket.emit('add content', elementsObject);
+                  iAddElt++;
+                }
               } else {
                 printError({
                   type: 'weather',
@@ -197,18 +203,28 @@ const handleOptionSelection = (parent, child) => {
 
         if (child !== '.newContent') {
           // Send the changes to the server side
-          socket.emit('add content', {
-            element: child,
-            parent: parent,
-            type: 'youtube search'
-          });
+          if (iAddElt === 0) {
+            socket.emit('add content', {
+              element: child,
+              parent: parent,
+              type: 'youtube search'
+            });
+            
+            iAddElt++;
+          }
+
+          iAddElt++;
         } else {
           // Send the changes to the server side
-          socket.emit('add content', {
-            element: element,
-            parent: parent,
-            type: 'youtube search'
-          });
+          if (iAddElt === 0) {
+            socket.emit('add content', {
+              element: element,
+              parent: parent,
+              type: 'youtube search'
+            });
+
+            iAddElt++;
+          }
         }
 
         console.log('youtube added !');

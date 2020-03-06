@@ -162,6 +162,9 @@ let username = os.userInfo().username;
 
 let replyID = 0;
 
+// Define a counter to prevent multiple addings
+let iAddElt = 0;
+
 // Define the user request theme to avoid training the bot with unecessary data
 // like city names or stupid stuff (msgTheme == 'function' in that case)
 let msgTheme = 'none';
@@ -238,13 +241,12 @@ app.get('/', (req, res) => {
         for (const [bigI, value] of elements.entries()) {
           var subElts = value.elements;
           totalLength += value.elements.length;
-          console.log(`totalLength : ${value.elements.length}`);
+
           for (const [i, subEltsValue] of subElts.entries()) {
             const sendData = () => {
-              console.log(totalLength, eltsArray.length);
               if (eltsArray.length === totalLength) {
                 // Send data to the client
-                console.log('server initiated parsing !', eltsArray);
+                console.log('server initiated parsing !');
                 io.emit('parse content', eltsArray);
               }
             }
@@ -281,7 +283,6 @@ app.get('/', (req, res) => {
       }
 
       io.on('add content', feedData => {
-        console.log(JSON.stringify(settings, null, 2));
         console.log('add content !');
 
         var elements = settings.elements;
@@ -289,9 +290,6 @@ app.get('/', (req, res) => {
         settings.RSS = true;
 
         let newElt = {};
-
-        // Define a counter to prevent multiple addings
-        let iAddElt = 0;
 
         // Store the parent element number
         let iParent = Number(feedData.parent.match(/\d/)) - 1;
@@ -383,14 +381,16 @@ app.get('/', (req, res) => {
             if (newElt !== {}) {
               if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
                 for (const [k, kValue] of value.elements.entries()) {
-                  if (kValue.element === feedData.element && kValue.parent === feedData.parent) {
-                    console.log(1);
-                    value.elements.splice(k, 1, newElt);
-                    iAddElt++;
-                  } else if (kValue.element !== feedData.element && kValue.parent === feedData.parent) {
-                    console.log(2);
-                    value.elements.push(newElt);
-                    iAddElt++;
+                  if (iAddElt === 0) {
+                    if (kValue.element === feedData.element && kValue.parent === feedData.parent) {
+                      console.log(k, 1);
+                      value.elements.splice(k, 1, newElt);
+                      iAddElt++;
+                    } else if (kValue.element !== feedData.element && kValue.parent === feedData.parent) {
+                      console.log(k, 2);
+                      value.elements.push(newElt);
+                      iAddElt++;
+                    }
                   }
                 }
               } else if (value.elements[0] === undefined && iParent === j) {
