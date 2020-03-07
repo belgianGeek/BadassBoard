@@ -123,7 +123,9 @@ if (!$('.subRow').length) {
   });
 }
 
-checkForUpdates();
+$(document).ready(() => {
+  checkForUpdates();
+});
 
 // Show settings on button click
 showSettings();

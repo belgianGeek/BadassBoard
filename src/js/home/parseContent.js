@@ -1,7 +1,5 @@
 const parseContent = () => {
   socket.on('parse content', (parsedData) => {
-    console.log('client is parsing...');
-    // console.log(JSON.stringify(parsedData, null, 2));
     for (const [i, value] of parsedData.entries()) {
 
       const buildElement = (parent, element, iElement, callback) => {

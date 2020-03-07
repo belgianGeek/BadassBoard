@@ -1,5 +1,4 @@
 const handleOptionSelection = (parent, child) => {
-  console.log('handleOptionSelection !');
   let newContentClass = '';
   let elementsObject = {};
 
@@ -88,8 +87,6 @@ const handleOptionSelection = (parent, child) => {
               iAddElt++;
             }
 
-            console.log('RSS added !');
-
             $(`${btnClass} .addContent`).hide();
           } else {
             printError({
@@ -164,8 +161,6 @@ const handleOptionSelection = (parent, child) => {
               if (count !== 0) {
                 $(`${parent} ${element} .addContent`).hide();
 
-                console.log('weather added !');
-
                 // Send the changes to the server side
                 if (iAddElt === 0) {
                   socket.emit('add content', elementsObject);
@@ -209,7 +204,7 @@ const handleOptionSelection = (parent, child) => {
               parent: parent,
               type: 'youtube search'
             });
-            
+
             iAddElt++;
           }
 
@@ -226,8 +221,6 @@ const handleOptionSelection = (parent, child) => {
             iAddElt++;
           }
         }
-
-        console.log('youtube added !');
 
         $(`${parent} ${element} .addContent`).hide();
       });

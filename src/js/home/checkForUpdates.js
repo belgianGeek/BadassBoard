@@ -1,6 +1,6 @@
 const checkForUpdates = () => {
   $.ajax({
-    url: 'https://api.github.com/repos/Leroux47/BadassBoard/releases',
+    url: 'https://api.github.com/repositories/204866456/releases',
     method: 'GET',
     dataType: 'json',
     statusCode: {

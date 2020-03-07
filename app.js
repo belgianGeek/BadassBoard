@@ -238,7 +238,6 @@ app.get('/', (req, res) => {
             const sendData = () => {
               if (eltsArray.length === totalLength) {
                 // Send data to the client
-                console.log('server initiated parsing !');
                 io.emit('parse content', eltsArray);
               }
             }
@@ -275,8 +274,6 @@ app.get('/', (req, res) => {
       }
 
       io.on('add content', feedData => {
-        console.log('add content !');
-
         var elements = settings.elements;
 
         settings.RSS = true;
@@ -373,6 +370,8 @@ app.get('/', (req, res) => {
             if (newElt !== {}) {
               if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
                 for (const [k, kValue] of value.elements.entries()) {
+                  // Remove the "feed" property for each element before updating the settings
+                  delete kValue.feed;
                   if (iAddElt === 0) {
                     if (kValue.element === feedData.element && kValue.parent === feedData.parent) {
                       value.elements.splice(k, 1, newElt);
@@ -380,10 +379,6 @@ app.get('/', (req, res) => {
                     } else if (kValue.element !== feedData.element && kValue.parent === feedData.parent) {
                       value.elements.push(newElt);
                       iAddElt++;
-
-                      for (const [i, setting] of settings.elements) {
-                        console.log(JSON.stringify(setting, null, 2));
-                      }
                     }
                   }
                 }

@@ -109,7 +109,6 @@ const showSettings = () => {
             }
           },
           success: (res) => {
-            // console.log(fd, file, `${updatedSettings.backgroundImage} uploaded successfully`);
             $('.backgroundImage').css('backgroundImage', `url(${updatedSettings.backgroundImage})`);
 
             // Update the <style> tag to fix the blur
