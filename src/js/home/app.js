@@ -142,15 +142,6 @@ socket.on('errorMsg', (err) => {
   printError(err);
 });
 
-socket.on('server settings updated', (data) => {
-  if (data !== null && data !== undefined) {
-    $('.backgroundImage').css('background-image', `url(${data.backgroundImage})`);
-
-    headStyle = `<style>.formContainer__container::before {background-image: url(${data.backgroundImage});}</style>`;
-    $('head').append(headStyle);
-  }
-});
-
 // Autocomplete
 $('.questionBox').on('input', () => {
   autocomplete($('.questionBox').val());

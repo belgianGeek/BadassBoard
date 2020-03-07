@@ -108,9 +108,7 @@ const customize = (customizationData) => {
           settings.backgroundImage = customizationData.backgroundImage;
         }
 
-        io.emit('server settings updated', {
-          backgroundImage: settings.backgroundImage
-        });
+        io.emit('wallpaper', settings.backgroundImage);
       }
 
       if (settings.backgroundImage !== undefined) {
@@ -134,12 +132,9 @@ const customize = (customizationData) => {
     } else {
       settings.backgroundImage = customizationData.backgroundImage;
 
-      io.emit('server settings updated', {
-        backgroundImage: settings.backgroundImage
-      });
+      io.emit('wallpaper', settings.backgroundImage);
     }
   }
-  console.log(settings.backgroundImage);
 
   if (customizationData.RSS !== null && customizationData.RSS !== undefined) {
     settings.RSS = customizationData.RSS;
