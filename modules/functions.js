@@ -52,5 +52,17 @@ module.exports = {
         }
       });
     }, 900000);
+  },
+  updateSettingsFile: (settingsPath, updatedSettings, callback) => {
+    fs.writeFile(settingsPath, JSON.stringify(updatedSettings, null, 2), 'utf-8', (err, data) => {
+      if (err) {
+        console.log(`Error saving settings : ${err}`);
+      } else {
+        console.log('Settings successfully saved !');
+        if (callback !== undefined) {
+          callback();
+        }
+      }
+    })
   }
 }

@@ -201,7 +201,7 @@ if (!ip.address().match(/169.254/) || !ip.address().match(/127.0/)) {
 // Clear the temp folder every 15 minutes
 functions.clearTemp();
 
-// Create the settings file if it doesn't exist
+// Create the settings file if it doesn't exist...
 functions.createSettingsFile(settingsPath, settingsTemplate);
 const updateSettings = () => {
   // Update the settings variable with the new data
@@ -212,10 +212,14 @@ const updateSettings = () => {
 
 updateSettings();
 
-// Repeat the process every 5 minutes
+// ... and repeat the process every 5 minutes
 setInterval(() => {
   functions.createSettingsFile(settingsPath, settingsTemplate);
-  updateSettings();
+
+  // Write changes to the settings file after each update
+  functions.updateSettingsFile(settingsPath, settings, () => {
+    updateSettings();
+  });
 }, 300000);
 
 app.get('/', (req, res) => {
