@@ -35,11 +35,6 @@ const settingsPath = './settings/settings.json';
 
 server.listen(8080);
 
-const bot = {
-  name: 'Ava',
-  icon: './src/scss/chat/bot.png'
-}
-
 const nlp = require('natural');
 let classifier = new nlp.LogisticRegressionClassifier();
 const stemmer = nlp.PorterStemmer.attach();
@@ -68,7 +63,10 @@ const functions = require('./modules/functions');
 
 // Settings object to be written in the settings file if it doesn't exist
 let settings = settingsTemplate = {
-  "RSS": true,
+  "bot": {
+    "name": "BadassBot",
+    "icon": "./src/scss/icons/interface/bot.png"
+  },
   "elements": [{
       "elements": []
     },
@@ -80,6 +78,7 @@ let settings = settingsTemplate = {
     }
   ],
   "owmToken": "9b013a34970de2ddd85f46ea9185dbc5",
+  "RSS": true,
   "searchEngine": {
     "label": "DuckDuckGo",
     "url": "https://duckduckgo.com/?q="
@@ -160,7 +159,7 @@ let iAddElt = 0;
 let msgTheme = 'none';
 
 function Reply(content) {
-  this.author = 'Ava';
+  this.author = settings.bot.name;
   this.content = content;
   this.id = replyID;
   this.dateTime = new Date();
@@ -617,15 +616,23 @@ app.get('/', (req, res) => {
   })
 
   .get('/chat', (req, res) => {
+    if (settings.bot === undefined) {
+      settings.bot = {
+        name: "BadassBot",
+        icon: "./src/scss/icons/interface/bot.png"
+      }
+    }
+
     res.render('chat.ejs', {
-      botName: bot.name
+      botName: settings.bot.name,
+      botIcon: settings.bot.icon
     });
 
     io.once('connection', io => {
       let reply = '';
       let replyType = 'generic';
 
-      let welcomeMsg = new Reply(`Hi ! I'm ${bot.name}, how can I help you ?`).send();
+      let welcomeMsg = new Reply(`Hi ! I'm ${settings.bot.name}, how can I help you ?`).send();
 
       if (settings.backgroundImage !== undefined) {
         io.emit('wallpaper', settings.backgroundImage);
