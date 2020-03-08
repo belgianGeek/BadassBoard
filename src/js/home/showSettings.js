@@ -109,6 +109,7 @@ const showSettings = () => {
             }
           },
           success: (res) => {
+            // console.log(fd, file, `${updatedSettings.backgroundImage} uploaded successfully`);
             $('.backgroundImage').css('backgroundImage', `url(${updatedSettings.backgroundImage})`);
 
             // Update the <style> tag to fix the blur
@@ -116,9 +117,13 @@ const showSettings = () => {
             $('head').append(`<style>.formContainer__container::before {background-image: url(${updatedSettings.backgroundImage});}</style>`);
           },
           error: (err) => {
+            printError({
+              type: 'generic',
+              msg: 'Your new wallpaper failed uploading... Please check the logs for details.'
+            })
             console.log(fd, file, `Error uploading wallpaper :\n${JSON.stringify(err, null, 2)}`);
           }
-        });
+        })
       }
     } else {
       if ($('.backgroundImageUploadForm__InputFile').val() === '' && $('.backgroundImageUploadForm__InputUrl').val() !== '') {

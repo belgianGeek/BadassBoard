@@ -107,8 +107,6 @@ const customize = (customizationData) => {
         } else {
           settings.backgroundImage = customizationData.backgroundImage;
         }
-
-        io.emit('wallpaper', settings.backgroundImage);
       }
 
       if (settings.backgroundImage !== undefined) {
@@ -131,9 +129,9 @@ const customize = (customizationData) => {
       }
     } else {
       settings.backgroundImage = customizationData.backgroundImage;
-
-      io.emit('wallpaper', settings.backgroundImage);
     }
+
+    io.emit('wallpaper', settings.backgroundImage);
   }
 
   if (customizationData.RSS !== null && customizationData.RSS !== undefined) {
@@ -838,13 +836,9 @@ app.get('/', (req, res) => {
         };
 
         if (err) {
-          res.render('home.ejs', {
-            msg: err
-          });
+          console.log(`Error uploading file :(( :\n${err}`);
         } else {
-          res.render('home.ejs', {
-            msg: `${req.file.originalname} successfully uploaded !`,
-          });
+          console.log(`${req.file.originalname} successfully uploaded !`);
         }
       } else if (err) {
         console.log(`Error uploading file :(( :\n${err}`);
