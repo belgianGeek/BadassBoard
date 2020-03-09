@@ -54,15 +54,23 @@ module.exports = {
     }, 900000);
   },
   updateSettingsFile: (settingsPath, updatedSettings, callback) => {
-    fs.writeFile(settingsPath, JSON.stringify(updatedSettings, null, 2), 'utf-8', (err, data) => {
-      if (err) {
-        console.log(`Error saving settings : ${err}`);
-      } else {
-        console.log('Settings successfully saved !');
-        if (callback !== undefined) {
-          callback();
+    for (const [i, elt] of updatedSettings.elements.entries()) {
+      for (const [j, value] of elt.elements.entries()) {
+        delete value.feed;
+
+        if (i === updatedSettings.elements.length - 1 && j === elt.elements.length - 1) {
+          fs.writeFile(settingsPath, JSON.stringify(updatedSettings, null, 2), 'utf-8', (err, data) => {
+            if (err) {
+              console.log(`Error saving settings : ${err}`);
+            } else {
+              console.log('Settings successfully saved !');
+              if (callback !== undefined) {
+                callback();
+              }
+            }
+          });
         }
       }
-    })
+    }
   }
 }
