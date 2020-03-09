@@ -46,7 +46,7 @@ const addContentOptions = (element) => {
           $(parent).remove();
         });
 
-        $('.confirmation__child__btnContainer__cancelBtn').click(() => {
+        $('.confirmation__child__btnContainer__cancelBtn, .click').click(() => {
           restoreScroll();
           emptyConfirmationContent();
 

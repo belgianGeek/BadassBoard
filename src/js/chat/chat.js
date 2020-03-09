@@ -11,7 +11,23 @@ $.ajax({
   dataType: 'json'
 }).done(settings => {
   if (settings.owmToken !== undefined) {
-    owmToken = settings.owmToken;
+    $('.owmToken__input').val(settings.owmToken);
+  }
+
+  if (settings.searchEngine !== undefined) {
+    $('.searchEngineSelection__select').val(settings.searchEngine.label);
+  } else {
+    $('.searchEngineSelection__select').val(searchEngine.label);
+
+    // Send the search engine to the server
+    socket.emit('customization', searchEngine);
+  }
+
+  if (settings.RSS) {
+    $('.toggleRss__Input').prop('checked', true);
+    $('.toggleRss__Slider').removeClass('unchecked');
+  } else {
+    $('.toggleRss__Input').prop('checked', false);
   }
 });
 

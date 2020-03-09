@@ -219,6 +219,11 @@ setInterval(() => {
   });
 }, 300000);
 
+// Add a function to the Array prototype and get random elements
+Array.prototype.random = function() {
+  return this[Math.floor((Math.random() * this.length))];
+}
+
 app.get('/', (req, res) => {
     res.render('home.ejs');
 
@@ -616,6 +621,17 @@ app.get('/', (req, res) => {
   })
 
   .get('/chat', (req, res) => {
+    // Define emoijis
+    let emoijis = {
+      devil: '😈',
+      innocent: '😇',
+      laugh: '😂',
+      sad: '😭',
+      smile: '😃',
+      sunglasses: '😎',
+      wink: '😉'
+    }
+
     if (settings.bot === undefined) {
       settings.bot = {
         name: "BadassBot",
@@ -733,16 +749,33 @@ app.get('/', (req, res) => {
               reply = `I'm just talking to you ${msg.author}.`;
               msgTheme = 'activity';
             } else if (classifier.classify(msg.content) === 'love') {
-              reply = `Sorry ${msg.author}, I don't think human and robots can love each other...`;
+              let answers = [
+                `Sorry ${msg.author}, I don't think human and robots can love each other...`,
+                `Welcome to the Friendzone dude !`,
+                `Forgive me but I can't express any feelings`
+              ];
+
+              reply = answers.random();
               msgTheme = 'love';
             } else if (classifier.classify(msg.content) === 'gross') {
               reply = `Don't be so gross ${msg.author} !`;
               msgTheme = 'gross';
             } else if (classifier.classify(msg.content) === 'insults') {
-              reply = `Didn't you Mother teach you politeness ?`;
+              let answers = [
+                `Didn't you Mother teach you politeness ?`,
+                `So you think you're better than me ? Interesting...`
+              ];
+
+              reply = answers.random();
               msgTheme = 'insults';
             } else if (classifier.classify(msg.content) === 'thanks') {
-              reply = `You're welcome ${msg.author} !`;
+              let answers = [
+                `You're welcome ${msg.author} !`,
+                `Glad I could help you !`,
+                `Now you owe me one ${emoijis.innocent}`,
+              ];
+
+              reply = answers.random();
               msgTheme = 'thanks';
             } else if (classifier.classify(msg.content) === 'joke') {
               reply = `I don't have any jokes for now...`;
