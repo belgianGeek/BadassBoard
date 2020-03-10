@@ -52,9 +52,6 @@ nlp.LogisticRegressionClassifier.load('classifier.json', null, function(err, loa
 });
 
 const rottenParser = require('./modules/rottenParser');
-// rottenParser.getMovieReview('Ex Machina').then(data => {
-//   console.log(data.title, data.rating);
-// });
 
 const botTraining = require('./modules/nlp');
 botTraining.botTraining(classifier);
@@ -758,7 +755,13 @@ app.get('/', (req, res) => {
               reply = answers.random();
               msgTheme = 'love';
             } else if (classifier.classify(msg.content) === 'gross') {
-              reply = `Don't be so gross ${msg.author} !`;
+              let answers = [
+                `Don't be so gross ${msg.author} !`,
+                `I'm not equiped for that kind of... activity, sorry.`,
+                `What if I told you to go fuck yourself ${msg.author} ?`,
+              ];
+
+              reply = answers.random();
               msgTheme = 'gross';
             } else if (classifier.classify(msg.content) === 'insults') {
               let answers = [
@@ -794,6 +797,14 @@ app.get('/', (req, res) => {
                 reply = `Sorry ${msg.author}, I couldn't understand... What are you searching for ?`;
                 replyType = 'wiki';
               }
+            } else if (classifier.classify(msg.content) === 'movie review') {
+              let answers = [
+                `Which movie do you want a review for ?`,
+                `Which movie are you interested in ?`
+              ];
+
+              reply = answers.random();
+              replyType = 'movie review';
             }
           } else if (classifier.getClassifications(msg.content)[0].value === 0.5) {
             reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
@@ -817,6 +828,36 @@ app.get('/', (req, res) => {
             let args = msg.content.split(' ');
 
             searchWiki(args, msg);
+          } else if (replyType === 'movie review') {
+            rottenParser.getMovieReview(msg.content)
+              .then(movieData => {
+                let reply = {
+                  title: movieData.title,
+                  img: movieData.poster,
+                  url: movieData.url,
+                  description: movieData.synopsis,
+                  fields: [
+                    // `<em><u>Rating </u>: ${movieData.rating}</em>`
+                    `<em><u>Critics consensus </u>: ${movieData.consensus}</em>`
+                  ]
+                };
+
+                if (movieData.rating > '80%') {
+                  reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/cf-lg.3c29eff04f2.png';
+                  reply.color =  'gold';
+                } else if (movieData.rating > '50%' && movieData.rating < '80%') {
+                  reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-fresh-lg.12e316e31d2.png';
+                  reply.color = 'red';
+                } else {
+                  reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-rotten-lg.ecdfcf9596f.png';
+                  reply.color = 'green';
+                }
+
+
+                msgTheme = 'movie review';
+
+                new Reply(reply).send();
+              });
           }
         }
 

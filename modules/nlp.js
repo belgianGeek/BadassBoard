@@ -22,7 +22,6 @@ module.exports = {
     classifier.addDocument('Hey what are you doing ?', 'activity');
     classifier.addDocument('Hi what are u doing ?', 'activity');
 
-
     // Insults
     classifier.addDocument('suck me', 'gross');
     classifier.addDocument(`shut up`, 'insults');
@@ -46,6 +45,9 @@ module.exports = {
     classifier.addDocument('define', 'wiki');
     classifier.addDocument('search for', 'wiki');
     classifier.addDocument('Wiki Wikipedia', 'wiki');
+
+    // Movies
+    classifier.addDocument('Can I get a movie review ?', 'movie review');
 
     classifier.train();
   }

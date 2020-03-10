@@ -15,7 +15,7 @@ module.exports = {
 
           let rottenTitle = $('.mop-ratings-wrap__title--top').text();
           let rottenRating = $('#tomato_meter_link .mop-ratings-wrap__percentage').text().trim();
-          let rottenSynopsis = $('#movieSynopsis').text().match(/[^\s]{2}[A-Za-z0-9.,;(){}@&#$"'-_\/\\ ]{250}/);
+          let rottenSynopsis = `${$('#movieSynopsis').text().match(/[^\s]{2}[A-Za-z0-9.,;(){}@&#$"'-_\/\\ ]{250}/)[0]}...`;
           let rottenConsensus = $('.mop-ratings-wrap__text--concensus').text().match(/[A-Za-z0-9.,;(){}@&#$"'-_\/\\ ]{1,200}/);
           let rottenPoster = $('#poster_link img').attr('data-src');
 
