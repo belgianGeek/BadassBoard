@@ -470,10 +470,13 @@ app.get('/', (req, res) => {
 
               downloadedFile.name = filename;
 
+              // Wait one second to be sure the file processing ended
               // Inform the client that the download ended
-              io.emit('download ended', {
-                title: downloadedFile.name
-              });
+              setTimeout(() => {
+                io.emit('download ended', {
+                  title: downloadedFile.name
+                }, 60000);
+              })
             } else {
               io.emit('errorMsg', {
                 type: 'generic',
@@ -621,6 +624,7 @@ app.get('/', (req, res) => {
     // Define emoijis
     let emoijis = {
       devil: '😈',
+      expressionless: '😑',
       innocent: '😇',
       laugh: '😂',
       sad: '😭',
@@ -676,9 +680,9 @@ app.get('/', (req, res) => {
 
                 return new Reply(`Currently in ${previsions.city}, the temperature is ${previsions.temp} C°, ${previsions.description}. ` +
                   `Humidity is about ${previsions.humidity}%, and the wind blows at ${previsions.windSpeed} km/h.`).send();
-
               } else {
                 msgTheme = 'weather';
+                replyType = 'generic';
                 return new Reply("Sorry, I can't find this place... Make sure of the location you have given me and retry...").send();
               }
             } else {
@@ -700,34 +704,57 @@ app.get('/', (req, res) => {
         }
 
         const searchWiki = (args, msg) => {
-          request(`https://en.wikipedia.org/api/rest_v1/page/summary/${args.join('_')}?redirect=true`, (err, res, body) => {
-            if (!err) {
-              let res = JSON.parse(body);
-              replyType = 'generic';
+          return new Promise((fullfill, reject) => {
+            request(`https://en.wikipedia.org/api/rest_v1/page/summary/${args.join('_')}?redirect=true`, (err, res, body) => {
+              if (!err) {
+                let res = JSON.parse(body);
+                replyType = 'generic';
 
-              let reply = `According to Wikipedia, <i>${res.extract}</i>`;
+                // Check if the API entry exists
+                if (!res.title.match(/not found/gi)) {
+                  let reply = {
+                    icon: './src/scss/icons/suggestions/wikipedia.ico',
+                    title: res.title,
+                    url: res.content_urls.desktop.page,
+                    color: 'white',
+                    description: `<p>According to Wikipedia,</p> <article><i>${res.extract}</i></article>`
+                  };
 
-              // Check if the API entry exists
-              if (res.title !== 'Not found.') {
-                if (res.type === 'disambiguation') {
-                  reply += `<br>A disambiguation page is available here : <a href="${res.content_urls.desktop.page}">${res.title}</a>`;
+                  if (res.type === 'disambiguation') {
+                    reply.description += `<p>A disambiguation page is available here : <a href="${reply.url}">${res.title}</a></p>`;
+                  } else {
+                    reply.description += `<p>More info : <a href="${reply.url}">${res.title}</a></p>`;
+                  }
+
+                  if (res.thumbnail !== undefined) {
+                    reply.img = res.thumbnail.source;
+                  }
+
+                  // Modify the message theme to create the embed
+                  msgTheme = 'wiki';
+                  reply.theme = 'wiki';
+
+                  fullfill(reply);
                 } else {
-                  reply += `<br>More info : <a href="${res.content_urls.desktop.page}">${res.title}</a>`;
+                  reject(`Sorry ${msg.author}, Wikipedia does not have any entry for this...`);
                 }
-
-                // Modify the message theme to create the embed
-                msgTheme = 'wiki';
-                reply.theme = 'wiki';
-                return new Reply(reply).send();
               } else {
-                return new Reply(`Sorry ${msg.author}, Wikipedia does not have any entry for this...`).send();
+                replyType = 'generic';
+                console.log(`Error parsing Wikipedia API : ${err}`);
+                reject(`Sorry, ${msg.author}, I was unable to complete your request. Please check the logs for details.`);
               }
-            } else {
-              replyType = 'generic';
-              console.log(`Error parsing Wikipedia API : ${err}`);
-              return new Reply(`Sorry, ${msg.author}, I was unable to complete your request. Please check the logs for details.`).send();
-            }
+            });
           });
+        }
+
+        const wikiResponse = (args, msg) => {
+          searchWiki(args, msg)
+          .then((res) => {
+            new Reply(res).send();
+          })
+          .catch((err) => {
+            new Reply(err).send();
+          })
         }
 
         console.log(classifier.getClassifications(msg.content));
@@ -789,10 +816,10 @@ app.get('/', (req, res) => {
 
               if (msg.content.match(/^define/i)) {
                 args.shift();
-                searchWiki(args, msg);
+                wikiResponse(args, msg);
               } else if (msg.content.match(/^search for/i)) {
                 args.splice(0, 2);
-                searchWiki(args, msg);
+                wikiResponse(args, msg);
               } else {
                 reply = `Sorry ${msg.author}, I couldn't understand... What are you searching for ?`;
                 replyType = 'wiki';
@@ -826,37 +853,54 @@ app.get('/', (req, res) => {
             reply = answers[Math.floor(Math.random() * answers.length)];
           } else if (replyType === 'wiki') {
             let args = msg.content.split(' ');
-
-            searchWiki(args, msg);
+            wikiResponse(args, msg);
           } else if (replyType === 'movie review') {
+            let args = msg.content.split(' ');
+
             rottenParser.getMovieReview(msg.content)
               .then(movieData => {
+
                 let reply = {
                   title: movieData.title,
                   img: movieData.poster,
                   url: movieData.url,
-                  description: movieData.synopsis,
+                  description: `<u>Synopsis</u> : ${movieData.synopsis}`,
                   fields: [
-                    // `<em><u>Rating </u>: ${movieData.rating}</em>`
-                    `<em><u>Critics consensus </u>: ${movieData.consensus}</em>`
+                    `<u>Rating</u> : ${movieData.rating}`,
+                    `<u>Critics consensus</u> : ${movieData.consensus}`
                   ]
                 };
 
-                if (movieData.rating > '80%') {
-                  reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/cf-lg.3c29eff04f2.png';
-                  reply.color =  'gold';
-                } else if (movieData.rating > '50%' && movieData.rating < '80%') {
+                if (!movieData.rating.match(/No rating found/i)) {
+                  if (movieData.rating > '80%') {
+                    reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/cf-lg.3c29eff04f2.png';
+                    reply.color = 'gold';
+                  } else if (movieData.rating > '50%' && movieData.rating < '80%') {
+                    reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-fresh-lg.12e316e31d2.png';
+                    reply.color = 'red';
+                  } else {
+                    reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-rotten-lg.ecdfcf9596f.png';
+                    reply.color = 'green';
+                  }
+                } else {
                   reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-fresh-lg.12e316e31d2.png';
                   reply.color = 'red';
-                } else {
-                  reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-rotten-lg.ecdfcf9596f.png';
-                  reply.color = 'green';
                 }
 
 
                 msgTheme = 'movie review';
 
                 new Reply(reply).send();
+              })
+              .catch((err) => {
+                console.log(err);
+                let link = `https://www.rottentomatoes.com/search/?search=${args.join(' ')}`;
+                let linkTag = `<a class="embed__link" href="${link}">${link}</a>`;
+
+                new Reply(
+                  `Sorry, I couldn't get this movie review... ${emoijis.expressionless} \n` +
+                  `Please try again using another keywords or go to this results page : ${linkTag}`
+                ).send();
               });
           }
         }

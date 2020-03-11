@@ -48,6 +48,7 @@ module.exports = {
 
     // Movies
     classifier.addDocument('Can I get a movie review ?', 'movie review');
+    classifier.addDocument('movie review', 'movie review');
 
     classifier.train();
   }

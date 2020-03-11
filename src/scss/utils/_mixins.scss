@@ -32,7 +32,7 @@
   border-left: none;
   border-right: none;
   border-top: none;
-  border-bottom: 1px solid lightblue;
+  border-bottom: 1px solid $underline-input;
   max-width: 100%;
 }
 @mixin placeholder($color: lightgray) {

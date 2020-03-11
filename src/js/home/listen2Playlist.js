@@ -26,7 +26,7 @@ const listen2Playlist = (data) => {
           })
           .addClass('audio__player')
           .text('Your browser does not support the audio element :(')
-          .appendTo('.player');
+          .appendTo('.audio__container__player');
 
         let leftSvg = $('<svg class="audio__leftSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>')
           .prependTo('.audio');
@@ -56,7 +56,7 @@ const listen2Playlist = (data) => {
             .appendTo('.audio');
         }
 
-        $('.streamInfoContainer, .player, .playlistInfo, .audio__leftSvg, .audio__rightSvg').show();
+        $('.streamInfoContainer, .audio__container__player, .playlistInfo, .audio__leftSvg, .audio__rightSvg').show();
         $('.playlistEndMsg').hide();
       }
 
@@ -66,11 +66,11 @@ const listen2Playlist = (data) => {
           .addClass('playlistInfo')
           .text(`${iPlaylist + 1}/${data.videoCount}`)
           .show()
-          .prependTo('.audioMsg');
+          .prependTo('.audio__container__msg');
 
         let streamInfoContainer = $('<span></span>')
           .addClass('streamInfoContainer')
-          .appendTo('.audioMsg');
+          .appendTo('.audio__container__msg');
 
         // Display some info about the played track
         let streamTitle = $('<p></p>')
@@ -93,7 +93,7 @@ const listen2Playlist = (data) => {
             .addClass('playlistInfo')
             .text(`${iPlaylist + 1}/${data.videoCount}`)
             .show()
-            .prependTo('.audioMsg');
+            .prependTo('.audio__container__msg');
         } else {
           $('.playlistInfo')
             .show()
@@ -111,20 +111,20 @@ const listen2Playlist = (data) => {
         } else {
           $('.audio__leftSvg, .audio__remove').hide();
 
-          $('.player, .streamInfoContainer, .playlistInfo').hide();
+          $('.audio__container__player, .streamInfoContainer, .playlistInfo').hide();
 
           if (!$('.endOfPlaylist').length) {
             let endOfPlaylist = $('<span></span>')
               .text('There is no track left in here... 😭')
-              .addClass('audioMsg__playlistEnd')
-              .prependTo('.audioMsg');
+              .addClass('audio__container__msg__playlistEnd')
+              .prependTo('.audio__container__msg');
 
             $('.audio').removeClass('playlist');
           }
 
           $('.audio').css('width', '50%');
 
-          $('.audioMsg')
+          $('.audio__container__msg')
             .css({
               justifyContent: 'center',
               width: '100%'
@@ -135,7 +135,7 @@ const listen2Playlist = (data) => {
       }
 
       $('.audio__player').show();
-      $('.audioMsg').show();
+      $('.audio__container__msg').show();
       $('.audio').fadeIn(1500, () => {
         $('.audio').css('display', 'flex');
       });

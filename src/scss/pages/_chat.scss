@@ -60,6 +60,7 @@
       .embed {
         * {
           margin-top: 0.5em;
+          font-size: 1em;
         }
 
         a {
@@ -69,6 +70,20 @@
 
         &__icon {
           height: 1.5em;
+        }
+
+        &__link, &__title {
+          color: $link-color;
+        }
+
+        &__desc, &__fields {
+          text-align: justify;
+        }
+
+        &__fields {
+          &__field {
+            margin: 0.5em 0;
+          }
         }
       }
 

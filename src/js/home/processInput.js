@@ -81,7 +81,7 @@ const processInput = (msg) => {
                   })
                   .addClass('audio__player')
                   .text('Your browser does not support the audio element.')
-                  .appendTo('.player');
+                  .appendTo('audio__container__player');
 
                 let audioSrc = $('<source>');
                 audioSrc.attr({
@@ -98,7 +98,7 @@ const processInput = (msg) => {
               if (!$('.streamInfoContainer').length) {
                 let streamInfoContainer = $('<span></span>')
                   .addClass('streamInfoContainer')
-                  .appendTo('.audioMsg');
+                  .appendTo('.audio__container__msg');
 
                 let streamTitle = $('<p></p>')
                   .attr('id', 'streamTitle')
@@ -129,7 +129,7 @@ const processInput = (msg) => {
                   width: '100%'
                 });
 
-              $('.audioMsg, .streamInfoContainer, .audio__player').show();
+              $('.audio__container__msg, .streamInfoContainer, .audio__player').show();
               $('.audio').fadeIn(1500, () => {
                 $('.audio').css('display', 'flex');
               });
