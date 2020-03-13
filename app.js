@@ -27,7 +27,11 @@ const upload = multer({
   limits: {
     fileSize: 5000000
   }
-}).single('backgroundImageUploadInput'); // the name cannot be modified because it is linked to the input name in the formData object
+}).fields([{
+  name: 'chatBotAvatarUploadInput'
+}, {
+  name: 'backgroundImageUploadInput'
+}]); // the name cannot be modified because it is linked to the input name in the formData object
 
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
@@ -83,6 +87,7 @@ let settings = settingsTemplate = {
 }
 
 const customize = (customizationData) => {
+  console.log(JSON.stringify(customizationData, null, 2));
 
   if (customizationData.backgroundImage !== null && customizationData.backgroundImage !== undefined) {
     if (!customizationData.backgroundImage.match(/^http/)) {
@@ -125,9 +130,20 @@ const customize = (customizationData) => {
       }
     } else {
       settings.backgroundImage = customizationData.backgroundImage;
+      // io.emit('wallpaper', settings.backgroundImage);
     }
+  }
 
-    io.emit('wallpaper', settings.backgroundImage);
+  if (customizationData.bot.icon !== null && customizationData.bot.icon !== undefined) {
+    settings.bot.icon = customizationData.bot.icon;
+    io.emit('bot avatar', settings.bot.icon);
+
+    let answers = [
+      `Whoa, that's much better !`,
+      'I like this new look ! 😎'
+    ];
+
+    new Reply(answers.random()).send();
   }
 
   if (customizationData.RSS !== null && customizationData.RSS !== undefined) {
@@ -214,7 +230,7 @@ setInterval(() => {
   functions.updateSettingsFile(settingsPath, settings, () => {
     updateSettings();
   });
-}, 300000);
+}, 60000);
 
 // Add a function to the Array prototype and get random elements
 Array.prototype.random = function() {
@@ -641,8 +657,7 @@ app.get('/', (req, res) => {
     }
 
     res.render('chat.ejs', {
-      botName: settings.bot.name,
-      botIcon: settings.bot.icon
+      botName: settings.bot.name
     });
 
     io.once('connection', io => {
@@ -749,12 +764,12 @@ app.get('/', (req, res) => {
 
         const wikiResponse = (args, msg) => {
           searchWiki(args, msg)
-          .then((res) => {
-            new Reply(res).send();
-          })
-          .catch((err) => {
-            new Reply(err).send();
-          })
+            .then((res) => {
+              new Reply(res).send();
+            })
+            .catch((err) => {
+              new Reply(err).send();
+            })
         }
 
         console.log(classifier.getClassifications(msg.content));
@@ -841,6 +856,7 @@ app.get('/', (req, res) => {
 
           if (replyType === 'forecast') {
             reply = getWeatherForecast(msg.content);
+            replyType = 'generic';
           } else if (replyType === 'news') {
             replyType = 'generic';
             msgTheme = 'news';
@@ -891,6 +907,8 @@ app.get('/', (req, res) => {
                 msgTheme = 'movie review';
 
                 new Reply(reply).send();
+
+                replyType = 'generic';
               })
               .catch((err) => {
                 console.log(err);
@@ -901,6 +919,8 @@ app.get('/', (req, res) => {
                   `Sorry, I couldn't get this movie review... ${emoijis.expressionless} \n` +
                   `Please try again using another keywords or go to this results page : ${linkTag}`
                 ).send();
+
+                replyType = 'generic';
               });
           }
         }
@@ -930,6 +950,10 @@ app.get('/', (req, res) => {
           }
         }
       });
+
+      io.on('customization', (customizationData) => {
+        customize(customizationData);
+      });
     })
   })
 
@@ -955,18 +979,29 @@ app.get('/', (req, res) => {
 
   .post('/upload', (req, res) => {
     upload(req, res, (err) => {
-      if (req.file !== undefined) {
-        let data = {
-          backgroundImage: `${req.file.destination}/${req.file.filename}`
-        };
-
-        if (err) {
-          console.log(`Error uploading file :(( :\n${err}`);
-        } else {
-          console.log(`${req.file.originalname} successfully uploaded !`);
+      if (req.files !== undefined) {
+        if (req.files.chatBotAvatarUploadInput !== undefined) {
+          let avatar = `${req.files.chatBotAvatarUploadInput[0].destination}/${req.files.chatBotAvatarUploadInput[0].filename}`;
+          if (err) {
+            console.log(`Error uploading file :(( :\n${err}`);
+          } else {
+            console.log(`${req.files.chatBotAvatarUploadInput[0].originalname} successfully uploaded !`);
+            io.emit('bot avatar', avatar);
+          }
+        } else if (req.files.backgroundImageUploadInput !== undefined) {
+          let wallpaper = `${req.files.backgroundImageUploadInput[0].destination}/${req.files.backgroundImageUploadInput[0].filename}`;
+          if (err) {
+            console.log(`Error uploading file :(( :\n${err}`);
+          } else {
+            console.log(`${req.files.backgroundImageUploadInput[0].originalname} successfully uploaded !`);
+          }
         }
-      } else if (err) {
+      } else {
         console.log(`Error uploading file :(( :\n${err}`);
+      }
+
+      if (err) {
+        console.log(`Error uploading file : ${JSON.stringify(err, null, 2)}`);
       }
     });
   })

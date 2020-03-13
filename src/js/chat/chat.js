@@ -4,6 +4,10 @@ const socket = io();
 // Define the message ID
 let msgID = 0;
 
+Array.prototype.random = function() {
+  return this[Math.floor((Math.random() * this.length))];
+}
+
 // Get the background image from the settings and add it to the page
 $.ajax({
   url: './settings/settings.json',
@@ -48,6 +52,37 @@ socket.on('wallpaper', wallpaper => {
       statusCode: {
         200: () => {
           $('.backgroundImage').css('backgroundImage', `url(${wallpaper})`);
+        },
+        404: () => {
+          handle404ImageError();
+        }
+      }
+    })
+    .fail(err => {
+      // CORS error handling
+      if (err.statusText === 'error' && err.readyState === 0) {
+        handle404ImageError();
+      }
+    });
+});
+
+socket.on('bot avatar', avatar => {
+  const handle404ImageError = () => {
+    let backrgoundImageReply = $('<span></span>')
+      .addClass('msg reply')
+      .text('Sorry, my new avatar couldn\'t be loaded... Maybe try another one')
+      .appendTo('.msgContainer__msgList__list');
+
+    $('.msgContainer__botInfo__icon').attr('src', './src/scss/icons/interface/bot.png');
+  }
+
+  $.ajax({
+      url: avatar,
+      method: 'GET',
+      dataType: '',
+      statusCode: {
+        200: () => {
+          $('.msgContainer__botInfo__icon').attr('src', avatar);
         },
         404: () => {
           handle404ImageError();

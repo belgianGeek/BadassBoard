@@ -13,7 +13,14 @@ const showSettings = () => {
   }
 
   // Create an object to store the new settings values
-  let updatedSettings = {};
+  let updatedSettings = {
+    backgroundImage: "",
+    bot: {
+      name: "",
+      icon: ""
+    }
+  };
+
   let checkboxState = $('.toggleRss__Input').prop('checked');
 
   if (!checkboxState) {
@@ -36,6 +43,11 @@ const showSettings = () => {
   // Simulate click on the input to upload a file and enable the rss feed feature on startup
   $('.backgroundImageUploadForm__Btn').click(() => {
     $('.backgroundImageUploadForm__InputFile').click();
+  });
+
+  // Upload bot avatar event handler
+  $('.chatCustomizationForm__btn').click(() => {
+    $('.chatCustomizationForm__inputFile').click();
   });
 
   $('.toggleRss__Switch').click(() => {
@@ -77,6 +89,7 @@ const showSettings = () => {
     let error = false;
 
     // Only submit the form if one of the fields are fullfilled
+    // Wallpaper upload
     if ($('.backgroundImageUploadForm__InputFile').val() !== '' && $('.backgroundImageUploadForm__InputUrl').val() === '') {
       let file = $('.backgroundImageUploadForm__InputFile').get(0).files[0];
 
@@ -109,7 +122,6 @@ const showSettings = () => {
             }
           },
           success: (res) => {
-            // console.log(fd, file, `${updatedSettings.backgroundImage} uploaded successfully`);
             $('.backgroundImage').css('backgroundImage', `url(${updatedSettings.backgroundImage})`);
 
             // Update the <style> tag to fix the blur
@@ -120,7 +132,8 @@ const showSettings = () => {
             printError({
               type: 'generic',
               msg: 'Your new wallpaper failed uploading... Please check the logs for details.'
-            })
+            });
+
             console.log(fd, file, `Error uploading wallpaper :\n${JSON.stringify(err, null, 2)}`);
           }
         })
@@ -179,6 +192,47 @@ const showSettings = () => {
         // OpenWeatherMap token
         updatedSettings.owmToken = $('.owmToken__input').val();
         owmToken = $('.owmToken__input').val();
+      }
+    }
+
+    // Chatbot avatar upload
+    if ($('.chatCustomizationForm__inputFile').val() !== '' && $('.chatCustomizationForm__inputUrl').val() === '') {
+      let file = $('.chatCustomizationForm__inputFile').get(0).files[0];
+
+      if ((file.size / 1048576) > 5) {
+        error = true;
+
+        printError({
+          type: 'upload',
+          msg: 'Your file is too laaaaarge ! Please select one under 5 Mb.'
+        });
+      } else {
+        updatedSettings.bot.icon = `./upload/${file.name}`;
+
+        let fd = new FormData();
+        fd.append('chatBotAvatarUploadInput', file, file.name);
+
+        $.ajax({
+          url: '/upload',
+          type: 'POST',
+          data: fd,
+          processData: false,
+          contentType: false,
+          statusCode: {
+            404: () => {
+              console.log('page not found !');
+            },
+            200: () => {
+              console.log(`${file.name} was uploaded successfully !`);
+            }
+          },
+          success: (res) => {
+            $('.msgContainer__botInfo__icon').attr('src', updatedSettings.bot.icon);
+          },
+          error: (err) => {
+            console.log(fd, file, `Error uploading bot avatar :\n${JSON.stringify(err, null, 2)}`);
+          }
+        })
       }
     }
 
