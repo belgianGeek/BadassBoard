@@ -187,6 +187,14 @@
       width: 90%;
     }
 
+    .chatCustomizationForm {
+      &__btn,
+      &__comment,
+      &__inputUrl {
+        margin-top: 1.5em;
+      }
+    }
+
     .backgroundImageUploadForm__Btn,
     .chatCustomizationForm__btn {
       color: black;

@@ -87,46 +87,43 @@ let settings = settingsTemplate = {
 }
 
 const customize = (customizationData) => {
-  console.log(JSON.stringify(customizationData, null, 2));
+  const renamePicture = (filename) => {
+    if (filename.match(' ')) {
+      let newFilename = filename.split(' ').join('_');
+      fs.rename(filename, newFilename, (err) => {
+        if (!err) {
+          settings.backgroundImage = newFilename;
+        } else {
+          // Avoid errors saying the path does not exist after renaming
+          if (err.code !== 'ENOENT') {
+            console.log(`Error renaming background-image : ${err}`);
+          }
+        }
+      });
+    } else {
+      settings.backgroundImage = filename;
+    }
+  }
 
   if (customizationData.backgroundImage !== null && customizationData.backgroundImage !== undefined) {
     if (!customizationData.backgroundImage.match(/^http/)) {
-
-      const renamePicture = () => {
-        if (customizationData.backgroundImage.match(' ')) {
-          let newFilename = customizationData.backgroundImage.split(' ').join('_');
-          fs.rename(customizationData.backgroundImage, newFilename, (err) => {
-            if (!err) {
-              settings.backgroundImage = newFilename;
-            } else {
-              // Avoid errors saying the path does not exist after renaming
-              if (err.code !== 'ENOENT') {
-                console.log(`Error renaming background-image : ${err}`);
-              }
-            }
-          });
-        } else {
-          settings.backgroundImage = customizationData.backgroundImage;
-        }
-      }
-
       if (settings.backgroundImage !== undefined) {
         fs.stat(settings.backgroundImage, (err, stats) => {
           if (!err) {
             // Remove the old wallpaper and rename the new
             fs.unlink(settings.backgroundImage, (err) => {
               if (!err || err.code === 'ENOENT') {
-                renamePicture();
+                renamePicture(customizationData.backgroundImage);
               } else {
                 console.log(`Error deleting the previous background image : ${err}`);
               }
             });
           } else {
-            renamePicture();
+            renamePicture(customizationData.backgroundImage);
           }
         });
       } else {
-        renamePicture();
+        renamePicture(customizationData.backgroundImage);
       }
     } else {
       settings.backgroundImage = customizationData.backgroundImage;
@@ -134,7 +131,28 @@ const customize = (customizationData) => {
   }
 
   if (customizationData.bot !== null && customizationData.bot !== undefined) {
-    settings.bot.icon = customizationData.bot.icon;
+    if (!customizationData.bot.icon.match(/^http/)) {
+      if (settings.bot.icon !== undefined) {
+        fs.stat(settings.bot.icon, (err, stats) => {
+          if (!err) {
+            // Remove the old wallpaper and rename the new
+            fs.unlink(settings.bot.icon, (err) => {
+              if (!err || err.code === 'ENOENT') {
+                renamePicture(customizationData.bot.icon);
+              } else {
+                console.log(`Error deleting the previous avatar : ${err}`);
+              }
+            });
+          } else {
+            renamePicture(customizationData.bot.icon);
+          }
+        });
+      } else {
+        renamePicture(customizationData.bot.icon);
+      }
+    } else {
+      settings.bot.icon = customizationData.bot.icon;
+    }
 
     let answers = [
       `Whoa, that's much better !`,

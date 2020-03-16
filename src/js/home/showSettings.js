@@ -1,5 +1,4 @@
 const showSettings = () => {
-  console.log('settings');
 
   const hideSettings = () => {
     if ($('.uploadWarning').length) {
@@ -25,7 +24,6 @@ const showSettings = () => {
   }
 
   $('.header__settingsBtn').click(() => {
-    console.log('click');
     $('.backgroundImage, header, .mainContainer').addClass('blur');
 
     // Disable page scroll
@@ -94,7 +92,7 @@ const showSettings = () => {
         error = true;
 
         printError({
-          type: 'upload',
+          type: 'wallpaper upload',
           msg: 'Your file is too laaaaarge ! Please select one under 5 Mb.'
         });
       } else {
@@ -149,21 +147,21 @@ const showSettings = () => {
           } else {
             error = true;
             printError({
-              type: 'upload',
+              type: 'wallpaper upload',
               msg: 'Your URL is too large ! Please shorten it !'
             });
           }
         } else {
           error = true;
           printError({
-            type: 'upload',
+            type: 'wallpaper upload',
             msg: 'Your URL is not supported... Please try another one or open an issue on Github'
           });
         }
       } else if ($('.backgroundImageUploadForm__InputFile').val() !== '' && $('.backgroundImageUploadForm__InputUrl').val() !== '') {
         error = true;
         printError({
-          type: 'upload',
+          type: 'wallpaper upload',
           msg: 'Hey, don\'t be too powerful dude ! One field at a time !'
         });
       }
@@ -192,7 +190,7 @@ const showSettings = () => {
         error = true;
 
         printError({
-          type: 'upload',
+          type: 'avatar upload',
           msg: 'Your file is too laaaaarge ! Please select one under 5 Mb.'
         });
       } else {
@@ -211,12 +209,43 @@ const showSettings = () => {
           contentType: false,
           success: (res) => {
             console.log(`${file.name} was uploaded successfully !`);
-            $('.msgContainer__botInfo__icon').attr('src', updatedSettings.bot.icon);
+            $('.chatContainer__botInfo__icon').attr('src', updatedSettings.bot.icon);
           },
           error: (err) => {
             console.log(fd, file, `Error uploading bot avatar :\n${JSON.stringify(err, null, 2)}`);
           }
         })
+      }
+    } else {
+      if ($('.chatCustomizationForm__inputFile').val() === '' && $('.chatCustomizationForm__inputUrl').val() !== '') {
+        if ($('.chatCustomizationForm__inputUrl').val().match(/^(http|https):\/\/(www.|)[a-zA-Z0-9-\.\/]{1,}\.\w.+/i)) {
+          if ($('.chatCustomizationForm__inputUrl').val().length < 250) {
+            updatedSettings.bot = {
+              icon: $('.chatCustomizationForm__inputUrl').val()
+            }
+
+            $('.chatContainer__botInfo__icon').attr('src', updatedSettings.bot.icon);
+
+          } else {
+            error = true;
+            printError({
+              type: 'avatar upload',
+              msg: 'Your URL is too large ! Please shorten it !'
+            });
+          }
+        } else {
+          error = true;
+          printError({
+            type: 'avatar upload',
+            msg: 'Your URL is not supported... Please try another one or open an issue on Github'
+          });
+        }
+      } else if ($('.chatCustomizationForm__inputFile').val() !== '' && $('.chatCustomizationForm__inputUrl').val() !== '') {
+        error = true;
+        printError({
+          type: 'avatar upload',
+          msg: 'Hey, don\'t be too powerful dude ! One field at a time !'
+        });
       }
     }
 

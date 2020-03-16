@@ -48,7 +48,7 @@ const printError = (err) => {
     } else {
       $('.upperContainer__converter .waring').css('display', 'flex');
     }
-  } else if (err.type === 'upload') {
+  } else if (err.type === 'wallpaper upload') {
     if (!$(`.settings__container .uploadWarning`).length) {
       let warning = $('<b></b>')
         .text(err.msg)
@@ -56,6 +56,15 @@ const printError = (err) => {
         .css('display', '');
 
       $('.backgroundImageUploadForm').after(warning);
+    }
+  } else if (err.type === 'avatar upload') {
+    if (!$(`.settings__container .uploadWarning`).length) {
+      let warning = $('<b></b>')
+        .text(err.msg)
+        .addClass('warning uploadWarning')
+        .css('display', '');
+
+      $('.chatCustomizationForm').after(warning);
     }
   }
 }
