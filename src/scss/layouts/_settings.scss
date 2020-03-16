@@ -93,6 +93,7 @@
     }
 
     .backgroundImageUploadForm,
+    .botNameCustomizationForm,
     .chatCustomizationForm,
     .owmToken,
     .searchEngineSelection,
@@ -191,8 +192,15 @@
       &__btn,
       &__comment,
       &__inputUrl {
-        margin-top: 1.5em;
+        @media(max-width: 720px) {
+          margin-top: 1.5em;
+        }
       }
+    }
+
+    .botNameCustomizationForm {
+      &__comment,
+      &__input {}
     }
 
     .backgroundImageUploadForm__Btn,
@@ -211,6 +219,7 @@
     }
 
     .backgroundImageUploadForm__InputUrl,
+    .botNameCustomizationForm__input,
     .chatCustomizationForm__inputUrl {
       @include input-style;
     }
