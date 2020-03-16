@@ -5,7 +5,7 @@ socket.on('reply', reply => {
       let replyElt = $('<span></span>')
         .addClass('msg reply')
         .append(reply.content)
-        .appendTo('.msgContainer__msgList__list');
+        .appendTo('.chatContainer__msgList__list');
     }, 500);
   };
 
@@ -42,7 +42,7 @@ socket.on('reply', reply => {
       replyElt.text(reply.content);
     }
 
-    replyElt.appendTo('.msgContainer__msgList__list');
+    replyElt.appendTo('.chatContainer__msgList__list');
   }
 
   if (reply.theme !== 'wiki' && reply.theme !== 'movie review') {

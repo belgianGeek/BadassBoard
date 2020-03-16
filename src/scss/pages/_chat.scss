@@ -10,12 +10,19 @@
   font-size: 1.2em;
   width: 100%;
   justify-content: end;
+  margin: 0.5em 0;
 
   svg {
     align-self: center;
     margin-right: 1em;
     cursor: pointer;
-    padding-top: 0.5em;
+  }
+
+  &__settingsBtn {
+    &:hover {
+      transform: rotate(-360deg);
+      transition: transform 1500ms;
+    }
   }
 }
 
@@ -36,7 +43,7 @@
   flex-direction: column;
 }
 
-.msgContainer {
+.chatContainer {
   height: 95%;
   align-items: center;
   font-size: 1.1em;
@@ -72,11 +79,13 @@
           height: 1.5em;
         }
 
-        &__link, &__title {
+        &__link,
+        &__title {
           color: $link-color;
         }
 
-        &__desc, &__fields {
+        &__desc,
+        &__fields {
           text-align: justify;
         }
 

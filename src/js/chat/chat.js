@@ -36,11 +36,14 @@ $.ajax({
 });
 
 socket.on('wallpaper', wallpaper => {
+  console.log('wallpaper');
   const handle404ImageError = () => {
-    let backrgoundImageReply = $('<span></span>')
-      .addClass('msg reply')
-      .text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
-      .appendTo('.msgContainer__msgList__list');
+    if (!$('.backgroundMsg').length) {
+      let backrgoundImageReply = $('<span></span>')
+        .addClass('msg reply backgroundMsg')
+        .text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
+        .appendTo('.chatContainer__msgList__list');
+    }
 
     $('.backgroundImage').css('backgroundImage', '');
   }
@@ -68,12 +71,14 @@ socket.on('wallpaper', wallpaper => {
 
 socket.on('bot avatar', avatar => {
   const handle404ImageError = () => {
-    let backrgoundImageReply = $('<span></span>')
-      .addClass('msg reply')
-      .text('Sorry, my new avatar couldn\'t be loaded... Maybe try another one')
-      .appendTo('.msgContainer__msgList__list');
+    if (!$('.avatarMsg').length) {
+      let backrgoundImageReply = $('<span></span>')
+        .addClass('msg reply avatarMsg')
+        .text('Sorry, my new avatar couldn\'t be loaded... Maybe try another one')
+        .appendTo('.chatContainer__msgList__list');
+    }
 
-    $('.msgContainer__botInfo__icon').attr('src', './src/scss/icons/interface/bot.png');
+    $('.chatContainer__botInfo__icon').attr('src', './src/scss/icons/interface/bot.png');
   }
 
   $.ajax({
@@ -82,7 +87,7 @@ socket.on('bot avatar', avatar => {
       dataType: '',
       statusCode: {
         200: () => {
-          $('.msgContainer__botInfo__icon').attr('src', avatar);
+          $('.chatContainer__botInfo__icon').attr('src', avatar);
         },
         404: () => {
           handle404ImageError();
@@ -97,7 +102,7 @@ socket.on('bot avatar', avatar => {
     });
 });
 
-$('.msgContainer__msgList__form').submit((event) => {
+$('.chatContainer__msgList__form').submit((event) => {
   event.preventDefault();
   let msg = new Message();
   msg.send();
@@ -107,6 +112,4 @@ $('.header__homeIcon').click(() => {
   window.open('/');
 });
 
-$('.header__settingsBtn').click(() => {
-  showSettings();
-});
+showSettings();

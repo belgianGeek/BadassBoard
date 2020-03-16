@@ -14,6 +14,41 @@ fs.readdir('./src/js/chat', (err, files) => {
   if (err) {
     console.log('Error reading dir ' + err);
   } else {
+    minify('./src/js/home/showSettings.js').then((code) => {
+        fs.appendFile('./src/js/chat.min.js', code, (err) => {
+          if (err) {
+            console.log(`Error writing file : ${err}`);
+          } else {
+            console.log(`Successfully minified file : showSettings.js`);
+          }
+        });
+      })
+      .then(() => {
+        minify('./src/js/home/scroll.js').then((code) => {
+            fs.appendFile('./src/js/chat.min.js', code, (err) => {
+              if (err) {
+                console.log(`Error writing file : ${err}`);
+              } else {
+                console.log(`Successfully minified file : scroll.js`);
+              }
+            });
+          })
+          .catch(console.error);
+      })
+      .then(() => {
+        minify('./src/js/home/printError.js').then((code) => {
+            fs.appendFile('./src/js/chat.min.js', code, (err) => {
+              if (err) {
+                console.log(`Error writing file : ${err}`);
+              } else {
+                console.log(`Successfully minified file : printError.js`);
+              }
+            });
+          })
+          .catch(console.error);
+      })
+      .catch(console.error);
+
     for (const [i, file] of files.entries()) {
       let filename = `./src/js/chat/${file}`;
       minify(filename).then((code) => {
@@ -26,43 +61,6 @@ fs.readdir('./src/js/chat', (err, files) => {
           });
         })
         .catch(console.error);
-
-      if (i === files.length - 1) {
-        minify('./src/js/home/showSettings.js').then((code) => {
-            fs.appendFile('./src/js/chat.min.js', code, (err) => {
-              if (err) {
-                console.log(`Error writing file : ${err}`);
-              } else {
-                console.log(`Successfully minified file : showSettings.js`);
-              }
-            });
-          })
-          .then(() => {
-            minify('./src/js/home/scroll.js').then((code) => {
-                fs.appendFile('./src/js/chat.min.js', code, (err) => {
-                  if (err) {
-                    console.log(`Error writing file : ${err}`);
-                  } else {
-                    console.log(`Successfully minified file : scroll.js`);
-                  }
-                });
-              })
-              .catch(console.error);
-          })
-          .then(() => {
-            minify('./src/js/home/printError.js').then((code) => {
-                fs.appendFile('./src/js/chat.min.js', code, (err) => {
-                  if (err) {
-                    console.log(`Error writing file : ${err}`);
-                  } else {
-                    console.log(`Successfully minified file : printError.js`);
-                  }
-                });
-              })
-              .catch(console.error);
-          })
-          .catch(console.error);
-      }
     }
   }
 });

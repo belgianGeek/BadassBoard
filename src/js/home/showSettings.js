@@ -1,4 +1,5 @@
 const showSettings = () => {
+  console.log('settings');
 
   const hideSettings = () => {
     if ($('.uploadWarning').length) {
@@ -13,13 +14,7 @@ const showSettings = () => {
   }
 
   // Create an object to store the new settings values
-  let updatedSettings = {
-    backgroundImage: "",
-    bot: {
-      name: "",
-      icon: ""
-    }
-  };
+  let updatedSettings = {};
 
   let checkboxState = $('.toggleRss__Input').prop('checked');
 
@@ -30,6 +25,7 @@ const showSettings = () => {
   }
 
   $('.header__settingsBtn').click(() => {
+    console.log('click');
     $('.backgroundImage, header, .mainContainer').addClass('blur');
 
     // Disable page scroll
@@ -113,15 +109,8 @@ const showSettings = () => {
           data: fd,
           processData: false,
           contentType: false,
-          statusCode: {
-            404: () => {
-              console.log('page not found !');
-            },
-            200: () => {
-              console.log(`${file.name} was uploaded successfully !`);
-            }
-          },
           success: (res) => {
+            console.log(`${file.name} was uploaded successfully !`);
             $('.backgroundImage').css('backgroundImage', `url(${updatedSettings.backgroundImage})`);
 
             // Update the <style> tag to fix the blur
@@ -207,7 +196,9 @@ const showSettings = () => {
           msg: 'Your file is too laaaaarge ! Please select one under 5 Mb.'
         });
       } else {
-        updatedSettings.bot.icon = `./upload/${file.name}`;
+        updatedSettings.bot = {
+          icon: `./upload/${file.name}`
+        }
 
         let fd = new FormData();
         fd.append('chatBotAvatarUploadInput', file, file.name);
@@ -218,15 +209,8 @@ const showSettings = () => {
           data: fd,
           processData: false,
           contentType: false,
-          statusCode: {
-            404: () => {
-              console.log('page not found !');
-            },
-            200: () => {
-              console.log(`${file.name} was uploaded successfully !`);
-            }
-          },
           success: (res) => {
+            console.log(`${file.name} was uploaded successfully !`);
             $('.msgContainer__botInfo__icon').attr('src', updatedSettings.bot.icon);
           },
           error: (err) => {
@@ -245,6 +229,9 @@ const showSettings = () => {
 
       // Send the updated settings to the server
       socket.emit('customization', updatedSettings);
+
+      // Reset the updatedSettings object to its default value
+      updatedSettings = {};
 
       if ($('.uploadWarning').length) {
         $('.uploadWarning').remove();

@@ -130,13 +130,11 @@ const customize = (customizationData) => {
       }
     } else {
       settings.backgroundImage = customizationData.backgroundImage;
-      // io.emit('wallpaper', settings.backgroundImage);
     }
   }
 
-  if (customizationData.bot.icon !== null && customizationData.bot.icon !== undefined) {
+  if (customizationData.bot !== null && customizationData.bot !== undefined) {
     settings.bot.icon = customizationData.bot.icon;
-    io.emit('bot avatar', settings.bot.icon);
 
     let answers = [
       `Whoa, that's much better !`,
@@ -230,7 +228,7 @@ setInterval(() => {
   functions.updateSettingsFile(settingsPath, settings, () => {
     updateSettings();
   });
-}, 60000);
+}, 300000);
 
 // Add a function to the Array prototype and get random elements
 Array.prototype.random = function() {
@@ -649,13 +647,6 @@ app.get('/', (req, res) => {
       wink: '😉'
     }
 
-    if (settings.bot === undefined) {
-      settings.bot = {
-        name: "BadassBot",
-        icon: "./src/scss/icons/interface/bot.png"
-      }
-    }
-
     res.render('chat.ejs', {
       botName: settings.bot.name
     });
@@ -668,6 +659,10 @@ app.get('/', (req, res) => {
 
       if (settings.backgroundImage !== undefined) {
         io.emit('wallpaper', settings.backgroundImage);
+      }
+
+      if (settings.bot.icon !== './src/scss/icons/interface/bot.png') {
+        io.emit('bot avatar', settings.bot.icon);
       }
 
       io.on('chat msg', msg => {
@@ -994,6 +989,7 @@ app.get('/', (req, res) => {
             console.log(`Error uploading file :(( :\n${err}`);
           } else {
             console.log(`${req.files.backgroundImageUploadInput[0].originalname} successfully uploaded !`);
+            io.emit('wallpaper', wallpaper);
           }
         }
       } else {
