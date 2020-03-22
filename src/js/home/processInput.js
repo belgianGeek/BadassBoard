@@ -81,7 +81,7 @@ const processInput = (msg) => {
                   })
                   .addClass('audio__player')
                   .text('Your browser does not support the audio element.')
-                  .appendTo('audio__container__player');
+                  .appendTo('.audio__container__player');
 
                 let audioSrc = $('<source>');
                 audioSrc.attr({
