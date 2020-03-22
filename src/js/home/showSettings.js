@@ -177,8 +177,7 @@ const showSettings = () => {
 
       if ($('.owmToken__input').val().match(/[a-z0-9]{32}/)) {
         // OpenWeatherMap token
-        updatedSettings.owmToken = $('.owmToken__input').val();
-        owmToken = $('.owmToken__input').val();
+        updatedSettings.owmToken = owmToken = $('.owmToken__input').val();
       }
     }
 

@@ -54,7 +54,6 @@ $.ajax({
 
   if (settings.owmToken !== undefined) {
     owmToken = settings.owmToken;
-    $('.owmToken__input').val(settings.owmToken);
   }
 
   if (settings.searchEngine !== undefined) {

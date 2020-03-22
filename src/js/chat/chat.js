@@ -14,10 +14,6 @@ $.ajax({
   method: 'GET',
   dataType: 'json'
 }).done(settings => {
-  if (settings.owmToken !== undefined) {
-    $('.owmToken__input').val(settings.owmToken);
-  }
-
   if (settings.searchEngine !== undefined) {
     $('.searchEngineSelection__select').val(settings.searchEngine.label);
   } else {
@@ -36,7 +32,6 @@ $.ajax({
 });
 
 socket.on('wallpaper', wallpaper => {
-  console.log('wallpaper');
   const handle404ImageError = () => {
     if (!$('.backgroundMsg').length) {
       let backrgoundImageReply = $('<span></span>')
@@ -70,9 +65,10 @@ socket.on('wallpaper', wallpaper => {
 });
 
 socket.on('bot avatar', avatar => {
+  console.log('avatar');
   const handle404ImageError = () => {
     if (!$('.avatarMsg').length) {
-      let backrgoundImageReply = $('<span></span>')
+      let backgroundImageReply = $('<span></span>')
         .addClass('msg reply avatarMsg')
         .text('Sorry, my new avatar couldn\'t be loaded... Maybe try another one')
         .appendTo('.chatContainer__msgList__list');

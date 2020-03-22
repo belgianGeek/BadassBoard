@@ -9,6 +9,7 @@ const {
 } = require('child_process');
 const os = require('os');
 const path = require('path');
+const process = require('process');
 const request = require('request');
 const multer = require('multer');
 
@@ -87,72 +88,82 @@ let settings = settingsTemplate = {
 }
 
 const customize = (customizationData) => {
-  const renamePicture = (filename) => {
-    if (filename.match(' ')) {
-      let newFilename = filename.split(' ').join('_');
-      fs.rename(filename, newFilename, (err) => {
-        if (!err) {
-          settings.backgroundImage = newFilename;
-        } else {
-          // Avoid errors saying the path does not exist after renaming
-          if (err.code !== 'ENOENT') {
-            console.log(`Error renaming background-image : ${err}`);
+  const handlePicture = (filename, imgType) => {
+    const rename = () => {
+      if (filename.match(' ')) {
+        let newFilename = filename.split(' ').join('_');
+        fs.rename(filename, newFilename, (err) => {
+          if (!err) {
+            settingsElt = newFilename;
+          } else {
+            // Avoid errors saying the path does not exist after renaming
+            if (err.code !== 'ENOENT') {
+              console.log(`Error renaming background-image : ${err}`);
+            }
           }
+        });
+      } else {
+        if (imgType === 'avatar') {
+          settings.bot.icon = filename;
+        } else if (imgType === 'wallpaper') {
+          settings.backgroundImage = filename;
         }
-      });
+      }
+    }
+
+    if (imgType === 'avatar') {
+      if (settings.bot.icon !== undefined) {
+        if (!settings.bot.icon.startsWith('http')) {
+          fs.stat(settings.bot.icon, (err, stats) => {
+            if (!err) {
+              // Remove the old wallpaper and rename the new
+              fs.unlink(settings.bot.icon, (err) => {
+                if (!err || err.code === 'ENOENT') {
+                  rename();
+                } else {
+                  console.log(`Error deleting the previous background image : ${err}`);
+                }
+              });
+            } else {
+              console.log(`Renaming file... ${err}`);
+              rename();
+            }
+          });
+        } else {
+          settings.bot.icon = filename;
+        }
+      }
     } else {
-      settings.backgroundImage = filename;
+      if (settings.backgroundImage !== undefined) {
+        if (!settings.backgroundImage.startsWith('http')) {
+          fs.stat(settings.backgroundImage, (err, stats) => {
+            if (!err) {
+              // Remove the old wallpaper and rename the new
+              fs.unlink(settings.backgroundImage, (err) => {
+                if (!err || err.code === 'ENOENT') {
+                  rename();
+                } else {
+                  console.log(`Error deleting the previous background image : ${err}`);
+                }
+              });
+            } else {
+              console.log(`Renaming file... ${err}`);
+              rename();
+            }
+          });
+        } else {
+          settings.backgroundImage = filename;
+        }
+      }
     }
   }
 
   if (customizationData.backgroundImage !== null && customizationData.backgroundImage !== undefined) {
-    if (!customizationData.backgroundImage.match(/^http/)) {
-      if (settings.backgroundImage !== undefined) {
-        fs.stat(settings.backgroundImage, (err, stats) => {
-          if (!err) {
-            // Remove the old wallpaper and rename the new
-            fs.unlink(settings.backgroundImage, (err) => {
-              if (!err || err.code === 'ENOENT') {
-                renamePicture(customizationData.backgroundImage);
-              } else {
-                console.log(`Error deleting the previous background image : ${err}`);
-              }
-            });
-          } else {
-            renamePicture(customizationData.backgroundImage);
-          }
-        });
-      } else {
-        renamePicture(customizationData.backgroundImage);
-      }
-    } else {
-      settings.backgroundImage = customizationData.backgroundImage;
-    }
+    handlePicture(customizationData.backgroundImage, 'wallpaper');
   }
 
   if (customizationData.bot !== null && customizationData.bot !== undefined) {
-    if (!customizationData.bot.icon.match(/^http/)) {
-      if (settings.bot.icon !== undefined) {
-        fs.stat(settings.bot.icon, (err, stats) => {
-          if (!err) {
-            // Remove the old wallpaper and rename the new
-            fs.unlink(settings.bot.icon, (err) => {
-              if (!err || err.code === 'ENOENT') {
-                renamePicture(customizationData.bot.icon);
-              } else {
-                console.log(`Error deleting the previous avatar : ${err}`);
-              }
-            });
-          } else {
-            renamePicture(customizationData.bot.icon);
-          }
-        });
-      } else {
-        renamePicture(customizationData.bot.icon);
-      }
-    } else {
-      settings.bot.icon = customizationData.bot.icon;
-    }
+    handlePicture(customizationData.bot.icon, 'avatar');
 
     let answers = [
       `Whoa, that's much better !`,
@@ -246,7 +257,7 @@ setInterval(() => {
   functions.updateSettingsFile(settingsPath, settings, () => {
     updateSettings();
   });
-}, 300000);
+}, 30000);
 
 // Add a function to the Array prototype and get random elements
 Array.prototype.random = function() {
@@ -1029,3 +1040,8 @@ app.get('/', (req, res) => {
       }
     });
   });
+
+process.on('SIGINT', () => {
+  console.log('Shutdown signal received, over.');
+  process.exit(0);
+})
