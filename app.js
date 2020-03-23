@@ -247,7 +247,9 @@ const updateSettings = () => {
   JSON.stringify(settings, null, 2);
 }
 
-updateSettings();
+setTimeout(() => {
+  updateSettings();
+}, 1000);
 
 // ... and repeat the process every 5 minutes
 setInterval(() => {
@@ -257,7 +259,7 @@ setInterval(() => {
   functions.updateSettingsFile(settingsPath, settings, () => {
     updateSettings();
   });
-}, 30000);
+}, 300000);
 
 // Add a function to the Array prototype and get random elements
 Array.prototype.random = function() {
@@ -1043,5 +1045,10 @@ app.get('/', (req, res) => {
 
 process.on('SIGINT', () => {
   console.log('Shutdown signal received, over.');
-  process.exit(0);
+
+  // Write changes to the settings file before exiting the process
+  functions.updateSettingsFile(settingsPath, settings, () => {
+    console.log('Your settings were saved !');
+    process.exit(0);
+  });
 })
