@@ -4,8 +4,6 @@ let currentVersion = '0.2.1';
 // Define a variable to store the ID of the currently played track
 let iPlaylist = 0;
 
-let iAddElt = 0;
-
 // Define a vriable to store the mouse coordinates
 let mousePosition = {};
 

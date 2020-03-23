@@ -82,10 +82,7 @@ const handleOptionSelection = (parent, child) => {
           if ($(`${btnClass} .addContent__feed__input`).val() !== null && $(`${btnClass} .addContent__feed__input`).val() !== undefined && $(`${btnClass} .addContent__feed__input`).val().match(/^http/i)) {
 
             // Ask the server to parse the feed
-            if (iAddElt === 0) {
-              socket.emit('add content', elementsObject);
-              iAddElt++;
-            }
+            socket.emit('add content', elementsObject);
 
             $(`${btnClass} .addContent`).hide();
           } else {
@@ -162,10 +159,7 @@ const handleOptionSelection = (parent, child) => {
                 $(`${parent} ${element} .addContent`).hide();
 
                 // Send the changes to the server side
-                if (iAddElt === 0) {
-                  socket.emit('add content', elementsObject);
-                  iAddElt++;
-                }
+                socket.emit('add content', elementsObject);
               } else {
                 printError({
                   type: 'weather',
@@ -198,28 +192,18 @@ const handleOptionSelection = (parent, child) => {
 
         if (child !== '.newContent') {
           // Send the changes to the server side
-          if (iAddElt === 0) {
-            socket.emit('add content', {
-              element: child,
-              parent: parent,
-              type: 'youtube search'
-            });
-
-            iAddElt++;
-          }
-
-          iAddElt++;
+          socket.emit('add content', {
+            element: child,
+            parent: parent,
+            type: 'youtube search'
+          });
         } else {
           // Send the changes to the server side
-          if (iAddElt === 0) {
-            socket.emit('add content', {
-              element: element,
-              parent: parent,
-              type: 'youtube search'
-            });
-
-            iAddElt++;
-          }
+          socket.emit('add content', {
+            element: element,
+            parent: parent,
+            type: 'youtube search'
+          });
         }
 
         $(`${parent} ${element} .addContent`).hide();

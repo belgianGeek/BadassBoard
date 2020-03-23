@@ -65,6 +65,7 @@ const functions = require('./modules/functions');
 
 // Settings object to be written in the settings file if it doesn't exist
 let settings = settingsTemplate = {
+  "backgroundImage": "./src/scss/wallpaper.png",
   "bot": {
     "name": "BadassBot",
     "icon": "./src/scss/icons/interface/bot.png"
@@ -1044,11 +1045,16 @@ app.get('/', (req, res) => {
   });
 
 process.on('SIGINT', () => {
-  console.log('Shutdown signal received, over.');
+  let exitMsg = [
+    `Shutdown signal received, over.`,
+    `Bye !`,
+    `See you ${username} !`,
+    `Later dude !`
+  ];
 
   // Write changes to the settings file before exiting the process
   functions.updateSettingsFile(settingsPath, settings, () => {
-    console.log('Your settings were saved !');
+    console.log(`\n${exitMsg.random()}`);
     process.exit(0);
   });
-})
+});
