@@ -250,6 +250,15 @@ const showSettings = () => {
 
     $('.owmToken__input').val(updatedSettings.owmToken);
 
+    // ChatBot name
+    if ($('.botNameCustomizationForm__input').val() !== '' && $('.botNameCustomizationForm__input').val() !== $('.chatContainer__botInfo p').text()) {
+      updatedSettings.bot = {
+        name: $('.botNameCustomizationForm__input').val()
+      };
+
+      $('.chatContainer__botInfo p').text(updatedSettings.bot.name);
+    }
+
     // If there is no errors, hide the div
     if (!error) {
 
@@ -260,6 +269,9 @@ const showSettings = () => {
 
       // Reset the updatedSettings object to its default value
       updatedSettings = {};
+
+      // Reset the file upload input value
+      $('.backgroundImageUploadForm__InputFile').val('');
 
       if ($('.uploadWarning').length) {
         $('.uploadWarning').remove();

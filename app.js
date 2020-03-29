@@ -88,14 +88,20 @@ let settings = settingsTemplate = {
   }
 }
 
-const customize = (customizationData) => {
+const customize = (io, customizationData) => {
   const handlePicture = (filename, imgType) => {
     const rename = () => {
       if (filename.match(' ')) {
         let newFilename = filename.split(' ').join('_');
         fs.rename(filename, newFilename, (err) => {
           if (!err) {
-            settingsElt = newFilename;
+            if (imgType === 'wallpaper') {
+              settings.backgroundImage = newFilename;
+              io.emit('wallpaper', newFilename);
+            } else {
+              settings.bot.icon = newFilename;
+              io.emit('bot avatar', newFilename);
+            }
           } else {
             // Avoid errors saying the path does not exist after renaming
             if (err.code !== 'ENOENT') {
@@ -106,8 +112,10 @@ const customize = (customizationData) => {
       } else {
         if (imgType === 'avatar') {
           settings.bot.icon = filename;
+          io.emit('bot avatar', filename);
         } else if (imgType === 'wallpaper') {
           settings.backgroundImage = filename;
+          io.emit('wallpaper', filename);
         }
       }
     }
@@ -132,6 +140,7 @@ const customize = (customizationData) => {
           });
         } else {
           settings.bot.icon = filename;
+          io.emit('bot avatar', filename);
         }
       }
     } else {
@@ -147,16 +156,19 @@ const customize = (customizationData) => {
                   console.log(`Error deleting the previous background image : ${err}`);
                 }
               });
-            } else {
-              console.log(`Renaming file... ${err}`);
+            } else if (err && err.code === 'ENOENT') {
               rename();
+            } else {
+              console.log(`Error renaming file : ${err}`);
             }
           });
         } else {
           settings.backgroundImage = filename;
+          io.emit('wallpaper', filename);
         }
       }
     }
+
   }
 
   if (customizationData.backgroundImage !== null && customizationData.backgroundImage !== undefined) {
@@ -164,14 +176,20 @@ const customize = (customizationData) => {
   }
 
   if (customizationData.bot !== null && customizationData.bot !== undefined) {
-    handlePicture(customizationData.bot.icon, 'avatar');
+    if (customizationData.bot.icon !== undefined) {
+      handlePicture(customizationData.bot.icon, 'avatar');
 
-    let answers = [
-      `Whoa, that's much better !`,
-      'I like this new look ! 😎'
-    ];
+      let answers = [
+        `Whoa, that's much better !`,
+        'I like this new look ! 😎'
+      ];
 
-    new Reply(answers.random()).send();
+      new Reply(answers.random()).send();
+    }
+
+    if (customizationData.bot.name !== undefined) {
+      settings.bot.name = customizationData.bot.name;
+    }
   }
 
   if (customizationData.RSS !== null && customizationData.RSS !== undefined) {
@@ -445,7 +463,15 @@ app.get('/', (req, res) => {
       });
 
       io.on('customization', (customizationData) => {
-        customize(customizationData);
+        customize(io, customizationData);
+
+        // if (customizationData.bot !== undefined && customizationData.bot.icon !== undefined) {
+        //   io.emit('bot avatar', settings.bot.icon);
+        // }
+        //
+        // if (customizationData.backgroundImage !== undefined) {
+        //   io.emit('wallpaper', settings.backgroundImage);
+        // }
       });
 
       io.on('download', (id) => {
@@ -979,7 +1005,7 @@ app.get('/', (req, res) => {
       });
 
       io.on('customization', (customizationData) => {
-        customize(customizationData);
+        customize(io, customizationData);
       });
     })
   })
@@ -1021,7 +1047,6 @@ app.get('/', (req, res) => {
             console.log(`Error uploading file :(( :\n${err}`);
           } else {
             console.log(`${req.files.backgroundImageUploadInput[0].originalname} successfully uploaded !`);
-            io.emit('wallpaper', wallpaper);
           }
         }
       } else {
