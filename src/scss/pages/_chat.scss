@@ -9,7 +9,7 @@
   z-index: 2;
   font-size: 1.2em;
   width: 100%;
-  justify-content: end;
+  justify-content: flex-end;
   margin: 0.5em 0;
 
   svg {
@@ -111,7 +111,7 @@
       }
 
       .reply {
-        align-self: end;
+        align-self: flex-end;
         margin-right: 1em;
       }
     }
@@ -139,7 +139,7 @@
     box-shadow: 0 0 1em black;
     font-size: 1.1em;
     z-index: 1;
-    align-self: end;
+    align-self: flex-end;
 
     &__icon {
       max-width: 50%;

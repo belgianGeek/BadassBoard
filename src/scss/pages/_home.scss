@@ -729,7 +729,7 @@
         width: 100%;
         display: none;
         height: max-content;
-        justify-content: end;
+        justify-content: flex-end;
         -webkit-justify-content: flex-end;
         margin-bottom: 2vh;
         margin-right: 4vh;
@@ -981,7 +981,7 @@
     }
 
     &__btnContainer {
-      align-self: end;
+      align-self: flex-end;
       margin: 1em 0;
 
       * {
