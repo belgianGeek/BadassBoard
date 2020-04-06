@@ -857,7 +857,7 @@
 
   &__child {
     width: 50%;
-    height: 50%;
+    height: 60%;
     background-color: rgba(0,0,0,0.7);
     border-radius: 1em;
     flex-direction: column;
@@ -874,13 +874,16 @@
         margin-top: 0;
       }
 
+      .article {
+        margin-bottom: 0.2em;
+      }
+
       .forecast,
       .rssContainer,
       .youtubeSearchContainer {
         flex-direction: column;
         font-size: 1.5em;
         width: 50%;
-        height: max-content;
         align-items: center;
         align-self: center;
         padding: 0.5em;
@@ -890,6 +893,16 @@
 
       .contentOptions {
         display: none;
+      }
+
+      .forecast,.rssContainer {
+        height: max-content;
+      }
+
+      .forecast__header,
+      .youtubeSearchContainer__header,
+      .rssContainer__header {
+        margin-bottom: 1em;
       }
 
       .forecast {
@@ -940,13 +953,16 @@
       }
 
       .youtubeSearchContainer {
+        height: 100%;
         &__header p {
           width: 100%;
           text-align: center;
+          margin: 0;
         }
 
         &__content {
-          justify-content: center;
+          flex-direction: column;
+          height: 100%;
 
           &__input {
             @include input-style();

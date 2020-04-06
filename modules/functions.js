@@ -53,6 +53,17 @@ module.exports = {
       });
     }, 900000);
   },
+  updatePrototypes: () => {
+    // Add a function to the Array prototype and get random elements
+    Array.prototype.random = function() {
+      return this[Math.floor((Math.random() * this.length))];
+    }
+
+    // To make the first letter of a string uppercase
+    String.prototype.capitalize = function() {
+        return this.charAt(0).toUpperCase() + this.slice(1);
+    }
+  },
   updateSettingsFile: (settingsPath, updatedSettings, callback) => {
     for (const [i, elt] of updatedSettings.elements.entries()) {
       for (const [j, value] of elt.elements.entries()) {

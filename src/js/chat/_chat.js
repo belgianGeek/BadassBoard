@@ -4,6 +4,8 @@ const socket = io();
 // Define the message ID
 let msgID = 0;
 
+let msgAuthor = '';
+
 Array.prototype.random = function() {
   return this[Math.floor((Math.random() * this.length))];
 }
@@ -29,6 +31,11 @@ $.ajax({
   } else {
     $('.toggleRss__Input').prop('checked', false);
   }
+});
+
+socket.on('username', username => {
+  msgAuthor = username;
+  console.log(msgAuthor);
 });
 
 socket.on('wallpaper', wallpaper => {
@@ -65,7 +72,6 @@ socket.on('wallpaper', wallpaper => {
 });
 
 socket.on('bot avatar', avatar => {
-  console.log('avatar');
   const handle404ImageError = () => {
     if (!$('.avatarMsg').length) {
       let backgroundImageReply = $('<span></span>')
@@ -98,10 +104,11 @@ socket.on('bot avatar', avatar => {
     });
 });
 
-$('.chatContainer__msgList__form').submit((event) => {
+$('.chatContainer__msgList__form').submit(event => {
   event.preventDefault();
   let msg = new Message();
   msg.send();
+  console.log(msg);
 });
 
 $('.header__homeIcon').click(() => {

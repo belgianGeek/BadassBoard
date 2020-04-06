@@ -23,7 +23,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-
   // Limit image size to max 5Mo
   limits: {
     fileSize: 5000000
@@ -280,10 +279,7 @@ setInterval(() => {
   });
 }, 300000);
 
-// Add a function to the Array prototype and get random elements
-Array.prototype.random = function() {
-  return this[Math.floor((Math.random() * this.length))];
-}
+functions.updatePrototypes();
 
 app.get('/', (req, res) => {
     res.render('home.ejs');
@@ -712,6 +708,9 @@ app.get('/', (req, res) => {
     io.once('connection', io => {
       let reply = '';
       let replyType = 'generic';
+
+      // Send the username to the frontend
+      io.emit('username', username.capitalize());
 
       let welcomeMsg = new Reply(`Hi ! I'm ${settings.bot.name}, how can I help you ?`).send();
 

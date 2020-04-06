@@ -1,5 +1,5 @@
 const Message = function() {
-  this.author = 'Max';
+  this.author = msgAuthor;
   this.content = $('.chatContainer__msgList__form__inputMsg').val();
   this.id = msgID;
   this.dateTime = new Date();
