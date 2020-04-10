@@ -31,6 +31,14 @@ $.ajax({
   } else {
     $('.toggleRss__Input').prop('checked', false);
   }
+
+  if (settings.bot.name !== 'BadassBot') {
+    $('.botNameCustomizationForm__input').val(settings.bot.name);
+  }
+
+  if (settings.bot.icon.startsWith('http')) {
+    $('.chatCustomizationForm__inputUrl').val(settings.bot.icon);
+  }
 });
 
 socket.on('username', username => {

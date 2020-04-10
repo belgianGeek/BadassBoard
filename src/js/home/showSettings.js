@@ -56,6 +56,7 @@ const showSettings = () => {
 
   $('.settings__child__cancelBtn').click(() => {
     hideSettings();
+    $('.backgroundImageUploadForm__InputFile').val('');
   });
 
   // Watch for search engine changes

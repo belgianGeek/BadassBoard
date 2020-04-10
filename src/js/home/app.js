@@ -70,6 +70,14 @@ $.ajax({
     // Send the search engine to the server
     socket.emit('customization', searchEngine);
   }
+
+  if (settings.bot.name !== 'BadassBot') {
+    $('.botNameCustomizationForm__input').val(settings.bot.name);
+  }
+
+  if (settings.bot.icon.startsWith('http')) {
+    $('.chatCustomizationForm__inputUrl').val(settings.bot.icon);
+  }
 });
 
 socket.on('wallpaper', wallpaper => {
