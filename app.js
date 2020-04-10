@@ -58,7 +58,7 @@ nlp.LogisticRegressionClassifier.load('classifier.json', null, function(err, loa
 const rottenParser = require('./modules/rottenParser');
 
 const botTraining = require('./modules/nlp');
-botTraining.botTraining(classifier);
+botTraining.botTraining(classifier, tokenizer);
 
 const functions = require('./modules/functions');
 
@@ -723,6 +723,10 @@ app.get('/', (req, res) => {
       }
 
       io.on('chat msg', msg => {
+        const tokenize = (msg) => {
+          return classifier.getClassifications(tokenizer.tokenize(msg.toLowerCase()));
+        }
+
         const getWeatherForecast = (msg) => {
           // Strip accents and diacritics
           let location = msg.normalize('NFD');
@@ -824,10 +828,8 @@ app.get('/', (req, res) => {
             })
         }
 
-        console.log(classifier.getClassifications(msg.content));
-
         if (replyType === 'generic') {
-          if (classifier.getClassifications(msg.content)[0].value > 0.5) {
+          if (tokenize(msg.content)[0].value > 0.5) {
             if (classifier.classify(msg.content) === 'greetings') {
               revertGreetings(msg);
             } else if (classifier.classify(msg.content) === 'weather') {
@@ -900,7 +902,7 @@ app.get('/', (req, res) => {
               reply = answers.random();
               replyType = 'movie review';
             }
-          } else if (classifier.getClassifications(msg.content)[0].value === 0.5) {
+          } else if (tokenize(msg.content)[0].value === 0.5) {
             reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
           }
         } else {
@@ -986,7 +988,7 @@ app.get('/', (req, res) => {
             let content = tokenizer.tokenize(msg.content);
 
             // Add the last user message to classifier and train the bot with it
-            if (classifier.getClassifications(msg.content)[0].value !== 'none') {
+            if (tokenize(msg.content)[0].value !== 'none') {
               classifier.addDocument(content, msgTheme);
               classifier.train();
 
@@ -997,7 +999,7 @@ app.get('/', (req, res) => {
                 }
               });
             } else {
-              console.log('not classified');
+              console.log(`The message "${msg.content}" was not classified because it didn't have a valid class...`);
             }
           }
         }

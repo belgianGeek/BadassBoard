@@ -1,26 +1,17 @@
 module.exports = {
-  botTraining: (classifier) => {
+  botTraining: (classifier, tokenizer) => {
     // Greetings
-    classifier.addDocument('Hi', 'greetings');
-    classifier.addDocument('Hey', 'greetings');
-    classifier.addDocument('Hello', 'greetings');
+    classifier.addDocument(['hi', 'hey', 'hello'], 'greetings');
 
     // News
-    classifier.addDocument('How are u ?', 'news');
-    classifier.addDocument('How are you ?', 'news');
-    classifier.addDocument('What\'s up ?', 'news');
-    classifier.addDocument('Hello how are you ?', 'news');
-    classifier.addDocument('hi how are you ?', 'news');
-    classifier.addDocument('Hey how are you ?', 'news');
-    classifier.addDocument('Hi what\'s up ?', 'news');
-    classifier.addDocument('Hey what\'s up ?', 'news');
-    classifier.addDocument('Hello what\'s up ?', 'news');
+    classifier.addDocument(['how', 'you'], 'news');
+    classifier.addDocument(['how', 'u'], 'news');
+    classifier.addDocument(['what', 's', 'up'], 'news');
 
     // Activities
-    classifier.addDocument('what are you doing ?', 'activity');
-    classifier.addDocument('what are u doing ?', 'activity');
-    classifier.addDocument('Hey what are you doing ?', 'activity');
-    classifier.addDocument('Hi what are u doing ?', 'activity');
+    classifier.addDocument(['what', 'do', 'doing'], 'activity');
+    classifier.addDocument('are you busy', 'activity');
+    classifier.addDocument('are u busy', 'activity');
 
     // Insults
     classifier.addDocument('suck me', 'gross');
@@ -29,7 +20,7 @@ module.exports = {
     classifier.addDocument(`go fuck yourself`, 'insults');
 
     // Love
-    classifier.addDocument(`I love you u`, 'love');
+    classifier.addDocument(`I love you`, 'love');
 
     // Weather
     classifier.addDocument('weather forecast', 'weather');
