@@ -1,5 +1,7 @@
 #  ̿̿ ̿̿ ̿'̿'\̵͇̿̿\з= ( ▀ ͜͞ʖ▀) =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿
 
+![Screenshot](https://raw.githubusercontent.com/belgianGeek/BadassBoard/dev/screenshots/home.jpg)
+
 # What is _BadassBoard_ ?
 
 This project intent to be an open source, self-hosted replacement for services like _start.me_.
@@ -14,6 +16,7 @@ Its features includes :
 - Audio streaming from YouTube thanks to the _Invidio.us_ API (playlist and videos are both supported) ;
 - IT units converter (only from bytes to terabytes for now) ;
 - Instant Youtube Search ;
+- Basic chatbot ;
 
 All of that available through a (nice ?) and customizable UI.
 
@@ -31,7 +34,7 @@ Once Node.js is installed, open a terminal/console in the project's root directo
 
 # How to use it ?
 
-First, make sure you are in the project's root directory. Then, you can launch the app by running the command `node run start` or `yarn start` in your console.
+First, make sure you are in the project's root directory. Then, you can launch the app by running the command `npm run start` or `yarn start` in your console.
 
 If you are connected to the Internet, you should get a nice message in your console, saying that you can connect to the app by typing `http://<your_IP>:8080` or `http://<your_hostname>:8080`in your web browser.
 
@@ -64,11 +67,19 @@ _BadassBoard_ can provide you weather forecast thanks to the _OpenWeatherMap_ AP
 
 As mentioned above, you can stream YouTube videos or playlists (thanks to the _Invidio.us_ API). Because _Invidio.us_ is becoming more and more popular, you might encounter some issues while using this feature. In this case, a message will inform you that your request couldn't be completed. If you're facing it, I invite you to open an issue with the more details that you can provide. But keep in mind that this might be related to _Invidio.us_ itself, as the audio streaming feature is based on it.
 
+## Chatbot
+
+Since the 0.3.0 version, a (basic) chatbot is embedded in _BadassBoard_.
+
+It can respond to basic messages, but also provide you some information about the weather, give you a movie review (thanks to a built-in _rottentomatoes.com_ scraping module), or search for terms and expressions on _Wikipedia_.
+
+You can customize its look and feel using the settings menu.
+
 # Contributing
 
 You found a bug or just have a suggestion ? Feel free to create an issue with the more details that you can provide (error code, context, etc.).
 
-If you want to improve the app, you can create a pull request or a fork as well.
+If you want to improve the app, you can create a pull request or fork it as well.
 
 ## Development notes
 
@@ -93,5 +104,8 @@ A special thank to the maintainers and creators of :
 - [Request](https://github.com/request/request) ;
 - [IP](https://github.com/indutny/node-ip) ;
 - [opusscript](https://github.com/abalabahaha/opusscript) ;
+- [Cheerio](https://cheerio.js.org/) ;
+- [Natural](https://github.com/NaturalNode/natural) ;
+- [Puppeteer](https://pptr.dev/) ;
 - [SCSS](https://yarnpkg.com/en/package/scss) ;
 - [Minify](https://github.com/coderaiser/minify) ;

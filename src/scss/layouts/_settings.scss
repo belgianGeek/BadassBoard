@@ -1,0 +1,245 @@
+.settings__container {
+  display: none;
+  width: 100%;
+  height: 100%;
+  @include align(center, center);
+  position: absolute;
+  font-size: 1em;
+  z-index: 3;
+
+  .settings__child {
+    @include align;
+    @include flex-direction;
+    width: 60%;
+    height: 85%;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 15px;
+    box-shadow: 10px 10px 12px 2px $contentBackground;
+    overflow-y: auto;
+    overflow-x: hidden;
+    @media(max-width: 720px) {
+      overflow-y: auto;
+      width: 90%;
+
+      .backgroundImageUploadForm__Btn,
+      .backgroundImageUploadForm__InputUrl,
+      .owmToken__input,
+      .searchEngineSelection__select {
+        margin-top: 1.5em;
+      }
+    }
+
+    &__header {
+      @include flex-direction(row);
+      width: 100%;
+      margin: 1% 0 0 1%;
+
+      h1 {
+        font-size: 1.5em;
+        width: 100%;
+        text-align: center;
+        font-family: distant_galaxyregular;
+        margin-bottom: 0;
+      }
+    }
+
+    &__heading {
+      font-family: distant_galaxyregular;
+      margin: 2em 0 0 1em;
+    }
+
+    &__heading2 {
+      font-size: 1.3em;
+    }
+
+    &__heading3 {
+      font-size: 1.2em;
+    }
+
+    .settings__BtnContainer {
+      width: 100%;
+      display: inline-flex;
+      justify-content: flex-end;
+      -webkit-justify-content: flex-end;
+      margin-top: 1.5em;
+      padding-bottom: 1.5em;
+      @media(max-width: 720px) {
+        position: relative;
+        top: 5%;
+        left: 0;
+        justify-content: space-evenly;
+      }
+    }
+
+    &__cancelBtn,
+    &__saveBtn {
+      border: none;
+      border-radius: 15px;
+      padding: 0.7em;
+      margin-right: 1.1em;
+      cursor: pointer;
+      @media(max-width: 720px) {
+        margin-bottom: 1em;
+        margin-right: 0;
+      }
+    }
+
+    &__saveBtn {
+      background: green;
+    }
+
+    &__cancelBtn {
+      background: red;
+    }
+
+    .backgroundImageUploadForm,
+    .botNameCustomizationForm,
+    .chatCustomizationForm,
+    .owmToken,
+    .searchEngineSelection,
+    .toggleRss {
+      margin: 2em 0 0 1em;
+      justify-content: space-between;
+      width: 90%;
+      align-items: center;
+      @media(max-width: 720px) {
+        @include flex-direction;
+      }
+
+      & * {
+        font-size: 1.05em;
+      }
+    }
+
+    .owmToken__Comment {
+      margin-right: 1.5em;
+    }
+
+    .searchEngineSelection,
+    .toggleRss {
+      justify-content: space-between;
+      margin: 2em 0 0 1em;
+      width: 90%;
+
+      &__Comment {
+        width: 100%;
+      }
+
+      &__Switch {
+        position: relative;
+        display: inline-block;
+        width: 3em;
+        height: 1em;
+      }
+
+      &__Slider {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: red;
+        transition: 0.4s;
+        border-radius: 2em;
+        height: 1.6em;
+        width: 3em;
+        cursor: pointer;
+
+        &:before {
+          position: absolute;
+          content: "";
+          height: 70%;
+          width: 45%;
+          bottom: 15%;
+          background-color: white;
+          transition: 0.4s;
+          border-radius: 50%;
+        }
+
+        &.checked:before {
+          left: 4px;
+        }
+
+        &.unchecked:before {
+          left: 4px;
+        }
+      }
+
+      &__Input {
+        display: none;
+
+        &:checked + .toggleRss__Slider {
+          background-color: $greenChecked;
+        }
+
+        &:focus + .toggleRss__Slider {
+          box-shadow: 0 0 1px $greenChecked;
+        }
+
+        &:checked + .toggleRss__Slider:before {
+          transform: translateX(26px);
+        }
+      }
+    }
+
+    .backgroundImageUploadForm {
+      margin: 2em 0 0 1em;
+      justify-content: space-between;
+      width: 90%;
+    }
+
+    .chatCustomizationForm {
+      &__btn,
+      &__comment,
+      &__inputUrl {
+        @media(max-width: 720px) {
+          margin-top: 1.5em;
+        }
+      }
+    }
+
+    .botNameCustomizationForm {
+      &__comment,
+      &__input {}
+    }
+
+    .backgroundImageUploadForm__Btn,
+    .chatCustomizationForm__btn {
+      color: black;
+      border-radius: 15px;
+      border: none;
+      background-color: $underline-input;
+      padding: 1%;
+      cursor: pointer;
+    }
+
+    .backgroundImageUploadForm__InputFile,
+    .chatCustomizationForm__inputFile {
+      display: none;
+    }
+
+    .backgroundImageUploadForm__InputUrl,
+    .botNameCustomizationForm__input,
+    .chatCustomizationForm__inputUrl {
+      @include input-style;
+    }
+
+    .owmToken {
+      justify-content: space-between;
+      margin: 2em 0 0 1em;
+      width: 90%;
+
+      &__input {
+        @include input-style;
+      }
+    }
+
+    .searchEngineSelection {
+      &__select,
+      &__select option {
+        color: black;
+        font-size: 1em;
+      }
+    }
+  }
+}

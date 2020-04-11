@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Home</title>
   <link rel="icon" type="image/png" href="src/favicon.png">
-  <link rel="stylesheet" href="src/css/app.css">
+  <link rel="stylesheet" href="src/scss/prefixed/app.css">
 </head>
 
 <body>
@@ -14,6 +14,9 @@
   <div class="wrapper flex">
     <main class="mainContainer flex">
       <header class="header">
+        <svg class="header__chatBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
         <svg class="header__converterBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M17 2.1l4 4-4 4" />
           <path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8M7 21.9l-4-4 4-4" />
@@ -42,7 +45,7 @@
         </div>
         <span class="upperContainer__converter">
           <section class="converter flex">
-            <img class="converter__remove flex" alt="Hide the converter" src="./src/css/icons/interface/cross.svg">
+            <img class="converter__remove flex" alt="Hide the converter" src="./src/scss/icons/interface/cross.svg">
             <select class="converter__value1 flex">
               <option value="Choose a value">Choose a value</option>
               <option value="Byte">Byte</option>
@@ -67,11 +70,13 @@
           <%= typeof msg != 'undefined' ? msg : '' %>
         </div>
         <div class="audio">
-          <img class="audio__remove removeContentBtn flex" alt="Remove the audio player" src="./src/css/icons/interface/cross.svg">
-          <div class="audioMsg flex"></div>
-          <div class="player flex"></div>
+          <img class="audio__remove removeContentBtn flex" alt="Remove the audio player" src="./src/scss/icons/interface/cross.svg">
+          <span class="audio__container flex">
+            <div class="audio__container__msg flex"></div>
+            <div class="audio__container__player flex"></div>
+          </span>
         </div>
-        <div class="moreContent flex">
+        <div class="contentContainers flex">
           <div class="content__container content1__container flex" id="content1__container">
             <div class="content content1 flex" id="content1">
               <%- include('addFeedForm'); %>
@@ -90,50 +95,9 @@
         </div>
       </div>
     </main>
-    <div class="settings__container">
-      <div class="settings__child flex">
-        <span class="settings__child__header flex">
-          <h1>BadassBoard settings</h1>
-        </span>
-        <h2 class="settings__child__heading2 settings__child__heading">General</h2>
-        <span class="toggleRss flex">
-          <span class="toggleRss__Comment">Show the content containers on startup ?</span>
-          <label class="toggleRss__Switch">
-            <input class="toggleRss__Input" type="checkbox" name="toggleRssInput" value="">
-            <span class="toggleRss__Slider"></span>
-          </label>
-        </span>
-        <h2 class="settings__child__heading2 settings__child__heading">Search</h2>
-        <span class="searchEngineSelection flex">
-          <span class="searchEngineSelection__Comment flex">Which search engine do you want to use ?</span>
-          <select class="searchEngineSelection__select flex">
-            <option value="Bing">Bing</option>
-            <option value="DuckDuckGo">DuckDuckGo</option>
-            <option value="Ecosia">Ecosia</option>
-            <option value="Google">Google</option>
-            <option value="Qwant">Qwant</option>
-          </select>
-        </span>
-        <h2 class="settings__child__heading2 settings__child__heading">Customization</h2>
-        <form class="backgroundImageUploadForm flex" action="/" enctype="multipart/form-data" method="post">
-          <label for="backgroundImageUploadForm__label">This background is 🤮 !</label>
-          <button class="backgroundImageUploadForm__Btn" type="button" name="backgroundImageUploadBtn">Let's upload a BADASS picture !</button>
-          <input class="backgroundImageUploadForm__InputFile" type="file" name="backgroundImageUploadInput" accept="image/png, image/jpg">
-          <input class="backgroundImageUploadForm__InputUrl" type="text" name="backgroundImageUrl" value="" placeholder='I prefer pasting an URL'>
-        </form>
-        <h2 class="settings__child__heading2 settings__child__heading">Awesome features corner 😇</h2>
-        <span class="owmToken flex">
-          <span class="owmToken__Comment">So you want to use weather forecast feature ? You can update your OpenWeatherMap API token here :</span>
-          <input class="owmToken__input" type="text" name="owmToken__input" value="" placeholder="OpenWeatherMap API token">
-        </span>
-        <span class="settings__BtnContainer">
-          <button class="settings__child__cancelBtn" type="button" name="cancelSettings">Cancel</button>
-          <button class="settings__child__saveBtn" type="submit" name="saveSettings">Save settings</button>
-        </span>
-      </div>
-    </div>
+    <%- include('settings'); %>
     <div class="rssTooltip flex"></div>
-    <div class="confirmation">
+    <div class="confirmation click">
       <section class="confirmation__child flex">
         <h1 class="confirmation__child__title">Watch out !</h1>
         <span class="confirmation__child__content flex">
@@ -145,16 +109,11 @@
         </span>
       </section>
     </div>
-    <footer class="footer flex">
-      <span class="icon">̿̿ ̿̿ ̿̿ ̿'̿'\̵͇̿̿\з= ( ▀ ͜͞ʖ▀) =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿</span>
-      <span class="credits flex">
-        <p>BadassBoard, proudly handmade in Belgium 🍺</p>
-      </span>
-    </footer>
+    <%- include('footer'); %>
   </div>
   <script src="https://code.jquery.com/jquery-3.4.1.min.js" charset="utf-8" type="application/javascript"></script>
   <script src="/socket.io/socket.io.js" type="application/javascript"></script>
-  <script src="/src/js/app_minified.js" charset="utf-8" type="application/javascript"></script>
+  <script src="/src/js/app.min.js" charset="utf-8" type="application/javascript"></script>
 </body>
 
 </html>

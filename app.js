@@ -9,6 +9,7 @@ const {
 } = require('child_process');
 const os = require('os');
 const path = require('path');
+const process = require('process');
 const request = require('request');
 const multer = require('multer');
 
@@ -22,12 +23,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-
   // Limit image size to max 5Mo
   limits: {
     fileSize: 5000000
   }
-}).single('backgroundImageUploadInput'); // the name cannot be modified because it is linked to the input name in the formData object
+}).fields([{
+  name: 'chatBotAvatarUploadInput'
+}, {
+  name: 'backgroundImageUploadInput'
+}]); // the name cannot be modified because it is linked to the input name in the formData object
 
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
@@ -35,161 +39,197 @@ const settingsPath = './settings/settings.json';
 
 server.listen(8080);
 
-const customize = (customizationData) => {
-  // console.log(JSON.stringify(customizationData, null, 2));
+const nlp = require('natural');
+let classifier = new nlp.LogisticRegressionClassifier();
+const stemmer = nlp.PorterStemmer.attach();
+const tokenizer = new nlp.WordTokenizer();
 
-  fs.readFile(settingsPath, 'utf-8', (err, data) => {
-    if (err) throw err;
-    let settings;
-    if (data !== undefined) {
-      settings = JSON.parse(data);
+nlp.LogisticRegressionClassifier.load('classifier.json', null, function(err, loadedClassifier) {
+  if (!err) {
+    console.log('Classifier successfully loaded !');
+    classifier = loadedClassifier;
+  } else {
+    if (err.code !== 'ENOENT') {
+      console.log(`Error calling classifier : ${JSON.stringify(err, null, 2)}`);
+    }
+  }
+});
 
-      const processNewSettings = (callback) => {
-        if (customizationData.backgroundImage !== null && customizationData.backgroundImage !== undefined) {
-          if (!customizationData.backgroundImage.match(/^http/)) {
+const rottenParser = require('./modules/rottenParser');
 
-            // Remove the old wallpaper and rename the new
-            fs.unlink(settings.backgroundImage, (err) => {
-              if (!err || err.code === 'ENOENT') {
-                if (customizationData.backgroundImage.match(' ')) {
-                  let newFilename = customizationData.backgroundImage.split(' ').join('_');
-                  fs.rename(customizationData.backgroundImage, newFilename, (err) => {
-                    if (!err) {
-                      settings.backgroundImage = newFilename;
-                    } else {
-                      // Avoid errors saying the path does not exist after renaming
-                      if (err.code !== 'ENOENT') {
-                        console.log(`Error renaming background-image : ${err}`);
-                      }
-                    }
-                  });
-                } else {
-                  settings.backgroundImage = customizationData.backgroundImage;
-                }
-              }
-            })
-          } else {
-            settings.backgroundImage = customizationData.backgroundImage;
-          }
-        }
+const botTraining = require('./modules/nlp');
+botTraining.botTraining(classifier, tokenizer);
 
-        if (customizationData.RSS !== null && customizationData.RSS !== undefined) {
-          settings.RSS = customizationData.RSS;
-        }
+const functions = require('./modules/functions');
 
-        if (customizationData.owmToken !== null && customizationData.owmToken !== undefined) {
-          settings.owmToken = customizationData.owmToken;
-        }
+// Settings object to be written in the settings file if it doesn't exist
+let settings = settingsTemplate = {
+  "backgroundImage": "./src/scss/wallpaper.png",
+  "bot": {
+    "name": "BadassBot",
+    "icon": "./src/scss/icons/interface/bot.png"
+  },
+  "elements": [{
+      "elements": []
+    },
+    {
+      "elements": []
+    },
+    {
+      "elements": []
+    }
+  ],
+  "owmToken": "9b013a34970de2ddd85f46ea9185dbc5",
+  "RSS": true,
+  "searchEngine": {
+    "label": "DuckDuckGo",
+    "url": "https://duckduckgo.com/?q="
+  }
+}
 
-        // console.log(JSON.stringify(customizationData, null, 2));
-
-        if (customizationData.searchEngine !== null && customizationData.searchEngine !== undefined) {
-          settings.searchEngine = customizationData.searchEngine;
-        }
-
-        setTimeout(() => {
-          callback();
-        }, 500);
-      }
-
-      processNewSettings(() => {
-        fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
+const customize = (io, customizationData) => {
+  const handlePicture = (filename, imgType) => {
+    const rename = () => {
+      if (filename.match(' ')) {
+        let newFilename = filename.split(' ').join('_');
+        fs.rename(filename, newFilename, (err) => {
           if (!err) {
-            if (settings.backgroundImage !== null && settings.backgroundImage !== undefined) {
-              io.emit('server settings updated', {
-                backgroundImage: settings.backgroundImage
-              });
+            if (imgType === 'wallpaper') {
+              settings.backgroundImage = newFilename;
+              io.emit('wallpaper', newFilename);
+            } else {
+              settings.bot.icon = newFilename;
+              io.emit('bot avatar', newFilename);
             }
           } else {
-            console.log(`Error updating settings after customization : ${err}`);
-          }
-        });
-      });
-    } else {
-      console.log(`Settings file content is undefined !`);
-    }
-  });
-}
-
-const readSettings = () => {
-  fs.readFile(settingsPath, 'utf-8', (err, data) => {
-    if (err) throw err;
-    let settings;
-    if (data !== undefined) {
-      settings = JSON.parse(data);
-      let elements = settings.elements;
-      var eltsArray = [];
-      if (settings.RSS === true) {
-        io.emit('RSS status retrieved', settings.RSS);
-        var bigI, i;
-        // let iArray = 0;
-        let totalLength = 0;
-        for (const [bigI, value] of elements.entries()) {
-          var subElts = value.elements;
-          totalLength += value.elements.length;
-          for (const [i, subEltsValue] of subElts.entries()) {
-            const sendData = () => {
-              if (eltsArray.length === totalLength) {
-                // console.log(`Array : ${JSON.stringify(eltsArray.length, null, 2)}`);
-                io.emit('parse content', eltsArray);
-              }
-            }
-
-            if (subEltsValue.type === 'rss') {
-              let elt = subEltsValue;
-              feedparser.parse(subEltsValue.url)
-                .then(items => {
-                  elt.feed = items;
-                  eltsArray.push(elt);
-                  // console.log(`RSS : bigI : ${bigI}`, `elements : ${eltsArray.length}`, `totalLength : ${totalLength}`);
-                  sendData();
-                })
-                .catch((err) => {
-                  if (err == 'Error: Not a feed') {
-                    io.emit('errorMsg', {
-                      type: 'rss verification',
-                      element: `${subEltsValue.parent} ${subEltsValue.element}`,
-                      msg: `${subEltsValue.url} is not a valid RSS feed`
-                    });
-                  }
-                });
-            } else if (subEltsValue.type === 'weather' || subEltsValue.type === 'youtube search') {
-              eltsArray.push(subEltsValue);
-              // console.log(`WEATHER : bigI : ${bigI}`, `elements : ${elements.length}`, `totalLength : ${totalLength}`);
-              sendData();
+            // Avoid errors saying the path does not exist after renaming
+            if (err.code !== 'ENOENT') {
+              console.log(`Error renaming background-image : ${err}`);
             }
           }
-        }
-      }
-    } else {
-      console.log(`File content is undefined !`);
-    }
-  });
-}
-
-const existPath = (path, callback) => {
-  fs.stat(path, (err, stats) => {
-    if (err) {
-      if (path.match(/\w.+\/$/)) {
-        fs.mkdir(path, (err) => {
-          if (err) throw err;
         });
       } else {
-        fs.writeFile(path, data, 'utf-8', (err) => {
-          if (err) throw err;
-        });
+        if (imgType === 'avatar') {
+          settings.bot.icon = filename;
+          io.emit('bot avatar', filename);
+        } else if (imgType === 'wallpaper') {
+          settings.backgroundImage = filename;
+          io.emit('wallpaper', filename);
+        }
       }
     }
 
-    // Only execute the callback if it is defined
-    if (callback) {
-      callback();
+    if (imgType === 'avatar') {
+      if (settings.bot.icon !== undefined) {
+        if (!settings.bot.icon.startsWith('http')) {
+          fs.stat(settings.bot.icon, (err, stats) => {
+            if (!err) {
+              // Remove the old wallpaper and rename the new
+              fs.unlink(settings.bot.icon, (err) => {
+                if (!err || err.code === 'ENOENT') {
+                  rename();
+                } else {
+                  console.log(`Error deleting the previous background image : ${err}`);
+                }
+              });
+            } else {
+              console.log(`Renaming file... ${err}`);
+              rename();
+            }
+          });
+        } else {
+          settings.bot.icon = filename;
+          io.emit('bot avatar', filename);
+        }
+      }
+    } else {
+      if (settings.backgroundImage !== undefined) {
+        if (!settings.backgroundImage.startsWith('http')) {
+          fs.stat(settings.backgroundImage, (err, stats) => {
+            if (!err) {
+              // Remove the old wallpaper and rename the new
+              fs.unlink(settings.backgroundImage, (err) => {
+                if (!err || err.code === 'ENOENT') {
+                  rename();
+                } else {
+                  console.log(`Error deleting the previous background image : ${err}`);
+                }
+              });
+            } else if (err && err.code === 'ENOENT') {
+              rename();
+            } else {
+              console.log(`Error renaming file : ${err}`);
+            }
+          });
+        } else {
+          settings.backgroundImage = filename;
+          io.emit('wallpaper', filename);
+        }
+      }
     }
-  });
+
+  }
+
+  if (customizationData.backgroundImage !== null && customizationData.backgroundImage !== undefined) {
+    handlePicture(customizationData.backgroundImage, 'wallpaper');
+  }
+
+  if (customizationData.bot !== null && customizationData.bot !== undefined) {
+    if (customizationData.bot.icon !== undefined) {
+      handlePicture(customizationData.bot.icon, 'avatar');
+
+      let answers = [
+        `Whoa, that's much better !`,
+        'I like this new look ! 😎'
+      ];
+
+      new Reply(answers.random()).send();
+    }
+
+    if (customizationData.bot.name !== undefined) {
+      settings.bot.name = customizationData.bot.name;
+    }
+  }
+
+  if (customizationData.RSS !== null && customizationData.RSS !== undefined) {
+    settings.RSS = customizationData.RSS;
+  }
+
+  if (customizationData.owmToken !== null && customizationData.owmToken !== undefined) {
+    settings.owmToken = customizationData.owmToken;
+  }
+
+  if (customizationData.searchEngine !== null && customizationData.searchEngine !== undefined) {
+    settings.searchEngine = customizationData.searchEngine;
+  }
 }
 
 // Get current the logged in user name
 let username = os.userInfo().username;
+
+let replyID = 0;
+
+// Define a counter to prevent multiple addings
+let iAddElt = 0;
+
+// Define the user request theme to avoid training the bot with unecessary data
+// like city names or stupid stuff (msgTheme == 'function' in that case)
+let msgTheme = 'none';
+
+function Reply(content) {
+  this.author = settings.bot.name;
+  this.content = content;
+  this.id = replyID;
+  this.dateTime = new Date();
+  this.theme = msgTheme;
+  this.send = function() {
+    return new Promise((fullfill, reject) => {
+      io.emit('reply', this);
+      replyID++;
+      fullfill(this);
+    });
+  }
+}
 
 // Create an empty object to store the downloaded file properties
 let downloadedFile = {
@@ -198,9 +238,9 @@ let downloadedFile = {
 }
 
 // Check if folders exist
-existPath('upload/');
-existPath('tmp/');
-existPath('settings/');
+functions.existPath('./upload/');
+functions.existPath('./tmp/');
+functions.existPath('./settings/');
 
 app.use("/src", express.static(__dirname + "/src"))
   .use("/upload", express.static(__dirname + "/upload"))
@@ -214,230 +254,220 @@ if (!ip.address().match(/169.254/) || !ip.address().match(/127.0/)) {
 }
 
 // Clear the temp folder every 15 minutes
+functions.clearTemp();
+
+// Create the settings file if it doesn't exist...
+functions.createSettingsFile(settingsPath, settingsTemplate);
+const updateSettings = () => {
+  // Update the settings variable with the new data
+  settings = fs.readFileSync(settingsPath, 'utf-8');
+  settings = JSON.parse(settings);
+  JSON.stringify(settings, null, 2);
+}
+
+setTimeout(() => {
+  updateSettings();
+}, 1000);
+
+// ... and repeat the process every 5 minutes
 setInterval(() => {
-  fs.readdir('./tmp', (err, files) => {
-    if (!err) {
-      for (const file of files) {
-        fs.unlink(`./tmp/${file}`, (err) => {
-          if (err) {
-            console.log(`Error deleting "${file}" from the temp folder :\n${err}`);
-          }
-        });
-      }
-    } else {
-      console.log(`Error cleaning the temp folder:\n${err}`);
-    }
+  functions.createSettingsFile(settingsPath, settingsTemplate);
+
+  // Write changes to the settings file after each update
+  functions.updateSettingsFile(settingsPath, settings, () => {
+    updateSettings();
   });
-}, 900000);
+}, 300000);
+
+functions.updatePrototypes();
 
 app.get('/', (req, res) => {
     res.render('home.ejs');
 
-    // Open only one socket connection, to avoid memory leaks
-    io.once('connection', (io) => {
-      // Settings object to be written in the settings file if it doesn't exist
-      let settings = {
-        "RSS": true,
-        "elements": [{
-            "elements": []
-          },
-          {
-            "elements": []
-          },
-          {
-            "elements": []
+    // Open only one socket connection to avoid memory leaks
+    io.once('connection', io => {
+      let elements = settings.elements;
+      var eltsArray = [];
+      if (settings.RSS === true) {
+        io.emit('RSS status retrieved', settings.RSS);
+        var bigI, i;
+
+        let totalLength = 0;
+        for (const [bigI, value] of elements.entries()) {
+          var subElts = value.elements;
+          totalLength += value.elements.length;
+
+          for (const [i, subEltsValue] of subElts.entries()) {
+            const sendData = () => {
+              if (eltsArray.length === totalLength) {
+                // Send data to the client
+                io.emit('parse content', eltsArray);
+              }
+            }
+
+            if (subEltsValue.type === 'rss') {
+              feedparser.parse(subEltsValue.url)
+                .then(items => {
+                  subEltsValue.feed = items;
+                  eltsArray.push(subEltsValue);
+
+                  sendData();
+                })
+                .catch((err) => {
+                  if (err == 'Error: Not a feed') {
+                    io.emit('errorMsg', {
+                      type: 'rss verification',
+                      element: `${subEltsValue.parent} ${subEltsValue.element}`,
+                      msg: `${subEltsValue.url} is not a valid RSS feed`
+                    });
+                  }
+                });
+            } else if (subEltsValue.type === 'weather' || subEltsValue.type === 'youtube search') {
+              eltsArray.push(subEltsValue);
+
+              sendData();
+            }
           }
-        ],
-        "owmToken": "9b013a34970de2ddd85f46ea9185dbc5",
-        "searchEngine": {
-          "label": "DuckDuckGo",
-          "url": "https://duckduckgo.com/?q="
         }
       }
 
-      // Read the settings file or create it if it doesn't exist
-      fs.stat(settingsPath, (err) => {
-        if (err === null) {
-          readSettings();
-        } else if (err.code === 'ENOENT') {
-          fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
-            if (err) {
-              console.log(`Error creating the settings file : ${err}`);
-            } else {
-              readSettings();
-            }
-          });
-        }
-      });
+      // Do not send the default wallpaper
+      if (settings.backgroundImage !== undefined) {
+        io.emit('wallpaper', settings.backgroundImage);
+      }
 
-      io.on('add content', (feedData) => {
-        // console.log(`feedData : ${JSON.stringify(feedData, null, 2)}`);
-        let element;
+      io.on('add content', feedData => {
+        var elements = settings.elements;
 
-        if (feedData !== undefined && feedData !== null) {
-          fs.readFile(settingsPath, 'utf-8', (err, data) => {
-            if (err) throw err;
-            let settings;
-            settings = JSON.parse(data);
-            var elements = settings.elements;
-            if (settings === undefined) {
-              console.log(`The settings file content is undefined...`);
-            } else {
-              settings.RSS = true;
+        settings.RSS = true;
 
-              // Check if feedData is an array
-              if (Array.isArray(feedData)) {
-                // console.log(JSON.stringify(feedData, null, 2));
-                let newElt = {};
+        let newElt = {};
 
-                for (let i = 0; i < feedData.length; i++) {
-                  // Store the parent element number
-                  let iParent = Number(feedData[i].parent.match(/\d/)) - 1;
+        // Store the parent element number
+        let iParent = Number(feedData.parent.match(/\d/)) - 1;
 
-                  // Define a counter to prevent multiple addings
-                  let iAddElt = 0;
+        const processData = (callback) => {
+          if (feedData.type === 'rss') {
+            request
+              .get(feedData.url)
+              .on('response', (res) => {
+                if (res.headers['content-type'].match(/xml/gi) || res.headers['content-type'].match(/rss/gi)) {
+                  newElt.element = feedData.element;
+                  newElt.parent = feedData.parent;
+                  newElt.url = feedData.url;
+                  newElt.type = feedData.type;
 
-                  for (const [j, value] of elements.entries()) {
-                    // console.log(`j : ${j}\nValue : ${JSON.stringify(value.elements, null, 2)}\n${feedData[i].parent}`);
+                  feedparser.parse(feedData.url)
+                    .then(items => {
+                      io.emit('parse content', [{
+                        feed: items,
+                        element: feedData.element,
+                        parent: feedData.parent,
+                        type: feedData.type
+                      }]);
 
-                    const processData = (callback) => {
-                      // console.log(i);
-                      if (feedData[i].type === 'rss') {
-                        request
-                          .get(feedData[i].url)
-                          .on('response', (res) => {
-                            if (res.headers['content-type'].match(/xml/gi) || res.headers['content-type'].match(/rss/gi)) {
-                              // console.log(res.headers['content-type']);
-                              newElt.element = feedData[i].element;
-                              newElt.parent = feedData[i].parent;
-                              newElt.url = feedData[i].url;
-                              newElt.type = feedData[i].type;
+                      callback();
+                    })
+                    .catch((err) => {
+                      if (err == 'Error: Not a feed') {
+                        console.log(`${feedData.url} is not a valid feed URL...`);
 
-                              feedparser.parse(feedData[i].url)
-                                .then(items => {
-                                  io.emit('parse content', [{
-                                    feed: items,
-                                    element: feedData[i].element,
-                                    parent: feedData[i].parent,
-                                    type: feedData[i].type
-                                  }]);
-
-                                  callback();
-                                })
-                                .catch((err) => {
-                                  if (err == 'Error: Not a feed') {
-                                    console.log('Invalid feed URL');
-                                    io.emit('errorMsg', {
-                                      type: 'rss verification',
-                                      element: `${feedData[i].parent} ${feedData[i].element}`,
-                                      msg: `${feedData[i].url} is not a valid RSS feed`
-                                    });
-                                  }
-                                });
-
-                              if (i === feedData.length - 1) {
-                                fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), (err) => {
-                                  if (err) throw err;
-                                });
-                              }
-                            } else {
-                              newElt = {};
-                              // console.log(1, newElt);
-
-                              io.emit('errorMsg', {
-                                type: 'rss verification',
-                                element: `${feedData[i].parent} ${feedData[i].element}`,
-                                msg: `${feedData[i].url} is not a valid RSS feed`
-                              });
-                            }
-                          })
-                          .on('error', (err) => {
-                            console.log(`Error parsing feed : ${err}`);
-                            io.emit('errorMsg', {
-                              type: 'rss verification',
-                              element: `${feedData[i].parent} ${feedData[i].element}`,
-                              msg: `${feedData[i].url} is not a valid RSS feed`
-                            });
-                          });
-
-                      } else if (feedData[i].type === 'weather') {
-                        newElt.element = feedData[i].element;
-                        newElt.parent = feedData[i].parent;
-                        newElt.location = feedData[i].location;
-                        newElt.type = feedData[i].type;
-
-                        io.emit('parse content', [{
-                          type: 'weather',
-                          element: feedData[i].element,
-                          parent: feedData[i].parent,
-                          location: feedData[i].location
-                        }]);
-
-                        callback();
-                      } else if (feedData[i].type === 'youtube search') {
-                        newElt.element = feedData[i].element;
-                        newElt.parent = feedData[i].parent;
-                        newElt.type = feedData[i].type;
-
-                        io.emit('parse content', [{
-                          type: 'youtube search',
-                          element: feedData[i].element,
-                          parent: feedData[i].parent,
-                        }]);
-
-                        callback();
-                      }
-                    }
-
-                    processData(() => {
-                      // console.log(2, newElt);
-                      if (newElt !== {}) {
-                        if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
-                          for (const [k, kValue] of value.elements.entries()) {
-                            if (kValue.element === feedData[i].element && kValue.parent === feedData[i].parent) {
-                              // console.log(1);
-                              value.elements.splice(k, 1, newElt);
-                              iAddElt++;
-                            } else if (kValue.element !== feedData[i].element && kValue.parent === feedData[i].parent) {
-                              if (iAddElt === 0) {
-                                // console.log(2);
-                                value.elements.push(newElt);
-                                iAddElt++;
-                              }
-                              // console.log(JSON.stringify(value.elements[k], null, 2));
-                            }
-                          }
-                        } else if (value.elements[0] === undefined && iParent === j) {
-                          // console.log(3);
-                          // Append the new element to the "elements" settings array
-                          value.elements.push(newElt);
-                          iAddElt++;
-                        }
-
-                        fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8', (err) => {
-                          if (err) throw err;
-
-                          // Reset the addings counter
-                          iAddElt = 0;
+                        io.emit('errorMsg', {
+                          type: 'rss verification',
+                          element: `${feedData.parent} ${feedData.element}`,
+                          msg: `${feedData.url} is not a valid RSS feed`
                         });
                       }
                     });
+                } else {
+                  newElt = {};
+
+                  io.emit('errorMsg', {
+                    type: 'rss verification',
+                    element: `${feedData.parent} ${feedData.element}`,
+                    msg: `${feedData.url} is not a valid RSS feed`
+                  });
+                }
+              })
+              .on('error', (err) => {
+                console.log(`Error parsing feed ${feedData.url} : ${err}`);
+
+                io.emit('errorMsg', {
+                  type: 'rss verification',
+                  element: `${feedData.parent} ${feedData.element}`,
+                  msg: `${feedData.url} is not a valid RSS feed`
+                });
+              });
+
+          } else if (feedData.type === 'weather') {
+            newElt.element = feedData.element;
+            newElt.parent = feedData.parent;
+            newElt.location = feedData.location;
+            newElt.type = feedData.type;
+
+            io.emit('parse content', [{
+              type: 'weather',
+              element: feedData.element,
+              parent: feedData.parent,
+              location: feedData.location
+            }]);
+
+            callback();
+          } else if (feedData.type === 'youtube search') {
+            newElt.element = feedData.element;
+            newElt.parent = feedData.parent;
+            newElt.type = feedData.type;
+
+            io.emit('parse content', [{
+              type: 'youtube search',
+              element: feedData.element,
+              parent: feedData.parent,
+            }]);
+
+            callback();
+          }
+        }
+
+        processData(() => {
+          for (const [j, value] of elements.entries()) {
+            if (newElt !== {}) {
+              if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
+                for (const [k, kValue] of value.elements.entries()) {
+                  // Remove the "feed" property for each element before updating the settings
+                  delete kValue.feed;
+                  if (iAddElt === 0) {
+                    if (kValue.element === feedData.element && kValue.parent === feedData.parent) {
+                      value.elements.splice(k, 1, newElt);
+                      iAddElt++;
+                    } else if (kValue.element !== feedData.element && kValue.parent === feedData.parent) {
+                      value.elements.push(newElt);
+                      iAddElt++;
+                    }
                   }
                 }
+              } else if (value.elements[0] === undefined && iParent === j) {
+                // Append the new element to the "elements" settings array
+                value.elements.push(newElt);
+                iAddElt++;
               }
             }
-          });
-        } else if (feedData === undefined || feedData === null) {
-          io.emit('errorMsg', {
-            msg: `Sorrry, RSS feed couldn't be added. Intense reflexion.`,
-            type: 'generic'
-          });
-          console.log(`Error adding feed : feedData is ${feedData}`);
-        }
+          }
+
+          // Reset the addings counter
+          iAddElt = 0;
+        });
       });
 
       io.on('customization', (customizationData) => {
-        customize(customizationData);
+        customize(io, customizationData);
+
+        // if (customizationData.bot !== undefined && customizationData.bot.icon !== undefined) {
+        //   io.emit('bot avatar', settings.bot.icon);
+        // }
+        //
+        // if (customizationData.backgroundImage !== undefined) {
+        //   io.emit('wallpaper', settings.backgroundImage);
+        // }
       });
 
       io.on('download', (id) => {
@@ -454,46 +484,33 @@ app.get('/', (req, res) => {
         ];
 
         const manualAudioDownload = () => {
-          console.log(`Youtube-dl executable was not found... Using the manual download method.`);
           var info = ytdl.getInfo(id, (err, info) => {
-            if (!err) {
-              let filename = info.player_response.videoDetails.title.replace(/[\/\\%:]/, '');
-              filename = `${filename}.mp3`;
+            if (err) throw err;
 
-              let path = `${__dirname}\\src\\${filename}`;
+            let filename = info.player_response.videoDetails.title.replace(/[\/\\%:]/, '');
+            filename = `${filename}.mp3`;
 
-              // Create a file containing the stream
-              let audioFile = fs.createWriteStream(path);
+            let path = `${__dirname}\\src\\${filename}`;
 
-              let stream = ytdl(id, {
-                  filter: 'audioonly'
-                }, {
-                  quality: 'highestaudio'
-                })
-                .pipe(audioFile);
+            // Create a file containing the stream
+            let audioFile = fs.createWriteStream(path);
 
-              stream.on('close', () => {
+            let stream = ytdl(id, {
+                filter: 'audioonly'
+              }, {
+                quality: 'highestaudio'
+              })
+              .pipe(audioFile);
 
-                downloadedFile.path = path;
-                downloadedFile.name = filename;
+            stream.on('close', () => {
+              downloadedFile.path = path;
+              downloadedFile.name = filename;
 
-                // Inform the client that the download ended
-                io.emit('download ended', {
-                  title: info.player_response.videoDetails.title,
-                });
+              // Inform the client that the download ended
+              io.emit('download ended', {
+                title: info.player_response.videoDetails.title,
               });
-            } else {
-              if (err.toString().match(/This video is unavailable/)) {
-                console.log(`Error downloading an audio file using the manual method : the video is unavailable`);
-
-                io.emit('errorMsg', {
-                  type: 'generic',
-                  msg: `Sorry, this video is not available for download...`
-                });
-              } else {
-                console.log(`Error downloading an audio file using the manual method : ${err.toString()}`);
-              }
-            }
+            });
           });
         }
 
@@ -508,23 +525,33 @@ app.get('/', (req, res) => {
           });
 
           download.on('close', () => {
+            if (downloadLog !== null) {
+              filename = downloadLog
+                .match(/(tmp\\|tmp\/)\w.+(.mp3)/i)[0]
+                .substring(4, 100);
 
-            filename = downloadLog
-              .match(/((.|)(\/|\\|)tmp(\/|\\)\w.+\.mp3)/i)[1]
-              .substring(1, 100);
+              if (os.platform() === 'win32') {
+                downloadedFile.path = `${__dirname}\\tmp\\${filename}`;
+              } else if (os.platform() === 'linux') {
+                downloadedFile.path = `${__dirname}tmp/${filename}`;
+              }
 
-            if (os.platform() === 'Win32') {
-              downloadedFile.path = `${__dirname}\\${filename}`;
-            } else if (os.platform() === 'linux') {
-              downloadedFile.path = `${__dirname}${filename}`;
+              downloadedFile.name = filename;
+
+              // Wait one second to be sure the file processing ended
+              // Inform the client that the download ended
+              setTimeout(() => {
+                io.emit('download ended', {
+                  title: downloadedFile.name
+                }, 60000);
+              })
+            } else {
+              io.emit('errorMsg', {
+                type: 'generic',
+                msg: `Sorry, this video couldn't be downloaded... Unable to retrieve filename.`
+              });
+              console.log(`Sorry, this video couldn't be downloaded... Unable to retrieve filename.`);
             }
-
-            downloadedFile.name = filename;
-
-            // Inform the client that the download ended
-            io.emit('download ended', {
-              title: downloadedFile.name
-            });
           });
         }
 
@@ -534,6 +561,10 @@ app.get('/', (req, res) => {
               if (err.code === 'ENOENT') {
                 manualAudioDownload();
               } else {
+                io.emit('errorMsg', {
+                  type: 'generic',
+                  msg: `Error downloading file without Youtube-dl. Please check the logs for details.`
+                });
                 console.log(`Error downloading file without Youtube-dl : ${err}`);
               }
             } else {
@@ -546,6 +577,10 @@ app.get('/', (req, res) => {
               if (err.code === 'ENOENT') {
                 manualAudioDownload();
               } else {
+                io.emit('errorMsg', {
+                  type: 'generic',
+                  msg: `Error downloading file without Youtube-dl. Please check the logs for details.`
+                });
                 console.log(`Error downloading file without Youtube-dl : ${err}`);
               }
             } else {
@@ -576,35 +611,25 @@ app.get('/', (req, res) => {
       });
 
       io.on('update feed', (feed2update) => {
-        // console.log(JSON.stringify(feed2update, null, 2));
-        fs.readFile(settingsPath, 'utf-8', (err, data) => {
-          try {
-            let settings = JSON.parse(data);
-            for (const i of settings.elements) {
-              for (const j of i.elements) {
-                // console.log(JSON.stringify(j, null, 2));
-                let eltRegex = new RegExp(j.element, 'gi');
-                let parentRegex = new RegExp(j.parent, 'gi');
-                if (feed2update.element.match(eltRegex) && feed2update.parent.match(parentRegex)) {
-                  // console.log('ok');
-                  feedparser.parse(j.url)
-                    .then(items => {
-                      // Parse rss
-                      io.emit('feed updated', {
-                        feed: items,
-                        element: feed2update.element,
-                        parent: feed2update.parent,
-                        update: true
-                      });
-                    })
-                    .catch(console.error);
-                }
-              }
+        for (const i of settings.elements) {
+          for (const j of i.elements) {
+            let eltRegex = new RegExp(j.element, 'gi');
+            let parentRegex = new RegExp(j.parent, 'gi');
+            if (feed2update.element.match(eltRegex) && feed2update.parent.match(parentRegex)) {
+              feedparser.parse(j.url)
+                .then(items => {
+                  // Parse rss
+                  io.emit('feed updated', {
+                    feed: items,
+                    element: feed2update.element,
+                    parent: feed2update.parent,
+                    update: true
+                  });
+                })
+                .catch(console.error);
             }
-          } catch (err) {
-            console.log(`Error reading settings file : ${err}`);
           }
-        });
+        }
       });
 
       io.on('parse playlist', (playlistUrl) => {
@@ -632,6 +657,8 @@ app.get('/', (req, res) => {
                   msg: 'Invalid playlist reference :((',
                   type: 'generic'
                 });
+              } else {
+                console.log(result.error);
               }
             } catch (e) {
               console.log(`Error parsing playlist : ${e}`);
@@ -645,65 +672,381 @@ app.get('/', (req, res) => {
       });
 
       io.on('remove content', (content2remove) => {
-        fs.readFile(settingsPath, 'utf-8', (err, data) => {
-          if (!err) {
-            let settings = JSON.parse(data);
-
-            for (const [i, settingsElts] of settings.elements.entries()) {
-              // Set a variable to stop the loop as soon as the element is removed
-              let found = false;
-              for (const [j, settingsElt] of settingsElts.elements.entries()) {
-                if (found !== true) {
-                  if (content2remove.parent === settingsElt.parent && content2remove.element === settingsElt.element) {
-                    settingsElts.elements.splice(j, 1);
-
-                    fs.writeFile(settingsPath, JSON.stringify(settings, null, 2), (err) => {
-                      if (!err) {
-                        found = true;
-                      } else {
-                        console.log(`Error updating settings : ${err}`);
-                      }
-                    });
-                  }
-                }
+        for (const [i, settingsElts] of settings.elements.entries()) {
+          // Set a variable to stop the loop as soon as the element is removed
+          let found = false;
+          for (const [j, settingsElt] of settingsElts.elements.entries()) {
+            if (found !== true) {
+              if (content2remove.parent === settingsElt.parent && content2remove.element === settingsElt.element) {
+                settingsElts.elements.splice(j, 1);
+                found = true;
               }
             }
-          } else {
-            console.log(`Error reading settings : ${err}`);
           }
-        });
+        }
       });
     });
   })
 
+  .get('/chat', (req, res) => {
+    // Define emoijis
+    let emoijis = {
+      devil: '😈',
+      expressionless: '😑',
+      innocent: '😇',
+      laugh: '😂',
+      sad: '😭',
+      smile: '😃',
+      sunglasses: '😎',
+      wink: '😉'
+    }
+
+    res.render('chat.ejs', {
+      botName: settings.bot.name
+    });
+
+    io.once('connection', io => {
+      let reply = '';
+
+      // Send the username to the frontend
+      io.emit('username', username.capitalize());
+
+      let welcomeMsg = new Reply(`Hi ! I'm ${settings.bot.name}, how can I help you ?`).send();
+
+      if (settings.backgroundImage !== undefined) {
+        io.emit('wallpaper', settings.backgroundImage);
+      }
+
+      if (settings.bot.icon !== './src/scss/icons/interface/bot.png') {
+        io.emit('bot avatar', settings.bot.icon);
+      }
+
+      io.on('chat msg', msg => {
+        console.log(classifier.getClassifications(msg.content), msgTheme);
+        const tokenize = (msg) => {
+          return classifier.getClassifications(tokenizer.tokenize(msg.toLowerCase()));
+        }
+
+        const getWeatherForecast = (msg) => {
+          // Strip accents and diacritics
+          let location = msg.normalize('NFD');
+          let url = `https://api.openweathermap.org/data/2.5/find?q=${location}&units=metric&lang=en&appid=9b013a34970de2ddd85f46ea9185dbc5`;
+
+          request(url, function(err, res, body) {
+            if (!err) {
+              let result = JSON.parse(body);
+              let count = result.count;
+
+              if (count !== 0) {
+                let previsions = {
+                  temp: result.list[0].main.temp,
+                  city: result.list[0].name,
+                  description: result.list[0].weather[0].description,
+                  humidity: result.list[0].main.humidity,
+                  windSpeed: result.list[0].wind.speed
+                };
+
+                msgTheme = 'weather';
+
+                return new Reply(`Currently in ${previsions.city}, the temperature is ${previsions.temp} C°, ${previsions.description}. ` +
+                  `Humidity is about ${previsions.humidity}%, and the wind blows at ${previsions.windSpeed} km/h.`).send();
+              } else {
+                msgTheme = 'weather';
+                return new Reply("Sorry, I can't find this place... Make sure of the location you have given me and retry...").send();
+              }
+            } else {
+              console.log(`Error getting weather forecast : ${err}`);
+            }
+
+          });
+        }
+
+        const revertGreetings = (msg) => {
+          if (msg.content.match(/(how are (you|u)|what's up)/gi)) {
+            reply = `I'm fine. What about you ?`;
+            msgTheme = 'news';
+
+            io.on('chat msg', msg => {
+              msgTheme = 'news';
+
+              let answers = [
+                'Nice to hear !',
+                'Great !'
+              ];
+
+              reply = answers.random();
+            });
+          } else {
+            reply = `Hey ${msg.author} ! What can I do for you ?`;
+            msgTheme = 'greetings';
+
+            io.on('chat msg', msg => {
+              if (msg.content.match(/nothing/i)) {
+                reply = new Reply('Ok then, I\'ll leave you alone.').send();
+              }
+            });
+          }
+        }
+
+        const searchWiki = (args, msg) => {
+          return new Promise((fullfill, reject) => {
+            request(`https://en.wikipedia.org/api/rest_v1/page/summary/${args.join('_')}?redirect=true`, (err, res, body) => {
+              if (!err) {
+                let res = JSON.parse(body);
+
+                // Check if the API entry exists
+                if (!res.title.match(/not found/gi)) {
+                  let reply = {
+                    icon: './src/scss/icons/suggestions/wikipedia.ico',
+                    title: res.title,
+                    url: res.content_urls.desktop.page,
+                    color: 'white',
+                    description: `<p>According to Wikipedia,</p> <article><i>${res.extract}</i></article>`
+                  };
+
+                  if (res.type === 'disambiguation') {
+                    reply.description += `<p>A disambiguation page is available here : <a href="${reply.url}">${res.title}</a></p>`;
+                  } else {
+                    reply.description += `<p>More info : <a href="${reply.url}">${res.title}</a></p>`;
+                  }
+
+                  if (res.thumbnail !== undefined) {
+                    reply.img = res.thumbnail.source;
+                  }
+
+                  // Modify the message theme to create the embed
+                  msgTheme = 'wiki';
+                  reply.theme = 'wiki';
+
+                  fullfill(reply);
+                } else {
+                  reject(`Sorry ${msg.author}, Wikipedia does not have any entry for this...`);
+                }
+              } else {
+                console.log(`Error parsing Wikipedia API : ${err}`);
+                reject(`Sorry, ${msg.author}, I was unable to complete your request. Please check the logs for details.`);
+              }
+            });
+          });
+        }
+
+        const wikiResponse = (args, msg) => {
+          searchWiki(args, msg)
+            .then((res) => {
+              new Reply(res).send();
+            })
+            .catch((err) => {
+              new Reply(err).send();
+            })
+        }
+
+        if (tokenize(msg.content)[0].value > 0.5) {
+          if (classifier.classify(msg.content) === 'greetings') {
+            revertGreetings(msg);
+          } else if (classifier.classify(msg.content) === 'weather') {
+            reply = `Which city do you want to get the forecast for ?`;
+            msgTheme = 'weather';
+
+            io.on('chat msg', msg => {
+              reply = getWeatherForecast(msg.content);
+            });
+          } else if (classifier.classify(msg.content) === 'news') {
+            revertGreetings(msg);
+          } else if (classifier.classify(msg.content) === 'activity') {
+            reply = `I'm just talking to you ${msg.author}.`;
+            msgTheme = 'activity';
+          } else if (classifier.classify(msg.content) === 'love') {
+            let answers = [
+              `Sorry ${msg.author}, I don't think human and robots can love each other...`,
+              `Welcome to the Friendzone dude !`,
+              `Forgive me but I can't express any feelings`
+            ];
+
+            reply = answers.random();
+            msgTheme = 'love';
+          } else if (classifier.classify(msg.content) === 'gross') {
+            let answers = [
+              `Don't be so gross ${msg.author} !`,
+              `I'm not equiped for that kind of... activity, sorry.`,
+              `What if I told you to go fuck yourself ${msg.author} ?`,
+            ];
+
+            reply = answers.random();
+            msgTheme = 'gross';
+          } else if (classifier.classify(msg.content) === 'insults') {
+            let answers = [
+              `Didn't you Mother teach you politeness ?`,
+              `So you think you're better than me ? Interesting...`
+            ];
+
+            reply = answers.random();
+            msgTheme = 'insults';
+          } else if (classifier.classify(msg.content) === 'thanks') {
+            let answers = [
+              `You're welcome ${msg.author} !`,
+              `Glad I could help you !`,
+              `Now you owe me one ${emoijis.innocent}`,
+            ];
+
+            reply = answers.random();
+            msgTheme = 'thanks';
+          } else if (classifier.classify(msg.content) === 'joke') {
+            reply = `I don't have any jokes for now...`;
+            msgTheme = 'joke';
+          } else if (classifier.classify(msg.content) === 'wiki') {
+            let args = msg.content.split(' ');
+            msgTheme = 'wiki';
+
+            if (msg.content.match(/^define/i)) {
+              args.shift();
+              wikiResponse(args, msg);
+            } else if (msg.content.match(/^search for/i)) {
+              args.splice(0, 2);
+              wikiResponse(args, msg);
+            } else {
+              reply = `Sorry ${msg.author}, I couldn't understand... What are you searching for ?`;
+
+              io.on('chat msg', msg => {
+                let args = msg.content.split(' ');
+                wikiResponse(args, msg);
+              });
+            }
+          } else if (classifier.classify(msg.content) === 'movie review') {
+            let answers = [
+              `Which movie do you want a review for ?`,
+              `Which movie are you interested in ?`
+            ];
+
+            reply = answers.random();
+
+            io.on('chat msg', msg => {
+              let args = msg.content.split(' ');
+
+              rottenParser.getMovieReview(msg.content)
+                .then(movieData => {
+
+                  let reply = {
+                    title: movieData.title,
+                    img: movieData.poster,
+                    url: movieData.url,
+                    description: `<u>Synopsis</u> : ${movieData.synopsis}`,
+                    fields: [
+                      `<u>Rating</u> : ${movieData.rating}`,
+                      `<u>Critics consensus</u> : ${movieData.consensus}`
+                    ]
+                  };
+
+                  if (!movieData.rating.match(/No rating found/i)) {
+                    if (movieData.rating > '80%') {
+                      reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/cf-lg.3c29eff04f2.png';
+                      reply.color = 'gold';
+                    } else if (movieData.rating > '50%' && movieData.rating < '80%') {
+                      reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-fresh-lg.12e316e31d2.png';
+                      reply.color = 'red';
+                    } else {
+                      reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-rotten-lg.ecdfcf9596f.png';
+                      reply.color = 'green';
+                    }
+                  } else {
+                    reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-fresh-lg.12e316e31d2.png';
+                    reply.color = 'red';
+                  }
+
+
+                  msgTheme = 'movie review';
+
+                  new Reply(reply).send();
+                })
+                .catch((err) => {
+                  console.log(err);
+                  let link = `https://www.rottentomatoes.com/search/?search=${args.join(' ')}`;
+                  let linkTag = `<a class="embed__link" href="${link}">${link}</a>`;
+
+                  new Reply(
+                    `Sorry, I couldn't get this movie review... ${emoijis.expressionless} \n` +
+                    `Please try again using another keywords or go to this results page : ${linkTag}`
+                  ).send();
+                });
+            });
+          }
+        } else if (tokenize(msg.content)[0].value === 0.5) {
+          reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
+        }
+
+        // Check if the reply is not empty before sending it
+        if (reply !== '') {
+          let answer = new Reply(reply).send();
+
+          let content = tokenizer.tokenize(msg.content);
+
+          // Add the last user message to classifier and train the bot with it
+          if (tokenize(msg.content)[0].value !== 'none') {
+            classifier.addDocument(content, msgTheme);
+            classifier.train();
+
+            // Save the classifier for further usage
+            classifier.save('classifier.json', function(err, classifier) {
+              if (err) {
+                console.log(`Error saving changes to the classifier : ${err}`);
+              }
+            });
+          } else {
+            console.log(`The message "${msg.content}" was not classified because it didn't have a valid class...`);
+          }
+        }
+      });
+
+      io.on('customization', (customizationData) => {
+        customize(io, customizationData);
+      });
+    })
+  })
+
   // Prompt the user to download the file
   .get('/download', (req, res) => {
-    res.download(downloadedFile.path, downloadedFile.name, (err) => {
-      if (err) throw err;
-    });
+    if (downloadedFile.path !== null) {
+      res.download(downloadedFile.path, downloadedFile.name, (err) => {
+        if (err) {
+          console.log(`Error downloading file : ${JSON.stringify(err, null, 2)}`);
+          io.emit('errorMsg', {
+            type: 'generic',
+            msg: 'An error occurred while downloading... Check the logs for details.'
+          })
+        }
+      });
+    } else {
+      io.emit('errorMsg', {
+        type: 'generic',
+        msg: 'Sorry, the filename couln\'t be retrieved...'
+      })
+    }
   })
 
   .post('/upload', (req, res) => {
     upload(req, res, (err) => {
-      if (req.file !== undefined) {
-        // console.log(req.file);
-        let data = {
-          backgroundImage: `${req.file.destination}/${req.file.filename}`
-        };
-
-        // console.log(`customize : ${data.backgroundImage}`);
-        if (err) {
-          res.render('home.ejs', {
-            msg: err
-          });
-        } else {
-          res.render('home.ejs', {
-            msg: `${req.file.originalname} successfully uploaded !`,
-          });
+      if (req.files !== undefined) {
+        if (req.files.chatBotAvatarUploadInput !== undefined) {
+          let avatar = `${req.files.chatBotAvatarUploadInput[0].destination}/${req.files.chatBotAvatarUploadInput[0].filename}`;
+          if (err) {
+            console.log(`Error uploading file :(( :\n${err}`);
+          } else {
+            console.log(`${req.files.chatBotAvatarUploadInput[0].originalname} successfully uploaded !`);
+            io.emit('bot avatar', avatar);
+          }
+        } else if (req.files.backgroundImageUploadInput !== undefined) {
+          let wallpaper = `${req.files.backgroundImageUploadInput[0].destination}/${req.files.backgroundImageUploadInput[0].filename}`;
+          if (err) {
+            console.log(`Error uploading file :(( :\n${err}`);
+          } else {
+            console.log(`${req.files.backgroundImageUploadInput[0].originalname} successfully uploaded !`);
+          }
         }
-      } else if (err) {
-        // console.log(JSON.stringify(req.file, null, 2));
+      } else {
         console.log(`Error uploading file :(( :\n${err}`);
+      }
+
+      if (err) {
+        console.log(`Error uploading file : ${JSON.stringify(err, null, 2)}`);
       }
     });
   })
@@ -712,19 +1055,23 @@ app.get('/', (req, res) => {
   .use((req, res, next) => {
     res.status(404).render('404.ejs');
     io.once('connection', (io) => {
-      fs.readFile(settingsPath, 'utf-8', (err, data) => {
-        if (err) throw err;
-        let settings;
-        if (data !== undefined) {
-          try {
-            settings = JSON.parse(data);
-          } catch (err) {
-            // If parsing fail, throw an error
-            console.log(`Error parsing settings !\n${err}`);
-          }
-        } else {
-          console.log(`File content is undefined !`);
-        }
-      });
+      if (settings.backgroundImage !== undefined) {
+        io.emit('wallpaper', settings.backgroundImage);
+      }
     });
   });
+
+process.on('SIGINT', () => {
+  let exitMsg = [
+    `Shutdown signal received, over.`,
+    `Bye !`,
+    `See you ${username} !`,
+    `Later dude !`
+  ];
+
+  // Write changes to the settings file before exiting the process
+  functions.updateSettingsFile(settingsPath, settings, () => {
+    console.log(`\n${exitMsg.random()}`);
+    process.exit(0);
+  });
+});
