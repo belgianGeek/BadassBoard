@@ -707,7 +707,6 @@ app.get('/', (req, res) => {
 
     io.once('connection', io => {
       let reply = '';
-      let replyType = 'generic';
 
       // Send the username to the frontend
       io.emit('username', username.capitalize());
@@ -723,6 +722,7 @@ app.get('/', (req, res) => {
       }
 
       io.on('chat msg', msg => {
+        console.log(classifier.getClassifications(msg.content), msgTheme);
         const tokenize = (msg) => {
           return classifier.getClassifications(tokenizer.tokenize(msg.toLowerCase()));
         }
@@ -746,14 +746,12 @@ app.get('/', (req, res) => {
                   windSpeed: result.list[0].wind.speed
                 };
 
-                replyType = 'generic';
                 msgTheme = 'weather';
 
                 return new Reply(`Currently in ${previsions.city}, the temperature is ${previsions.temp} C°, ${previsions.description}. ` +
                   `Humidity is about ${previsions.humidity}%, and the wind blows at ${previsions.windSpeed} km/h.`).send();
               } else {
                 msgTheme = 'weather';
-                replyType = 'generic';
                 return new Reply("Sorry, I can't find this place... Make sure of the location you have given me and retry...").send();
               }
             } else {
@@ -766,11 +764,27 @@ app.get('/', (req, res) => {
         const revertGreetings = (msg) => {
           if (msg.content.match(/(how are (you|u)|what's up)/gi)) {
             reply = `I'm fine. What about you ?`;
-            replyType = 'news';
             msgTheme = 'news';
+
+            io.on('chat msg', msg => {
+              msgTheme = 'news';
+
+              let answers = [
+                'Nice to hear !',
+                'Great !'
+              ];
+
+              reply = answers.random();
+            });
           } else {
             reply = `Hey ${msg.author} ! What can I do for you ?`;
             msgTheme = 'greetings';
+
+            io.on('chat msg', msg => {
+              if (msg.content.match(/nothing/i)) {
+                reply = new Reply('Ok then, I\'ll leave you alone.').send();
+              }
+            });
           }
         }
 
@@ -779,7 +793,6 @@ app.get('/', (req, res) => {
             request(`https://en.wikipedia.org/api/rest_v1/page/summary/${args.join('_')}?redirect=true`, (err, res, body) => {
               if (!err) {
                 let res = JSON.parse(body);
-                replyType = 'generic';
 
                 // Check if the API entry exists
                 if (!res.title.match(/not found/gi)) {
@@ -810,7 +823,6 @@ app.get('/', (req, res) => {
                   reject(`Sorry ${msg.author}, Wikipedia does not have any entry for this...`);
                 }
               } else {
-                replyType = 'generic';
                 console.log(`Error parsing Wikipedia API : ${err}`);
                 reject(`Sorry, ${msg.author}, I was unable to complete your request. Please check the logs for details.`);
               }
@@ -828,179 +840,158 @@ app.get('/', (req, res) => {
             })
         }
 
-        if (replyType === 'generic') {
-          if (tokenize(msg.content)[0].value > 0.5) {
-            if (classifier.classify(msg.content) === 'greetings') {
-              revertGreetings(msg);
-            } else if (classifier.classify(msg.content) === 'weather') {
-              reply = `Which city do you want to get the forecast for ?`;
-              replyType = 'forecast';
-              msgTheme = 'weather';
-            } else if (classifier.classify(msg.content) === 'news') {
-              revertGreetings(msg);
-            } else if (classifier.classify(msg.content) === 'activity') {
-              reply = `I'm just talking to you ${msg.author}.`;
-              msgTheme = 'activity';
-            } else if (classifier.classify(msg.content) === 'love') {
-              let answers = [
-                `Sorry ${msg.author}, I don't think human and robots can love each other...`,
-                `Welcome to the Friendzone dude !`,
-                `Forgive me but I can't express any feelings`
-              ];
+        if (tokenize(msg.content)[0].value > 0.5) {
+          if (classifier.classify(msg.content) === 'greetings') {
+            revertGreetings(msg);
+          } else if (classifier.classify(msg.content) === 'weather') {
+            reply = `Which city do you want to get the forecast for ?`;
+            msgTheme = 'weather';
 
-              reply = answers.random();
-              msgTheme = 'love';
-            } else if (classifier.classify(msg.content) === 'gross') {
-              let answers = [
-                `Don't be so gross ${msg.author} !`,
-                `I'm not equiped for that kind of... activity, sorry.`,
-                `What if I told you to go fuck yourself ${msg.author} ?`,
-              ];
-
-              reply = answers.random();
-              msgTheme = 'gross';
-            } else if (classifier.classify(msg.content) === 'insults') {
-              let answers = [
-                `Didn't you Mother teach you politeness ?`,
-                `So you think you're better than me ? Interesting...`
-              ];
-
-              reply = answers.random();
-              msgTheme = 'insults';
-            } else if (classifier.classify(msg.content) === 'thanks') {
-              let answers = [
-                `You're welcome ${msg.author} !`,
-                `Glad I could help you !`,
-                `Now you owe me one ${emoijis.innocent}`,
-              ];
-
-              reply = answers.random();
-              msgTheme = 'thanks';
-            } else if (classifier.classify(msg.content) === 'joke') {
-              reply = `I don't have any jokes for now...`;
-              msgTheme = 'joke';
-            } else if (classifier.classify(msg.content) === 'wiki') {
-              let args = msg.content.split(' ');
-              msgTheme = 'wiki';
-
-              if (msg.content.match(/^define/i)) {
-                args.shift();
-                wikiResponse(args, msg);
-              } else if (msg.content.match(/^search for/i)) {
-                args.splice(0, 2);
-                wikiResponse(args, msg);
-              } else {
-                reply = `Sorry ${msg.author}, I couldn't understand... What are you searching for ?`;
-                replyType = 'wiki';
-              }
-            } else if (classifier.classify(msg.content) === 'movie review') {
-              let answers = [
-                `Which movie do you want a review for ?`,
-                `Which movie are you interested in ?`
-              ];
-
-              reply = answers.random();
-              replyType = 'movie review';
-            }
-          } else if (tokenize(msg.content)[0].value === 0.5) {
-            reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
-          }
-        } else {
-          msgTheme = 'function';
-
-          if (replyType === 'forecast') {
-            reply = getWeatherForecast(msg.content);
-            replyType = 'generic';
-          } else if (replyType === 'news') {
-            replyType = 'generic';
-            msgTheme = 'news';
-
+            io.on('chat msg', msg => {
+              reply = getWeatherForecast(msg.content);
+            });
+          } else if (classifier.classify(msg.content) === 'news') {
+            revertGreetings(msg);
+          } else if (classifier.classify(msg.content) === 'activity') {
+            reply = `I'm just talking to you ${msg.author}.`;
+            msgTheme = 'activity';
+          } else if (classifier.classify(msg.content) === 'love') {
             let answers = [
-              'Nice to hear !',
-              'Great !'
+              `Sorry ${msg.author}, I don't think human and robots can love each other...`,
+              `Welcome to the Friendzone dude !`,
+              `Forgive me but I can't express any feelings`
             ];
 
-            reply = answers[Math.floor(Math.random() * answers.length)];
-          } else if (replyType === 'wiki') {
+            reply = answers.random();
+            msgTheme = 'love';
+          } else if (classifier.classify(msg.content) === 'gross') {
+            let answers = [
+              `Don't be so gross ${msg.author} !`,
+              `I'm not equiped for that kind of... activity, sorry.`,
+              `What if I told you to go fuck yourself ${msg.author} ?`,
+            ];
+
+            reply = answers.random();
+            msgTheme = 'gross';
+          } else if (classifier.classify(msg.content) === 'insults') {
+            let answers = [
+              `Didn't you Mother teach you politeness ?`,
+              `So you think you're better than me ? Interesting...`
+            ];
+
+            reply = answers.random();
+            msgTheme = 'insults';
+          } else if (classifier.classify(msg.content) === 'thanks') {
+            let answers = [
+              `You're welcome ${msg.author} !`,
+              `Glad I could help you !`,
+              `Now you owe me one ${emoijis.innocent}`,
+            ];
+
+            reply = answers.random();
+            msgTheme = 'thanks';
+          } else if (classifier.classify(msg.content) === 'joke') {
+            reply = `I don't have any jokes for now...`;
+            msgTheme = 'joke';
+          } else if (classifier.classify(msg.content) === 'wiki') {
             let args = msg.content.split(' ');
-            wikiResponse(args, msg);
-          } else if (replyType === 'movie review') {
-            let args = msg.content.split(' ');
+            msgTheme = 'wiki';
 
-            rottenParser.getMovieReview(msg.content)
-              .then(movieData => {
+            if (msg.content.match(/^define/i)) {
+              args.shift();
+              wikiResponse(args, msg);
+            } else if (msg.content.match(/^search for/i)) {
+              args.splice(0, 2);
+              wikiResponse(args, msg);
+            } else {
+              reply = `Sorry ${msg.author}, I couldn't understand... What are you searching for ?`;
 
-                let reply = {
-                  title: movieData.title,
-                  img: movieData.poster,
-                  url: movieData.url,
-                  description: `<u>Synopsis</u> : ${movieData.synopsis}`,
-                  fields: [
-                    `<u>Rating</u> : ${movieData.rating}`,
-                    `<u>Critics consensus</u> : ${movieData.consensus}`
-                  ]
-                };
+              io.on('chat msg', msg => {
+                let args = msg.content.split(' ');
+                wikiResponse(args, msg);
+              });
+            }
+          } else if (classifier.classify(msg.content) === 'movie review') {
+            let answers = [
+              `Which movie do you want a review for ?`,
+              `Which movie are you interested in ?`
+            ];
 
-                if (!movieData.rating.match(/No rating found/i)) {
-                  if (movieData.rating > '80%') {
-                    reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/cf-lg.3c29eff04f2.png';
-                    reply.color = 'gold';
-                  } else if (movieData.rating > '50%' && movieData.rating < '80%') {
+            reply = answers.random();
+
+            io.on('chat msg', msg => {
+              let args = msg.content.split(' ');
+
+              rottenParser.getMovieReview(msg.content)
+                .then(movieData => {
+
+                  let reply = {
+                    title: movieData.title,
+                    img: movieData.poster,
+                    url: movieData.url,
+                    description: `<u>Synopsis</u> : ${movieData.synopsis}`,
+                    fields: [
+                      `<u>Rating</u> : ${movieData.rating}`,
+                      `<u>Critics consensus</u> : ${movieData.consensus}`
+                    ]
+                  };
+
+                  if (!movieData.rating.match(/No rating found/i)) {
+                    if (movieData.rating > '80%') {
+                      reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/cf-lg.3c29eff04f2.png';
+                      reply.color = 'gold';
+                    } else if (movieData.rating > '50%' && movieData.rating < '80%') {
+                      reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-fresh-lg.12e316e31d2.png';
+                      reply.color = 'red';
+                    } else {
+                      reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-rotten-lg.ecdfcf9596f.png';
+                      reply.color = 'green';
+                    }
+                  } else {
                     reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-fresh-lg.12e316e31d2.png';
                     reply.color = 'red';
-                  } else {
-                    reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-rotten-lg.ecdfcf9596f.png';
-                    reply.color = 'green';
                   }
-                } else {
-                  reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-fresh-lg.12e316e31d2.png';
-                  reply.color = 'red';
-                }
 
 
-                msgTheme = 'movie review';
+                  msgTheme = 'movie review';
 
-                new Reply(reply).send();
+                  new Reply(reply).send();
+                })
+                .catch((err) => {
+                  console.log(err);
+                  let link = `https://www.rottentomatoes.com/search/?search=${args.join(' ')}`;
+                  let linkTag = `<a class="embed__link" href="${link}">${link}</a>`;
 
-                replyType = 'generic';
-              })
-              .catch((err) => {
-                console.log(err);
-                let link = `https://www.rottentomatoes.com/search/?search=${args.join(' ')}`;
-                let linkTag = `<a class="embed__link" href="${link}">${link}</a>`;
-
-                new Reply(
-                  `Sorry, I couldn't get this movie review... ${emoijis.expressionless} \n` +
-                  `Please try again using another keywords or go to this results page : ${linkTag}`
-                ).send();
-
-                replyType = 'generic';
-              });
+                  new Reply(
+                    `Sorry, I couldn't get this movie review... ${emoijis.expressionless} \n` +
+                    `Please try again using another keywords or go to this results page : ${linkTag}`
+                  ).send();
+                });
+            });
           }
+        } else if (tokenize(msg.content)[0].value === 0.5) {
+          reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
         }
 
         // Check if the reply is not empty before sending it
         if (reply !== '') {
-          // Send the reply if it is not part of a function
-          if (msgTheme !== 'function') {
-            let answer = new Reply(reply).send();
+          let answer = new Reply(reply).send();
 
-            let content = tokenizer.tokenize(msg.content);
+          let content = tokenizer.tokenize(msg.content);
 
-            // Add the last user message to classifier and train the bot with it
-            if (tokenize(msg.content)[0].value !== 'none') {
-              classifier.addDocument(content, msgTheme);
-              classifier.train();
+          // Add the last user message to classifier and train the bot with it
+          if (tokenize(msg.content)[0].value !== 'none') {
+            classifier.addDocument(content, msgTheme);
+            classifier.train();
 
-              // Save the classifier for further usage
-              classifier.save('classifier.json', function(err, classifier) {
-                if (err) {
-                  console.log(`Error saving changes to the classifier : ${err}`);
-                }
-              });
-            } else {
-              console.log(`The message "${msg.content}" was not classified because it didn't have a valid class...`);
-            }
+            // Save the classifier for further usage
+            classifier.save('classifier.json', function(err, classifier) {
+              if (err) {
+                console.log(`Error saving changes to the classifier : ${err}`);
+              }
+            });
+          } else {
+            console.log(`The message "${msg.content}" was not classified because it didn't have a valid class...`);
           }
         }
       });

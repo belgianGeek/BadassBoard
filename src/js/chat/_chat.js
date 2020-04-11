@@ -120,7 +120,7 @@ $('.chatContainer__msgList__form').submit(event => {
 });
 
 $('.header__homeIcon').click(() => {
-  window.open('/');
+  window.open('/', '_self');
 });
 
 showSettings();

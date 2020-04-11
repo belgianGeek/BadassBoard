@@ -14,6 +14,8 @@ const openUrl = (msg) => {
           window.open(`${suggestions[i].url}${keywords}&searchProfile=onlineshop&channel=mmnlnl`)
         } else if (suggestions[i].label === '!pb') {
           window.open(`${suggestions[i].url}${keywords}/-/`);
+        } else if (suggestions[i].label === '!1337x') {
+          window.open(`${suggestions[i].url}${keywords}/1/`);
         } else {
           window.open(`${suggestions[i].url}${keywords}`);
         }
