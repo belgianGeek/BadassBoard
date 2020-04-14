@@ -530,11 +530,7 @@ app.get('/', (req, res) => {
                 .match(/(tmp\\|tmp\/)\w.+(.mp3)/i)[0]
                 .substring(4, 100);
 
-              if (os.platform() === 'win32') {
-                downloadedFile.path = `${__dirname}\\tmp\\${filename}`;
-              } else if (os.platform() === 'linux') {
-                downloadedFile.path = `${__dirname}tmp/${filename}`;
-              }
+              downloadedFile.path = `${path.join(__dirname + '/tmp/' + filename)}`;
 
               downloadedFile.name = filename;
 
@@ -543,8 +539,8 @@ app.get('/', (req, res) => {
               setTimeout(() => {
                 io.emit('download ended', {
                   title: downloadedFile.name
-                }, 60000);
-              })
+                });
+              }, 60000);
             } else {
               io.emit('errorMsg', {
                 type: 'generic',
