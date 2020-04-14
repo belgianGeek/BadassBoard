@@ -30,14 +30,14 @@ module.exports = {
 
           // Synopsis
           if ($('#movieSynopsis').length) {
-            rottenSynopsis = `${$('#movieSynopsis').text().match(/[^\s]{2}[A-Za-z0-9.,;(){}@&#$"'-_\/\\ ]{250}/)[0]}...`;
+            rottenSynopsis = `${$('#movieSynopsis').text().trim().match(/\w.+/)[0].substring(0,250)}...`;
           } else {
             rottenSynopsis = 'Synopsis unavailable';
           }
 
           // Consensus
           if ($('.mop-ratings-wrap__text--concensus').length) {
-            rottenConsensus = $('.mop-ratings-wrap__text--concensus').text().match(/[A-Za-z0-9.,;(){}@&#$"'-_\/\\ ]{1,200}/)[0];
+            rottenConsensus = $('.mop-ratings-wrap__text--concensus').text().match(/\w.+/)[0].substring(0,200);
           } else {
             rottenConsensus = 'No consensus yet.';
           }
