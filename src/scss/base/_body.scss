@@ -21,4 +21,12 @@ body {
     right: 0;
     @include background-image;
   }
+
+  .fixed {
+    position: fixed;
+  }
+
+  .hidden {
+    display: none;
+  }
 }

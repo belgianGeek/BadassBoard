@@ -49,8 +49,20 @@ const showSettings = () => {
     // Adapt the design of the slider if the input is checked
     if (!$('.toggleRss__Input').prop('checked')) {
       $('.toggleRss__Slider').addClass('unchecked');
+
+      // Hide the content containers
+      $('.contentContainers').toggleClass('hidden flex');
+      $('.footer').toggleClass('fixed');
     } else {
       $('.toggleRss__Slider').removeClass('unchecked');
+
+      if ($('.contentContainers').hasClass('hidden')) {
+        $('.contentContainers').toggleClass('hidden flex');
+      }
+
+      if ($('.footer').hasClass('fixed')) {
+        $('.footer').toggleClass('fixed');
+      }
     }
   });
 

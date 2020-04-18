@@ -40,13 +40,13 @@ const printError = (err) => {
         .appendTo($(`${err.element} .addContent__feed`));
     }
   } else if (err.type === 'unit conversion') {
-    if (!$('.upperContainer__converter .warning').length) {
+    if (!$('.converter .warning').length) {
       let warning = $('<b></b>')
         .text(err.msg)
         .addClass('warning')
         .appendTo(err.element);
     } else {
-      $('.upperContainer__converter .waring').css('display', 'flex');
+      $('.converter .waring').css('display', 'flex');
     }
   } else if (err.type === 'wallpaper upload') {
     if (!$(`.settings__container .uploadWarning`).length) {
