@@ -51,13 +51,17 @@ const showSettings = () => {
       $('.toggleRss__Slider').addClass('unchecked');
 
       // Hide the content containers
-      $('.contentContainers').toggleClass('hidden flex');
+      $('.contentContainers')
+        .toggleClass('hidden flex')
+        .removeAttr('style');
       $('.footer').toggleClass('fixed');
     } else {
       $('.toggleRss__Slider').removeClass('unchecked');
 
       if ($('.contentContainers').hasClass('hidden')) {
-        $('.contentContainers').toggleClass('hidden flex');
+        $('.contentContainers')
+          .toggleClass('hidden flex')
+          .removeAttr('style');
       }
 
       if ($('.footer').hasClass('fixed')) {
@@ -280,9 +284,6 @@ const showSettings = () => {
       // Send the updated settings to the server
       socket.emit('customization', updatedSettings);
 
-      // Reset the updatedSettings object to its default value
-      updatedSettings = {};
-
       // Reset the file upload input value
       $('.backgroundImageUploadForm__InputFile').val('');
 
@@ -298,6 +299,9 @@ const showSettings = () => {
           $('.contentContainers').hide();
         }
       }
+
+      // Reset the updatedSettings object to its default value
+      updatedSettings = {};
     }
   });
 }

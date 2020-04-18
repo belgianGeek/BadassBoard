@@ -288,8 +288,9 @@ app.get('/', (req, res) => {
     io.once('connection', io => {
       let elements = settings.elements;
       var eltsArray = [];
+      
+      io.emit('RSS status retrieved', settings.RSS);
       if (settings.RSS === true) {
-        io.emit('RSS status retrieved', settings.RSS);
         var bigI, i;
 
         let totalLength = 0;
@@ -460,14 +461,6 @@ app.get('/', (req, res) => {
 
       io.on('customization', (customizationData) => {
         customize(io, customizationData);
-
-        // if (customizationData.bot !== undefined && customizationData.bot.icon !== undefined) {
-        //   io.emit('bot avatar', settings.bot.icon);
-        // }
-        //
-        // if (customizationData.backgroundImage !== undefined) {
-        //   io.emit('wallpaper', settings.backgroundImage);
-        // }
       });
 
       io.on('download', (id) => {
@@ -718,7 +711,6 @@ app.get('/', (req, res) => {
       }
 
       io.on('chat msg', msg => {
-        console.log(classifier.getClassifications(msg.content), msgTheme);
         const tokenize = (msg) => {
           return classifier.getClassifications(tokenizer.tokenize(msg.toLowerCase()));
         }
