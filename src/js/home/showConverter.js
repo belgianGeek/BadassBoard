@@ -2,21 +2,21 @@ const showConverter = () => {
   let result;
 
   $('.header__converterBtn').on('click', function() {
-    $('.upperContainer__converter')
+    $('.converter')
       .fadeIn()
       .css('display', 'flex');
   });
 
-  $('.converter__input, .converter__value1, .converter__value2').on('change', () => {
-    let inputUnit = $('.converter__value1').val();
-    let inputValue = Number($('.converter__input').val());
-    let resultUnit = $('.converter__value2').val();
+  $('.converter__body__input, .converter__body__value1, .converter__body__value2').on('change', () => {
+    let inputUnit = $('.converter__body__value1').val();
+    let inputValue = Number($('.converter__body__input').val());
+    let resultUnit = $('.converter__body__value2').val();
 
     const appendResult = (result) => {
       if (result !== undefined) {
-        $('.converter__result').val(result);
+        $('.converter__body__result').val(result);
       } else {
-        $('.converter__result').val('');
+        $('.converter__body__result').val('');
         console.log(`Error converting unit... Result value : ${result}`);
       }
     }
@@ -85,7 +85,7 @@ const showConverter = () => {
           }
         }
 
-        $('.upperContainer__converter .warning').hide();
+        $('.converter .warning').hide();
 
         if (inputValue !== '') {
           appendResult(result);
@@ -93,7 +93,7 @@ const showConverter = () => {
       } else {
         printError({
           type: 'unit conversion',
-          element: $('.upperContainer__converter'),
+          element: $('.converter'),
           msg: `Please enter a numeric value... 😑`
         });
       }
@@ -102,5 +102,5 @@ const showConverter = () => {
     convert();
   });
 
-  hideContent('.converter__remove');
+  hideContent('.converter__body__remove');
 }

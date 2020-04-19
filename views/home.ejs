@@ -12,85 +12,83 @@
 <body>
   <div class="backgroundImage"></div>
   <div class="wrapper flex">
+    <header class="header">
+      <svg class="header__chatBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+      <svg class="header__converterBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 2.1l4 4-4 4" />
+        <path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8M7 21.9l-4-4 4-4" />
+        <path d="M21 11.8v2a4 4 0 0 1-4 4H4.2" /></svg>
+      <svg class="header__settingsBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f8f4f4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path
+          d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+        </path>
+      </svg>
+    </header>
     <main class="mainContainer flex">
-      <header class="header">
-        <svg class="header__chatBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-        </svg>
-        <svg class="header__converterBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17 2.1l4 4-4 4" />
-          <path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8M7 21.9l-4-4 4-4" />
-          <path d="M21 11.8v2a4 4 0 0 1-4 4H4.2" /></svg>
-        <svg class="header__settingsBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f8f4f4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path
-            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-          </path>
-        </svg>
-      </header>
-      <div class="upperContainer">
-        <div class="formContainer__container">
-          <div class="formContainer">
-            <form class="form" method="get">
-              <input class="questionBox" type="text" name="question" placeholder="What are you searching for ?">
-              <button type="submit" name="questionBox__submitBtn">
-                <svg class="formSubmit" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="lightgrey" stroke-width="3" stroke-linecap="round" stroke-linejoin="arcs">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-              </button>
-            </form>
-          </div>
+      <div class="formContainer__container">
+        <div class="formContainer flex">
+          <form class="form" method="get">
+            <input class="questionBox" type="text" name="question" placeholder="What are you searching for ?">
+            <button type="submit" name="questionBox__submitBtn">
+              <svg class="formSubmit" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="lightgrey" stroke-width="3" stroke-linecap="round" stroke-linejoin="arcs">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+          </form>
           <div class="suggestions"></div>
         </div>
-        <span class="upperContainer__converter">
-          <section class="converter flex">
-            <img class="converter__remove flex" alt="Hide the converter" src="./src/scss/icons/interface/cross.svg">
-            <select class="converter__value1 flex">
-              <option value="Choose a value">Choose a value</option>
-              <option value="Byte">Byte</option>
-              <option value="Kilobyte">Kilobyte</option>
-              <option value="Megabyte">Megabyte</option>
-              <option value="Gigabyte">Gigabyte</option>
-              <option value="Terabyte">Terabyte</option>
-            </select>
-            <input class="converter__input" placeholder="Enter a value here">
-            <select class="converter__value2 flex">
-              <option value="Choose a value">Choose a value</option>
-              <option value="Byte">Byte</option>
-              <option value="Kilobyte">Kilobyte</option>
-              <option value="Megabyte">Megabyte</option>
-              <option value="Gigabyte">Gigabyte</option>
-              <option value="Terabyte">Terabyte</option>
-            </select>
-            <input class="converter__result">
-          </section>
+      </div>
+      <span class="converter">
+        <section class="converter__body flex">
+          <img class="converter__body__remove flex" alt="Hide the converter" src="./src/scss/icons/interface/cross.svg">
+          <select class="converter__body__value1 flex">
+            <option value="Choose a value">Choose a value</option>
+            <option value="Byte">Byte</option>
+            <option value="Kilobyte">Kilobyte</option>
+            <option value="Megabyte">Megabyte</option>
+            <option value="Gigabyte">Gigabyte</option>
+            <option value="Terabyte">Terabyte</option>
+          </select>
+          <input class="converter__body__input" placeholder="Enter a value here">
+          <select class="converter__body__value2 flex">
+            <option value="Choose a value">Choose a value</option>
+            <option value="Byte">Byte</option>
+            <option value="Kilobyte">Kilobyte</option>
+            <option value="Megabyte">Megabyte</option>
+            <option value="Gigabyte">Gigabyte</option>
+            <option value="Terabyte">Terabyte</option>
+          </select>
+          <input class="converter__body__result">
+        </section>
+      </span>
+      <div class="msgContainer">
+        <%= typeof msg != 'undefined' ? msg : '' %>
+      </div>
+      <div class="audio">
+        <img class="audio__remove removeContentBtn flex" alt="Remove the audio player" src="./src/scss/icons/interface/cross.svg">
+        <span class="audio__container flex">
+          <div class="audio__container__msg flex"></div>
+          <div class="audio__container__player flex"></div>
         </span>
-        <div class="msgContainer">
-          <%= typeof msg != 'undefined' ? msg : '' %>
-        </div>
-        <div class="audio">
-          <img class="audio__remove removeContentBtn flex" alt="Remove the audio player" src="./src/scss/icons/interface/cross.svg">
-          <span class="audio__container flex">
-            <div class="audio__container__msg flex"></div>
-            <div class="audio__container__player flex"></div>
-          </span>
-        </div>
-        <div class="contentContainers flex">
-          <div class="content__container content1__container flex" id="content1__container">
-            <div class="content content1 flex" id="content1">
-              <%- include('addFeedForm'); %>
-            </div>
+      </div>
+      <div class="contentContainers flex">
+        <div class="content__container content1__container flex" id="content1__container">
+          <div class="content content1 flex" id="content1">
+            <%- include('addFeedForm'); %>
           </div>
-          <div class="content__container content2__container flex" id="content2__container">
-            <div class="content content2 flex" id="content2">
-              <%- include('addFeedForm'); %>
-            </div>
+        </div>
+        <div class="content__container content2__container flex" id="content2__container">
+          <div class="content content2 flex" id="content2">
+            <%- include('addFeedForm'); %>
           </div>
-          <div class="content__container content3__container flex" id="content3__container">
-            <div class="content content3 flex" id="content3">
-              <%- include('addFeedForm'); %>
-            </div>
+        </div>
+        <div class="content__container content3__container flex" id="content3__container">
+          <div class="content content3 flex" id="content3">
+            <%- include('addFeedForm'); %>
           </div>
         </div>
       </div>
@@ -108,6 +106,9 @@
           <button class="confirmation__child__btnContainer__saveBtn" type="button" name="confirmation__child__btnContainer__saveBtn">Yep yep</button>
         </span>
       </section>
+    </div>
+    <div class="loading flex">
+      <img class="loading__img" alt="Loading image" src="src/scss/icons/interface/loading.png"/>
     </div>
     <%- include('footer'); %>
   </div>

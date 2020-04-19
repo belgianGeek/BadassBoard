@@ -21,4 +21,44 @@ body {
     right: 0;
     @include background-image;
   }
+
+  .fixed {
+    position: fixed;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .loading {
+    position: absolute;
+    @include align(center, center);
+    height: 100vh;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 3;
+
+    &__img {
+      border-radius: 50%;
+      animation: shockwave 1.3s linear infinite;
+      width: 10%;
+    }
+
+    @keyframes shockwave {
+      0% {
+        padding: 0;
+        box-shadow: 0 0 0.5em rgba(219, 208, 0, 0.5);
+      }
+
+      50% {
+        padding: 3em;
+        box-shadow: 0 0 5em rgba(219, 208, 0, 1);
+      }
+
+      95% {
+        padding: 3em;
+        box-shadow: 0 0 10em rgba(219, 208, 0, 0.2);
+      }
+    }
+  }
 }

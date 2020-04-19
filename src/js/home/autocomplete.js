@@ -8,31 +8,9 @@ const autocomplete = (search) => {
   if (!search.length) {
     matches = [];
     $('.suggestions').text('');
-    $('.formContainer')
-      .css({
-        borderRadius: '2em',
-        padding: '0.5% 1%'
-      });
-
-    $('.suggestions').removeClass('active');
   }
 
   if (matches !== [] && search.length >= 2 && search.startsWith('!')) {
-    $('.formContainer')
-      .css({
-        borderRadius: '2em 2em 0 0',
-        paddingBottom: 0
-      });
-
-    if (!$('.suggestions').hasClass('active')) {
-      $('.suggestions').addClass('active');
-    }
-
-    $('.suggestions')
-      .css({
-        width: $('.formContainer').innerWidth()
-      });
-
     // Check if matches are not null
     if (matches !== [] && matches.length > 0) {
       const html = matches.map(match => `
@@ -64,8 +42,6 @@ const autocomplete = (search) => {
             .focus();
         }
       });
-    } else {
-      $('.suggestions').removeClass('active');
     }
   }
 }

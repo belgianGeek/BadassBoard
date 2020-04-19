@@ -81,6 +81,8 @@ const parseContent = () => {
                 }
               });
             });
+
+            hideLoading();
           }, 500);
         }
 

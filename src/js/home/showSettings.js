@@ -49,14 +49,39 @@ const showSettings = () => {
     // Adapt the design of the slider if the input is checked
     if (!$('.toggleRss__Input').prop('checked')) {
       $('.toggleRss__Slider').addClass('unchecked');
+
+      // Hide the content containers
+      $('.contentContainers')
+        .fadeOut()
+        .toggleClass('hidden flex')
+        .removeAttr('style');
+      $('.footer').toggleClass('fixed');
     } else {
       $('.toggleRss__Slider').removeClass('unchecked');
+
+      if ($('.contentContainers').hasClass('hidden')) {
+        $('.contentContainers')
+          .fadeIn()
+          .toggleClass('hidden flex')
+          .removeAttr('style');
+      }
+
+      if ($('.footer').hasClass('fixed')) {
+        $('.footer').toggleClass('fixed');
+      }
     }
   });
 
   $('.settings__child__cancelBtn').click(() => {
     hideSettings();
-    $('.backgroundImageUploadForm__InputFile').val('');
+    $('.backgroundImageUploadForm__InputFile, .chatCustomizationForm__inputFile').val('');
+
+    if ($('.contentContainers').hasClass('hidden')) {
+      $('.contentContainers')
+        .fadeIn()
+        .toggleClass('hidden flex')
+        .removeAttr('style');
+    }
   });
 
   // Watch for search engine changes
@@ -268,9 +293,6 @@ const showSettings = () => {
       // Send the updated settings to the server
       socket.emit('customization', updatedSettings);
 
-      // Reset the updatedSettings object to its default value
-      updatedSettings = {};
-
       // Reset the file upload input value
       $('.backgroundImageUploadForm__InputFile').val('');
 
@@ -286,6 +308,9 @@ const showSettings = () => {
           $('.contentContainers').hide();
         }
       }
+
+      // Reset the updatedSettings object to its default value
+      updatedSettings = {};
     }
   });
 }

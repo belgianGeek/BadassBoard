@@ -288,8 +288,9 @@ app.get('/', (req, res) => {
     io.once('connection', io => {
       let elements = settings.elements;
       var eltsArray = [];
+      
+      io.emit('RSS status retrieved', settings.RSS);
       if (settings.RSS === true) {
-        io.emit('RSS status retrieved', settings.RSS);
         var bigI, i;
 
         let totalLength = 0;
@@ -460,14 +461,6 @@ app.get('/', (req, res) => {
 
       io.on('customization', (customizationData) => {
         customize(io, customizationData);
-
-        // if (customizationData.bot !== undefined && customizationData.bot.icon !== undefined) {
-        //   io.emit('bot avatar', settings.bot.icon);
-        // }
-        //
-        // if (customizationData.backgroundImage !== undefined) {
-        //   io.emit('wallpaper', settings.backgroundImage);
-        // }
       });
 
       io.on('download', (id) => {
@@ -530,11 +523,7 @@ app.get('/', (req, res) => {
                 .match(/(tmp\\|tmp\/)\w.+(.mp3)/i)[0]
                 .substring(4, 100);
 
-              if (os.platform() === 'win32') {
-                downloadedFile.path = `${__dirname}\\tmp\\${filename}`;
-              } else if (os.platform() === 'linux') {
-                downloadedFile.path = `${__dirname}tmp/${filename}`;
-              }
+              downloadedFile.path = `${path.join(__dirname + '/tmp/' + filename)}`;
 
               downloadedFile.name = filename;
 
@@ -543,8 +532,8 @@ app.get('/', (req, res) => {
               setTimeout(() => {
                 io.emit('download ended', {
                   title: downloadedFile.name
-                }, 60000);
-              })
+                });
+              }, 60000);
             } else {
               io.emit('errorMsg', {
                 type: 'generic',
@@ -722,7 +711,6 @@ app.get('/', (req, res) => {
       }
 
       io.on('chat msg', msg => {
-        console.log(classifier.getClassifications(msg.content), msgTheme);
         const tokenize = (msg) => {
           return classifier.getClassifications(tokenizer.tokenize(msg.toLowerCase()));
         }

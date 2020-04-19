@@ -6,8 +6,8 @@ const hideContent = (element2hide) => {
 
       // Hide the whole audio container
       $('.audio').hide();
-    } else if (element2hide === '.converter__remove') {
-      $('.upperContainer__converter').fadeOut();
+    } else if (element2hide === '.converter__body__remove') {
+      $('.converter').fadeOut();
     }
   });
 
