@@ -7,9 +7,11 @@ const checkRSSstatus = (rssStatus) => {
     addContent('.content2__container', '.content2');
     addContent('.content3__container', '.content3');
   } else {
+    hideLoading();
     $('.toggleRss__Input').prop('checked', false);
 
     $('.contentContainers')
+      .fadeOut()
       .toggleClass('hidden flex')
       .removeAttr('style');
   }

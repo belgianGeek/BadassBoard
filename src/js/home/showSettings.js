@@ -52,6 +52,7 @@ const showSettings = () => {
 
       // Hide the content containers
       $('.contentContainers')
+        .fadeOut()
         .toggleClass('hidden flex')
         .removeAttr('style');
       $('.footer').toggleClass('fixed');
@@ -60,6 +61,7 @@ const showSettings = () => {
 
       if ($('.contentContainers').hasClass('hidden')) {
         $('.contentContainers')
+          .fadeIn()
           .toggleClass('hidden flex')
           .removeAttr('style');
       }
@@ -72,7 +74,14 @@ const showSettings = () => {
 
   $('.settings__child__cancelBtn').click(() => {
     hideSettings();
-    $('.backgroundImageUploadForm__InputFile').val('');
+    $('.backgroundImageUploadForm__InputFile, .chatCustomizationForm__inputFile').val('');
+
+    if ($('.contentContainers').hasClass('hidden')) {
+      $('.contentContainers')
+        .fadeIn()
+        .toggleClass('hidden flex')
+        .removeAttr('style');
+    }
   });
 
   // Watch for search engine changes
