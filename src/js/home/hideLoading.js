@@ -1,11 +1,10 @@
 const hideLoading = () => {
   // Hide the animation
   $('.loading')
-    .fadeOut(() => {
-      setTimeout(() => {
-        $('.loading')
-          .toggleClass('hidden flex')
-          .removeAttr('style');
-      }, 500);
+    .fadeOut(function() {
+      $(this)
+        .removeClass('flex')
+        .addClass('hidden')
+        .removeAttr('style');
     });
 }
