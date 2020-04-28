@@ -42,7 +42,7 @@ const handleOptionSelection = (parent, child) => {
     // If the feed option is selected, handle the adding
     if ($(`${parent} ${child} .addContent__select`).val() === 'Add a feed') {
 
-      $(`${parent} ${child} .addContent`).removeClass('menu');
+      $(`${parent} ${child} .addContent`).removeClass('justifyCentered');
 
       $(`${parent} ${child} .addContent__select`).addClass('select');
 
@@ -95,7 +95,7 @@ const handleOptionSelection = (parent, child) => {
         });
     } else if ($(`${parent} ${child} .addContent__select`).val() === 'Weather forecast') {
 
-      $(`${parent} ${child} .addContent`).removeClass('menu');
+      $(`${parent} ${child} .addContent`).removeClass('justifyCentered');
 
       $(`${parent} ${child} .addContent__select`).addClass('select');
 
@@ -172,7 +172,7 @@ const handleOptionSelection = (parent, child) => {
         })
       });
     } else if ($(`${parent} ${child} .addContent__select`).val() === 'Youtube search box') {
-      $(`${parent} ${child} .addContent`).removeClass('menu');
+      $(`${parent} ${child} .addContent`).removeClass('justifyCentered');
 
       $(`${parent} ${child} .addContent__select`).addClass('select');
 
@@ -209,7 +209,7 @@ const handleOptionSelection = (parent, child) => {
         $(`${parent} ${element} .addContent`).hide();
       });
     } else {
-      $(`${parent} ${child} .addContent`).addClass('menu');
+      $(`${parent} ${child} .addContent`).addClass('justifyCentered');
       $(`${parent} ${child} .addContent__select`).removeClass('select');
       $(`${parent} ${child} .addContent`).children().not(`select, option, label`).hide();
     }

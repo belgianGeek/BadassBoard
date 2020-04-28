@@ -24,34 +24,80 @@
 }
 
 .header {
-  display: inline-flex;
   position: fixed;
-  top: 1%;
+  top: 0;
   left: 0;
-  width: 100%;
-  @include align(flex-end, center);
-  z-index: 3;
-  @media(max-width: 720px) {
-    width: auto;
-    left: 88%;
-
-    .header__converterBtn {
-      display: none;
-    }
-  }
+  @include align(flex-start, center);
+  z-index: 2;
 
   svg {
-    margin-left: 1.5%;
+    margin: 0.5em 0 0 0.5em;
     cursor: pointer;
   }
 
-  &__settingsBtn {
-    margin-right: 0.5%;
-
-    &:hover {
-      transform: rotate(-360deg);
-      transition: transform 1500ms;
+  .menu {
+    position: absolute;
+    height: 100vh;
+    min-width: 15vw;
+    top: 0;
+    left: -15vw;
+    background-color: opacify($contentBackground, 0.3);
+    z-index: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    @media (max-width: 720px) {
+      width: 30vh;
     }
+
+    &__close {
+      position: relative;
+      top: 0;
+      left: 85%;
+      margin-top: 1em;
+      cursor: pointer;
+      @media (max-width: 720px) {
+        left: 80%;
+      }
+
+      &:hover {
+        stroke: black;
+        background-color: white;
+        border-radius: 0.2em;
+      }
+    }
+
+    &__item {
+      padding: 0.5em 0;
+      margin: 0.5em;
+      justify-content: start;
+      width: 100%;
+      align-items: center;
+      box-sizing: border-box;
+      cursor: pointer;
+
+      &__icon {
+        width: 30%;
+      }
+
+      &__legend {
+        width: 70%;
+      }
+    }
+
+    &__item.settingsLink {
+      &:hover {
+        svg {
+          transform: rotate(-360deg);
+          transition: transform 1500ms;
+        }
+      }
+    }
+  }
+
+  .menu.flex {
+    animation: menu-slide .5s linear;
+    animation-fill-mode: forwards;
   }
 }
 
@@ -165,7 +211,6 @@
     content: '';
     @include background-image;
     filter: blur(5px);
-    z-index: -1;
   }
 
   .formContainer {
@@ -195,10 +240,7 @@
         background: none;
         color: black;
         @media(max-width: 720px) {
-          width: 80%;
           height: 2em;
-          border: none;
-          background: none;
           overflow-x: hidden;
           text-overflow: ellipsis;
         }
@@ -385,13 +427,12 @@
   padding-bottom: 2em;
   @media(max-width: 720px) {
     justify-content: flex-start;
-    margin-top: 15%;
     width: 90%;
     flex-wrap: wrap;
   }
 
   .content__container {
-    width: 30%;
+    width: 32%;
     justify-content: space-between;
     @include flex-direction;
     font-size: 1em;
@@ -408,7 +449,7 @@
     }
 
     .content {
-      height: 35vh;
+      height: 36vh;
       width: 100%;
       font-size: 1.2em;
       @media(max-width: 720px) {
@@ -680,10 +721,6 @@
         height: 2.1em;
       }
 
-      .select {
-        padding: 1%;
-      }
-
       &__feed,
       &__weather,
       &__youtube {
@@ -744,7 +781,7 @@
       }
     }
 
-    .menu {
+    .justifyCentered {
       justify-content: center;
     }
 
