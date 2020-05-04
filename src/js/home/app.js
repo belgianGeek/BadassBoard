@@ -132,6 +132,9 @@ $(document).ready(() => {
   checkForUpdates();
 });
 
+// Show the "about" page
+showAbout();
+
 // Show settings on button click
 showSettings();
 
@@ -177,25 +180,6 @@ if (!$('.msgContainer').text().match(/\w.+/)) {
 
 // Get current mouse position
 getMousePosition();
-
-// Show the hamburger menu content
-$('.header__menu, .menu__item__legend, .menu__item__icon').click(() => {
-  $('.menu').toggleClass('hidden flex');
-});
-
-$('.menu__close').click(() => {
-  $('.menu')
-    .css({
-      transform: "translateX(-15vw)",
-      transition: "transform 10s linear"
-    });
-
-    setTimeout(() => {
-      $('.menu')
-      .toggleClass('hidden flex')
-      .removeAttr('style');
-    }, 1000);
-});
 
 // Redirect to the chat page
 $('.chatLink').click(() => {

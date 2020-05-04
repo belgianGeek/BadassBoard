@@ -14,15 +14,3 @@
     box-shadow: 0 0 10em rgba(219, 208, 0, 0.2);
   }
 }
-
-@keyframes menu-slide {
-  from {
-    left: -15vw;
-  }
-
-  to {
-    left: -15vw;
-    transform: translateX(15vw);
-    transform-origin: left;
-  }
-}

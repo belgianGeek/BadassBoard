@@ -30,17 +30,115 @@
   @include align(flex-start, center);
   z-index: 2;
 
-  svg {
-    margin: 0.5em 0 0 0.5em;
+  &__menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
     cursor: pointer;
+
+    &__icon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      width: 60px;
+      height: 60px;
+      padding: 0.55rem;
+      background-color: transparent;
+      @include align(center, center);
+      cursor: pointer;
+
+      &__bar {
+        position: relative;
+        width: 100%;
+        height: 2px;
+        background-color: #fff;
+        @include align(center, center);
+        transition: all 0.4s ease;
+
+        &::before {
+          top: -10px;
+        }
+
+        &::after {
+          top: 10px;
+        }
+
+        &::after,
+        &::before {
+          content: '';
+          position: absolute;
+          width: 100%;
+          background: inherit;
+          height: 2px;
+        }
+      }
+    }
+
+    &__switch {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      z-index: 2;
+      cursor: pointer;
+
+      // Make the input entirely cover the button closing the menu
+      &:checked {
+        z-index: 3;
+        margin: 0;
+        width: 60px;
+        height: 60px;
+      }
+    }
+
+    &__switch:checked ~ .menu {
+      transform: translateX($menu-item-width * 1.5);
+      transform-origin: left;
+      transition: transform 0.5s cubic-bezier(1,0,0,1);
+    }
+
+    &__switch:checked,
+    &__switch:checked + &__icon {
+      transform: translateX(($menu-item-width * 1.5) - 2) rotate(135deg) scale(0.7);
+      transform-origin: left;
+      transition: transform 0.5s cubic-bezier(1,0,0,1);
+      top: -10px;
+    }
+
+    &__switch:checked + &__icon {
+      z-index: 2;
+      background-color: white;
+      border-radius: 50%;
+    }
+
+    &__switch:checked:hover + &__icon > div {
+      transform: rotate(.25turn);
+      transition: transform 0.1s linear;
+    }
+
+    &__switch:checked + &__icon > div::after,
+    &__switch:checked + &__icon > div::before {
+      top: 0;
+      transform: rotate(90deg);
+    }
+
+    &__switch:checked + &__icon > div,
+    &__switch:checked + &__icon > div::after,
+    &__switch:checked + &__icon > div::before {
+      background-color: black;
+    }
   }
 
   .menu {
     position: absolute;
     height: 100vh;
-    min-width: 15vw;
+    width: $menu-item-width * 1.5;
     top: 0;
-    left: -15vw;
+    left: -$menu-item-width * 1.5;
     background-color: opacify($contentBackground, 0.3);
     z-index: 1;
     flex-direction: column;
@@ -49,23 +147,6 @@
     @include box-shadow;
     @media (max-width: 720px) {
       width: 30vh;
-    }
-
-    &__close {
-      position: relative;
-      top: 0;
-      left: 85%;
-      margin-top: 1em;
-      cursor: pointer;
-      @media (max-width: 720px) {
-        left: 80%;
-      }
-
-      &:hover {
-        stroke: black;
-        background-color: white;
-        border-radius: 0.2em;
-      }
     }
 
     &__item {
@@ -94,11 +175,6 @@
         }
       }
     }
-  }
-
-  .menu.flex {
-    animation: menu-slide .5s linear;
-    animation-fill-mode: forwards;
   }
 }
 
