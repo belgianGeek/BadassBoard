@@ -96,9 +96,12 @@
     }
 
     &__switch:checked ~ .menu {
-      transform: translateX($menu-item-width * 1.5);
+      transform: translateX($menu-item-width * 2);
       transform-origin: left;
       transition: transform 0.5s cubic-bezier(1,0,0,1);
+      @media (max-width: 720px) {
+        transform: translateX(60vw);
+      }
     }
 
     &__switch:checked,
@@ -107,6 +110,9 @@
       transform-origin: left;
       transition: transform 0.5s cubic-bezier(1,0,0,1);
       top: -10px;
+      @media (max-width: 720px) {
+        transform: translateX(46vw) rotate(135deg) scale(0.7);
+      }
     }
 
     &__switch:checked + &__icon {
@@ -138,23 +144,22 @@
     height: 100vh;
     width: $menu-item-width * 1.5;
     top: 0;
-    left: -$menu-item-width * 1.5;
+    left: -$menu-item-width * 2;
     background-color: opacify($contentBackground, 0.3);
     z-index: 1;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
+    @include align(flex-start, flex-start);
     @include box-shadow;
     @media (max-width: 720px) {
-      width: 30vh;
+      width: 50vw;
+      left: -60vw;
     }
 
     &__item {
       padding: 0.5em 0;
       margin: 0.5em;
-      justify-content: start;
       width: 100%;
-      align-items: center;
+      @include align(flex-start, center);
       box-sizing: border-box;
       cursor: pointer;
 
