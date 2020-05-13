@@ -521,7 +521,7 @@ app.get('/', (req, res) => {
             console.log(downloadLog);
             if (downloadLog !== null) {
               filename = downloadLog
-                .match(/(tmp\\|tmp\/)\w.+(.mp3)/i)[0]
+                .match(/(tmp\\|tmp\/).*(.mp3)/i)[0]
                 .substring(4, 100);
 
               downloadedFile.path = `${path.join(__dirname + '/tmp/' + filename)}`;
