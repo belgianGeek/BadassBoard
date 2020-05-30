@@ -128,9 +128,8 @@ if (!$('.subRow').length) {
   });
 }
 
-$(document).ready(() => {
-  checkForUpdates();
-});
+// Show the "about" page
+showAbout();
 
 // Show the "about" page
 showAbout();
