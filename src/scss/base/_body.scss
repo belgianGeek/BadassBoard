@@ -11,6 +11,7 @@ body {
     font-family: 'Ubuntu Regular', sans-serif;
     color: white;
     letter-spacing: 0.5px;
+    box-sizing: border-box;
   }
 
   .backgroundImage {
@@ -42,22 +43,9 @@ body {
       border-radius: 50%;
       animation: shockwave 1.3s linear infinite;
       width: 10%;
-    }
-
-    @keyframes shockwave {
-      0% {
-        padding: 0;
-        box-shadow: 0 0 0.5em rgba(219, 208, 0, 0.5);
-      }
-
-      50% {
-        padding: 3em;
-        box-shadow: 0 0 5em rgba(219, 208, 0, 1);
-      }
-
-      95% {
-        padding: 3em;
-        box-shadow: 0 0 10em rgba(219, 208, 0, 0.2);
+      box-sizing: content-box;
+      @media (max-width: 720px) {
+        width: 30%;
       }
     }
   }

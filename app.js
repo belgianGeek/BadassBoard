@@ -288,7 +288,7 @@ app.get('/', (req, res) => {
     io.once('connection', io => {
       let elements = settings.elements;
       var eltsArray = [];
-      
+
       io.emit('RSS status retrieved', settings.RSS);
       if (settings.RSS === true) {
         var bigI, i;
@@ -518,9 +518,10 @@ app.get('/', (req, res) => {
           });
 
           download.on('close', () => {
+            console.log(downloadLog);
             if (downloadLog !== null) {
               filename = downloadLog
-                .match(/(tmp\\|tmp\/)\w.+(.mp3)/i)[0]
+                .match(/(tmp\\|tmp\/).*(.mp3)/i)[0]
                 .substring(4, 100);
 
               downloadedFile.path = `${path.join(__dirname + '/tmp/' + filename)}`;

@@ -23,7 +23,7 @@ const showSettings = () => {
     $('.toggleRss__Slider').removeClass('unchecked');
   }
 
-  $('.header__settingsBtn').click(() => {
+  $('.settingsLink').click(() => {
     $('.backgroundImage, header, .mainContainer').addClass('blur');
 
     // Disable page scroll

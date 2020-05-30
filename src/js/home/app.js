@@ -82,7 +82,7 @@ $.ajax({
 
 socket.on('wallpaper', wallpaper => {
   const handle404ImageError = () => {
-    headStyle = `<style>.formContainer__container::before {background-image: url('./src/scss/wallpaper.png');}</style>`;
+    headStyle = `<style>.formContainer__container::before {background-image: url('./src/scss/wallpaper.jpg');}</style>`;
     $('head').append(headStyle);
 
     $('.msgContainer').text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
@@ -128,9 +128,8 @@ if (!$('.subRow').length) {
   });
 }
 
-$(document).ready(() => {
-  checkForUpdates();
-});
+// Show the "about" page
+showAbout();
 
 // Show settings on button click
 showSettings();
@@ -179,7 +178,7 @@ if (!$('.msgContainer').text().match(/\w.+/)) {
 getMousePosition();
 
 // Redirect to the chat page
-$('.header__chatBtn').click(() => {
+$('.chatLink').click(() => {
   window.open('/chat');
 });
 

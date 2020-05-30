@@ -81,8 +81,6 @@ const parseContent = () => {
                 }
               });
             });
-
-            hideLoading();
           }, 500);
         }
 
@@ -361,4 +359,5 @@ const parseContent = () => {
       });
     }
   });
+  hideLoading();
 }
