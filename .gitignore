@@ -1,10 +1,19 @@
+# Folders
 node_modules
+stable
+upload
+settings
+tmp
+
+# Files
 nlp.js
 youtube-dl.exe
 streamInfo.json
 wiki.json
 backupSettings.json
-upload
-settings
-tmp
 classifier.json
+bot.png
+stream.json
+settings.json
+invidious.js
+zip*
