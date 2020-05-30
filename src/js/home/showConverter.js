@@ -1,7 +1,7 @@
 const showConverter = () => {
   let result;
 
-  $('.header__converterBtn').on('click', function() {
+  $('.unitsLink').on('click', function() {
     $('.converter')
       .fadeIn()
       .css('display', 'flex');

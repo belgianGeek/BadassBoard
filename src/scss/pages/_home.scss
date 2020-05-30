@@ -24,33 +24,161 @@
 }
 
 .header {
-  display: inline-flex;
   position: fixed;
-  top: 1%;
+  top: 0;
   left: 0;
-  width: 100%;
-  @include align(flex-end, center);
-  z-index: 3;
-  @media(max-width: 720px) {
-    width: auto;
-    left: 88%;
+  @include align(flex-start, center);
+  z-index: 2;
 
-    .header__converterBtn {
-      display: none;
+  &__menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+
+    &__icon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      width: 60px;
+      height: 60px;
+      padding: 0.55rem;
+      background-color: transparent;
+      @include align(center, center);
+      cursor: pointer;
+
+      &__bar {
+        position: relative;
+        width: 100%;
+        height: 2px;
+        background-color: #fff;
+        @include align(center, center);
+        transition: all 0.4s ease;
+
+        &::before {
+          top: -10px;
+        }
+
+        &::after {
+          top: 10px;
+        }
+
+        &::after,
+        &::before {
+          content: '';
+          position: absolute;
+          width: 100%;
+          background: inherit;
+          height: 2px;
+        }
+      }
+    }
+
+    &__switch {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      z-index: 2;
+      cursor: pointer;
+
+      // Make the input entirely cover the button closing the menu
+      &:checked {
+        z-index: 3;
+        margin: 0;
+        width: 60px;
+        height: 60px;
+      }
+    }
+
+    &__switch:checked ~ .menu {
+      transform: translateX($menu-item-width * 2);
+      transform-origin: left;
+      transition: transform 0.5s cubic-bezier(1,0,0,1);
+      @media (max-width: 720px) {
+        transform: translateX(60vw);
+      }
+    }
+
+    &__switch:checked,
+    &__switch:checked + &__icon {
+      transform: translateX(($menu-item-width * 1.5) - 2) rotate(135deg) scale(0.7);
+      transform-origin: left;
+      transition: transform 0.5s cubic-bezier(1,0,0,1);
+      top: -10px;
+      @media (max-width: 720px) {
+        transform: translateX(46vw) rotate(135deg) scale(0.7);
+      }
+    }
+
+    &__switch:checked + &__icon {
+      z-index: 2;
+      background-color: white;
+      border-radius: 50%;
+    }
+
+    &__switch:checked:hover + &__icon > div {
+      transform: rotate(.25turn);
+      transition: transform 0.1s linear;
+    }
+
+    &__switch:checked + &__icon > div::after,
+    &__switch:checked + &__icon > div::before {
+      top: 0;
+      transform: rotate(90deg);
+    }
+
+    &__switch:checked + &__icon > div,
+    &__switch:checked + &__icon > div::after,
+    &__switch:checked + &__icon > div::before {
+      background-color: black;
     }
   }
 
-  svg {
-    margin-left: 1.5%;
-    cursor: pointer;
-  }
+  .menu {
+    position: absolute;
+    height: 100vh;
+    width: $menu-item-width * 1.5;
+    top: 0;
+    left: -$menu-item-width * 2;
+    background-color: opacify($contentBackground, 0.3);
+    z-index: 1;
+    flex-direction: column;
+    @include align(flex-start, flex-start);
+    @include box-shadow;
+    @media (max-width: 720px) {
+      width: 50vw;
+      left: -60vw;
+    }
 
-  &__settingsBtn {
-    margin-right: 0.5%;
+    &__item {
+      padding: 0.5em 0;
+      margin: 0.5em;
+      width: 100%;
+      @include align(flex-start, center);
+      box-sizing: border-box;
+      cursor: pointer;
 
-    &:hover {
-      transform: rotate(-360deg);
-      transition: transform 1500ms;
+      &__icon {
+        width: 30%;
+      }
+
+      &__legend {
+        width: 70%;
+      }
+    }
+
+    &__item.settingsLink {
+      &:hover {
+        svg {
+          transform: rotate(-360deg);
+          transition: transform 1500ms;
+        }
+      }
     }
   }
 }
@@ -165,7 +293,6 @@
     content: '';
     @include background-image;
     filter: blur(5px);
-    z-index: -1;
   }
 
   .formContainer {
@@ -195,10 +322,7 @@
         background: none;
         color: black;
         @media(max-width: 720px) {
-          width: 80%;
           height: 2em;
-          border: none;
-          background: none;
           overflow-x: hidden;
           text-overflow: ellipsis;
         }
@@ -385,13 +509,12 @@
   padding-bottom: 2em;
   @media(max-width: 720px) {
     justify-content: flex-start;
-    margin-top: 15%;
     width: 90%;
     flex-wrap: wrap;
   }
 
   .content__container {
-    width: 30%;
+    width: 32%;
     justify-content: space-between;
     @include flex-direction;
     font-size: 1em;
@@ -408,7 +531,7 @@
     }
 
     .content {
-      height: 35vh;
+      height: 36vh;
       width: 100%;
       font-size: 1.2em;
       @media(max-width: 720px) {
@@ -680,10 +803,6 @@
         height: 2.1em;
       }
 
-      .select {
-        padding: 1%;
-      }
-
       &__feed,
       &__weather,
       &__youtube {
@@ -744,7 +863,7 @@
       }
     }
 
-    .menu {
+    .justifyCentered {
       justify-content: center;
     }
 

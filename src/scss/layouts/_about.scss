@@ -1,0 +1,16 @@
+.about__container {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  @include align(center, center);
+
+  &__child {
+    width: 60%;
+    height: 50%;
+    border-radius: .5em;
+    @include box-shadow;
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+}

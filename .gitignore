@@ -8,3 +8,10 @@ upload
 settings
 tmp
 classifier.json
+.yarnrc
+bot.png
+invidious.js
+zip*
+settings.json
+stream.json
+stable

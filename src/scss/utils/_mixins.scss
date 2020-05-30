@@ -9,6 +9,9 @@
   background-size: cover;
   background-attachment: fixed;
 }
+@mixin box-shadow {
+  box-shadow: 10px 10px 12px 2px $contentBackground;
+}
 @mixin btn-style($border: none) {
   border: $border;
   border-radius: 15px;
