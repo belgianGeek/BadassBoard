@@ -469,8 +469,8 @@ app.get('/', (req, res) => {
           '--audio-format',
           'mp3',
           '-o',
-          `./tmp/%(title)s.%(ext)s`,
-          id,
+          './tmp/%(title)s.%(ext)s',
+          'https://wwww.youtube.com/watch?v=' + id,
           '--youtube-skip-dash-manifest',
           '--embed-thumbnail',
           '--add-metadata'
