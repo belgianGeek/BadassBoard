@@ -411,6 +411,10 @@
   &__container {
     width: 100%;
     justify-content: space-around;
+    align-items: center;
+    @media (max-width: 720px) {
+      width: 90%;
+    }
 
     &__msg {
       height: min-content;
