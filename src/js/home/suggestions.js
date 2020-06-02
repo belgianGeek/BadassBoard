@@ -83,6 +83,12 @@ const suggestions = [
     url: 'https://api.jquery.com/?ns0=1&s='
   },
   {
+    label: '!k',
+    desc: 'korben.info',
+    icon: './src/scss/icons/suggestions/korben.png',
+    url: 'https://korben.info/search/'
+  },
+  {
     label: '!ldlc',
     desc: 'LDLC',
     icon: './src/scss/icons/suggestions/ldlc.png',
