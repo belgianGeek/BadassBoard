@@ -7,6 +7,8 @@ const addContentOptions = (element) => {
 
   const removeContent = (parent, element2remove, child) => {
     if ($(element2remove).length) {
+      let contentContainerParent = $(parent).parent().attr('class').match(/content\d__container/);
+      let contentContainerChild = $(parent).attr('class').match(/content\d{1,}/);
 
       // Remove content on button click
       $(`${parent} .removeContentBtn`).click(() => {
@@ -38,13 +40,13 @@ const addContentOptions = (element) => {
           $('.confirmation').fadeOut();
 
           socket.emit('remove content', {
-            parent: `.${$(parent).parent().attr('class').match(/content\d__container/)}`,
-            element: `.${$(parent).attr('class').match(/content\d{1,}/)}`
+            parent: `.${contentContainerParent}`,
+            element: `.${contentContainerChild}`
           });
 
           // Remove the content div
           $(element2remove).remove();
-          $(`.${$(parent).attr('class').match(/content\d{1,}/)} .blank`).removeClass('invisible');
+          $(`.${contentContainerParent} .${contentContainerChild} .blank`).removeClass('invisible');
         });
 
         $('.confirmation__child__btnContainer__cancelBtn, .click').click(() => {
