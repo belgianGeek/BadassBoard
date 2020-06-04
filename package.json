@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node app.js",
     "sass": "sass ./src/scss/home/app.scss:./src/scss/home/app.css --style compressed && sass ./src/scss/chat/chat.scss:./src/scss/chat/chat.css --style compressed",
-    "minify": "node minify_home.js && node minify_chat.js",
+    "minify": "node minify",
     "prefix": "postcss ./src/scss/404.css --use autoprefixer -d ./src/scss/prefixed && postcss ./src/scss/home/app.css --use autoprefixer -d ./src/scss/prefixed && postcss ./src/scss/chat/chat.css --use autoprefixer -d ./src/scss/prefixed"
   },
   "dependencies": {
