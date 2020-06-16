@@ -189,7 +189,7 @@ const parseContent = () => {
               .append(headerText);
 
             let youtubeSearchInput = $('<input>')
-              .addClass('youtubeSearchContainer__content__input')
+              .addClass('youtubeSearchContainer__content__input input')
               .attr('placeholder', 'Type here to search Youtube...');
 
             let youtubeSearchResults = $('<div></div>')

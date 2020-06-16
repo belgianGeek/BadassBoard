@@ -198,11 +198,6 @@
       }
     }
 
-    .botNameCustomizationForm {
-      &__comment,
-      &__input {}
-    }
-
     .backgroundImageUploadForm__Btn,
     .chatCustomizationForm__btn {
       color: black;
@@ -213,25 +208,10 @@
       cursor: pointer;
     }
 
-    .backgroundImageUploadForm__InputFile,
-    .chatCustomizationForm__inputFile {
-      display: none;
-    }
-
-    .backgroundImageUploadForm__InputUrl,
-    .botNameCustomizationForm__input,
-    .chatCustomizationForm__inputUrl {
-      @include input-style;
-    }
-
     .owmToken {
       justify-content: space-between;
       margin: 2em 0 0 1em;
       width: 90%;
-
-      &__input {
-        @include input-style;
-      }
     }
 
     .searchEngineSelection {

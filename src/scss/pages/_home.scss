@@ -241,7 +241,6 @@
     & input {
       width: 15%;
       height: 2em;
-      @include input-style;
       color: white;
     }
 
@@ -658,6 +657,7 @@
           width: 100%;
           height: 100%;
           font-size: 1.1em;
+          overflow: auto;
 
           &__info {
             margin: 0 2%;
@@ -708,14 +708,6 @@
           width: 100%;
           @include align(flex-start, center);
           @include flex-direction();
-
-          &__input {
-            @include input-style();
-
-            ::placeholder {
-              @include placeholder();
-            }
-          }
 
           &__results {
             @include flex-direction();
@@ -838,7 +830,6 @@
 
       &__feed__input,
       &__weather__input {
-        @include input-style;
         border-radius: 5px;
       }
 
@@ -1066,10 +1057,6 @@
         &__content {
           flex-direction: column;
           height: 100%;
-
-          &__input {
-            @include input-style();
-          }
         }
       }
 

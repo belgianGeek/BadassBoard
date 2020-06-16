@@ -118,7 +118,6 @@
 
     &__form {
       &__inputMsg {
-        @include input-style();
         width: 90%;
       }
 

@@ -9,8 +9,29 @@
   &__child {
     width: 60%;
     height: 50%;
-    border-radius: .5em;
+    border-radius: 0.5em;
     @include box-shadow;
     background-color: rgba(0, 0, 0, 0.8);
+    flex-direction: column;
+
+    &__title {
+      height: min-content;
+      width: 100%;
+      text-align: center;
+      font-size: 1.2em;
+    }
+
+    &__section {
+      flex-direction: column;
+      width: 70%;
+      height: 100%;
+      font-size: 1.05em;
+
+      &__item {
+        align-items: center;
+        justify-content: space-between;
+        width: 70%;
+      }
+    }
   }
 }
