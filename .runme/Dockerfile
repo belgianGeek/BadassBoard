@@ -1,5 +1,5 @@
 FROM node:latest
 WORKDIR /app
 COPY . .
-RUN npm install && npm run build
+RUN npm install
 ENTRYPOINT npm run start
