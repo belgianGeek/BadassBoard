@@ -12,6 +12,8 @@
     "prefix": "postcss ./src/scss/404.css --use autoprefixer -d ./src/scss/prefixed && postcss ./src/scss/home/app.css --use autoprefixer -d ./src/scss/prefixed && postcss ./src/scss/chat/chat.css --use autoprefixer -d ./src/scss/prefixed"
   },
   "dependencies": {
+    "adm-zip": "^0.4.16",
+    "axios": "^0.19.2",
     "cheerio": "^1.0.0-rc.3",
     "ejs": "^3.0.2",
     "express": "^4.17.1",

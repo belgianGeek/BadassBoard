@@ -56,6 +56,7 @@ nlp.LogisticRegressionClassifier.load('classifier.json', null, function(err, loa
 });
 
 const rottenParser = require('./modules/rottenParser');
+const badassUpdate = require('./modules/update');
 
 const botTraining = require('./modules/nlp');
 botTraining.botTraining(classifier, tokenizer);
@@ -674,6 +675,10 @@ app.get('/', (req, res) => {
             }
           }
         }
+      });
+
+      io.on('update check', () => {
+        badassUpdate(io);
       });
     });
   })
