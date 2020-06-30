@@ -25,7 +25,7 @@
     <h2 class="settings__child__heading2 settings__child__heading">Customization</h2>
     <form class="backgroundImageUploadForm flex" action="/" enctype="multipart/form-data" method="post">
       <label for="backgroundImageUploadForm__label">This background is 🤮 !</label>
-      <button class="backgroundImageUploadForm__Btn" type="button" name="backgroundImageUploadBtn">Let's upload a BADASS picture !</button>
+      <button class="backgroundImageUploadForm__Btn btn" type="button" name="backgroundImageUploadBtn">Let's upload a BADASS picture !</button>
       <input class="backgroundImageUploadForm__InputFile hidden" type="file" name="backgroundImageUploadInput" accept="image/png, image/jpg">
       <input class="backgroundImageUploadForm__InputUrl input" type="text" name="backgroundImageUrl" value="" placeholder='I prefer pasting an URL'>
     </form>
@@ -38,7 +38,7 @@
     <h3 class="settings__child__heading3 settings__child__heading">Chat</h3>
     <form class="chatCustomizationForm flex" action="/" enctype="multipart/form-data" method="post">
       <span class="chatCustomizationForm__comment">I want to refresh that stuff !</span>
-      <button class="chatCustomizationForm__btn" type="button" name="chatBotAvatarUploadBtn">Let's upload a super cool avatar !</button>
+      <button class="chatCustomizationForm__btn btn" type="button" name="chatBotAvatarUploadBtn">Let's upload a super cool avatar !</button>
       <input class="chatCustomizationForm__inputFile hidden" type="file" name="chatBotAvatarUploadInput" accept="image/png, image/jpg">
       <input class="chatCustomizationForm__inputUrl input" type="text" name="chatBotNameInput" value="" placeholder='Insert a new avatar URL'>
     </form>
@@ -47,8 +47,8 @@
       <input class="botNameCustomizationForm__input input" type="text" name="botName__input" placeholder="Insert a friendly name !">
     </form>
     <span class="settings__BtnContainer">
-      <button class="settings__child__cancelBtn" type="button" name="cancelSettings">Cancel</button>
-      <button class="settings__child__saveBtn" type="submit" name="saveSettings">Save settings</button>
+      <button class="settings__child__cancelBtn btn btn--red" type="button" name="cancelSettings">Cancel</button>
+      <button class="settings__child__saveBtn btn btn--green" type="submit" name="saveSettings">Save settings</button>
     </span>
   </div>
 </div>

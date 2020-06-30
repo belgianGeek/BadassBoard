@@ -73,23 +73,12 @@
 
     &__cancelBtn,
     &__saveBtn {
-      border: none;
-      border-radius: 15px;
       padding: 0.7em;
       margin-right: 1.1em;
-      cursor: pointer;
       @media(max-width: 720px) {
         margin-bottom: 1em;
         margin-right: 0;
       }
-    }
-
-    &__saveBtn {
-      background: green;
-    }
-
-    &__cancelBtn {
-      background: red;
     }
 
     .backgroundImageUploadForm,
@@ -196,16 +185,6 @@
           margin-top: 1.5em;
         }
       }
-    }
-
-    .backgroundImageUploadForm__Btn,
-    .chatCustomizationForm__btn {
-      color: black;
-      border-radius: 15px;
-      border: none;
-      background-color: $underline-input;
-      padding: 1%;
-      cursor: pointer;
     }
 
     .owmToken {

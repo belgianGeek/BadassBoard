@@ -835,19 +835,11 @@
 
       &__cancelBtn,
       &__submitBtn {
-        border: none;
-        border-radius: 12px;
         padding: 1.5%;
-        cursor: pointer;
       }
 
       &__submitBtn {
-        background-color: green;
         margin-left: 3%;
-      }
-
-      &__cancelBtn {
-        background-color: red;
       }
 
       .warning {
@@ -1093,14 +1085,6 @@
       * {
         @include btn-style();
         width: max-content;
-      }
-
-      &__saveBtn {
-        background-color: green;
-      }
-
-      &__cancelBtn {
-        background-color: red;
       }
     }
   }

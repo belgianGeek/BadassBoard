@@ -1,0 +1,16 @@
+.btn {
+  color: white;
+  border-radius: 15px;
+  border: none;
+  background-color: $underline-input;
+  padding: 1%;
+  cursor: pointer;
+
+  &--green {
+    background-color: $greenChecked;
+  }
+
+  &--red {
+    background-color: red;
+  }
+}
