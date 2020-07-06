@@ -10,11 +10,25 @@ const showAbout = () => {
       .removeAttr('style');
   });
 
-  $('.updateBtn').click(function () {
+  $('.updateBtn').click(function() {
     socket.emit('update check');
   });
 
   socket.on('update progress', msg => {
     $('.updateBtn').text(msg.text);
+  });
+
+  // Hide the "About" page on parent click
+  $('.about__container').click(function(e) {
+    if (e.target === this) {
+      $(this)
+        .fadeOut(function() {
+          $(this)
+            .toggleClass('hidden flex')
+            .removeAttr('style');
+
+          $('.mainContainer, .header').removeClass('blur');
+        });
+    }
   });
 }
