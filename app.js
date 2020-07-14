@@ -636,7 +636,7 @@ app.get('/', (req, res) => {
             }
           } else {
             try {
-              var result = JSON.parse(body);
+              let result = JSON.parse(body);
 
               if (result.error === undefined) {
                 fs.writeFile('./tmp/playlist.json', JSON.stringify(result, null, 2), 'utf-8', (err) => {

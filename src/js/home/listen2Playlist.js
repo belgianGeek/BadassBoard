@@ -5,7 +5,8 @@ const listen2Playlist = (data) => {
       msg: 'Invalid playlist reference !'
     });
   } else {
-    if (iPlaylist < data.videoCount && !data.videos[iPlaylist].title.match(/deleted video/gi) && data.videos[iPlaylist] !== undefined) {
+    // Avoid using data.videoCount because mixes are unsupported
+    if (iPlaylist < data.videos.length && !data.videos[iPlaylist].title.match(/deleted video/gi) && data.videos[iPlaylist] !== undefined) {
       // Remove the player on delete button click
       hideContent('.audio__remove');
 
@@ -64,7 +65,7 @@ const listen2Playlist = (data) => {
       if (!$('.streamInfoContainer').length) {
         let playlistInfo = $('<span></span>')
           .addClass('playlistInfo')
-          .text(`${iPlaylist + 1}/${data.videoCount}`)
+          .text(`${iPlaylist + 1}/${data.videos.length}`)
           .show()
           .prependTo('.audio__container__msg');
 
@@ -91,13 +92,13 @@ const listen2Playlist = (data) => {
         if (!$('.playlistInfo').length) {
           let playlistInfo = $('<span></span>')
             .addClass('playlistInfo')
-            .text(`${iPlaylist + 1}/${data.videoCount}`)
+            .text(`${iPlaylist + 1}/${data.videos.length}`)
             .show()
             .prependTo('.audio__container__msg');
         } else {
           $('.playlistInfo')
             .show()
-            .text(`${iPlaylist + 1}/${data.videoCount}`);
+            .text(`${iPlaylist + 1}/${data.videos.length}`);
         }
       }
 
