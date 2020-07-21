@@ -35,6 +35,7 @@ const upload = multer({
 
 const server = require('http').Server(app).listen(8080);
 const io = require('socket.io')(server);
+const compression = require('compression');
 
 const settingsPath = './settings/settings.json';
 
@@ -247,12 +248,18 @@ app.use("/src", express.static(__dirname + "/src"))
   .use("/settings", express.static(__dirname + "/settings"))
   .use("/tmp", express.static(__dirname + "/tmp"))
   .use((req, res, next) => {
+    // Set some security headers
     res.setHeader('X-XSS-Protection', '1;mode=block')
     res.setHeader('X-Frame-Options', 'DENY')
     res.setHeader('Referrer-Policy', 'no-referrer')
     res.setHeader('Feature-Policy', "accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; camera 'none'; encrypted-media 'none'; fullscreen 'self'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; payment 'none';  picture-in-picture 'none'; speaker 'none'; sync-xhr 'none'; usb 'none'; vr 'none';")
     return next();
   })
+  // Send compressed assets
+  .use(compression());
+
+// Cache views
+app.set('view cache', true);
 
 if (!ip.address().match(/169.254/) || !ip.address().match(/127.0/)) {
   console.log(`Hey ${username} ! You can connect to the web interface with your local IP (http://${ip.address()}:8080) or hostname (http://${os.hostname()}:8080).`);
