@@ -13,6 +13,9 @@
     @include box-shadow;
     background-color: rgba(0, 0, 0, 0.8);
     flex-direction: column;
+    @media(max-width: 1000px) {
+      width: 85%;
+    }
 
     &__title {
       height: min-content;
@@ -22,15 +25,31 @@
     }
 
     &__section {
-      flex-direction: column;
-      width: 70%;
+      flex-direction: row;
+      width: 100%;
       height: 100%;
       font-size: 1.05em;
+      padding: 0 1.5em;
 
-      &__item {
-        align-items: center;
-        justify-content: space-between;
-        width: 70%;
+      &__img {
+        align-self: center;
+        max-width: 30%;
+      }
+
+      &__left {
+        width: 75%;
+        font-size: 1.05em;
+        flex-direction: column;
+
+        &__item {
+          align-items: center;
+          justify-content: space-between;
+          width: 75%;
+
+          .updateBtn {
+            width: 10em;
+          }
+        }
       }
     }
   }
