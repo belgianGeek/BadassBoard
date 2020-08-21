@@ -88,6 +88,8 @@ let settings = settingsTemplate = {
   }
 }
 
+const tag = '0.3.0';
+
 const customize = (io, customizationData) => {
   const handlePicture = (filename, imgType) => {
     const rename = () => {
@@ -125,7 +127,7 @@ const customize = (io, customizationData) => {
         if (!settings.bot.icon.startsWith('http')) {
           fs.stat(settings.bot.icon, (err, stats) => {
             if (!err) {
-              // Remove the old wallpaper and rename the new
+              // Remove the old wallpaper and rename the new one
               fs.unlink(settings.bot.icon, (err) => {
                 if (!err || err.code === 'ENOENT') {
                   rename();
@@ -148,7 +150,7 @@ const customize = (io, customizationData) => {
         if (!settings.backgroundImage.startsWith('http')) {
           fs.stat(settings.backgroundImage, (err, stats) => {
             if (!err) {
-              // Remove the old wallpaper and rename the new
+              // Remove the old wallpaper and rename the new one
               fs.unlink(settings.backgroundImage, (err) => {
                 if (!err || err.code === 'ENOENT') {
                   rename();
@@ -296,7 +298,10 @@ setInterval(() => {
 functions.updatePrototypes();
 
 app.get('/', (req, res) => {
-    res.render('home.ejs');
+    res.render('home.ejs', {
+      wallpaper: settings.backgroundImage,
+      currentVersion: tag
+    });
 
     // Open only one socket connection to avoid memory leaks
     io.once('connection', io => {
@@ -344,11 +349,6 @@ app.get('/', (req, res) => {
             }
           }
         }
-      }
-
-      // Do not send the default wallpaper
-      if (settings.backgroundImage !== undefined) {
-        io.emit('wallpaper', settings.backgroundImage);
       }
 
       io.on('add content', feedData => {
@@ -691,7 +691,7 @@ app.get('/', (req, res) => {
       });
 
       io.on('update check', () => {
-        badassUpdate(io);
+        badassUpdate(io, tag);
       });
     });
   })
@@ -710,7 +710,9 @@ app.get('/', (req, res) => {
     }
 
     res.render('chat.ejs', {
-      botName: settings.bot.name
+      botName: settings.bot.name,
+      botIcon: settings.bot.icon,
+      wallpaper: settings.backgroundImage
     });
 
     io.once('connection', io => {
@@ -720,14 +722,6 @@ app.get('/', (req, res) => {
       io.emit('username', username.capitalize());
 
       let welcomeMsg = new Reply(`Hi ! I'm ${settings.bot.name}, how can I help you ?`).send();
-
-      if (settings.backgroundImage !== undefined) {
-        io.emit('wallpaper', settings.backgroundImage);
-      }
-
-      if (settings.bot.icon !== './src/scss/icons/interface/bot.png') {
-        io.emit('bot avatar', settings.bot.icon);
-      }
 
       io.on('chat msg', msg => {
         const tokenize = (msg) => {
@@ -1060,11 +1054,8 @@ app.get('/', (req, res) => {
 
   // 404 errors handling
   .use((req, res, next) => {
-    res.status(404).render('404.ejs');
-    io.once('connection', (io) => {
-      if (settings.backgroundImage !== undefined) {
-        io.emit('wallpaper', settings.backgroundImage);
-      }
+    res.status(404).render('404.ejs', {
+      wallpaper: settings.backgroundImage
     });
   });
 

@@ -10,7 +10,7 @@
 </head>
 
 <body>
-  <div class="backgroundImage"></div>
+  <div class="backgroundImage" style="background-image: url(<%= wallpaper %>)"></div>
   <div class="backgroundColor"></div>
   <div class="wrapper flex">
     <header class="header flex">
@@ -35,8 +35,8 @@
           </form>
         </div>
         <section class="chatContainer__botInfo flex">
-          <img class="chatContainer__botInfo__icon" src="./src/scss/icons/interface/bot.png" alt="Bot icon">
-          <p><%=botName%></p>
+          <img class="chatContainer__botInfo__icon" src="<%= botIcon %>" alt="Bot icon">
+          <p><%= botName %></p>
         </section>
       </section>
     </main>

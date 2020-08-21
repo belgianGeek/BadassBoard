@@ -4,9 +4,7 @@ const axios = require('axios');
 const path = require('path');
 const cp = require('child_process').exec;
 
-let tag = '0.3.0';
-
-module.exports = function update(io) {
+module.exports = function update(io, tag) {
   axios({
       url: 'https://api.github.com/repositories/204866456/releases',
       method: 'GET'

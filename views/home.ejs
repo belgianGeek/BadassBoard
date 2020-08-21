@@ -10,6 +10,11 @@
 </head>
 
 <body>
+  <style media="screen">
+    body .backgroundImage, .formContainer__container::before {
+      background-image: url(<%= wallpaper %>);
+    }
+  </style>
   <div class="backgroundImage"></div>
   <div class="wrapper flex">
     <header class="header flex">
@@ -127,6 +132,7 @@
           <section class="about__container__child__section__left flex">
             <span class="about__container__child__section__left__item flex">
               <p>Current version :</p>
+              <p class="currentVersion"><%= currentVersion %></p>
               <button class="updateBtn btn" type="button">Check for updates</button>
             </span>
           </section>

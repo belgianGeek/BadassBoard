@@ -17,5 +17,5 @@ stream.json
 settings.json
 invidious.js
 zip*
-yarn-error*
+yarn-*
 classifier.json
