@@ -127,16 +127,34 @@
     <div class="rssTooltip flex"></div>
     <div class="about__container hidden">
       <div class="about__container__child flex">
-        <h2 class="about__container__child__title">About BadassBoard</h2>
+        <h2 class="about__container__child__title">BadassBoard</h2>
         <section class="about__container__child__section flex">
-          <section class="about__container__child__section__left flex">
-            <span class="about__container__child__section__left__item flex">
-              <p>Current version :</p>
+          <img class="about__container__child__section__img" src="./src/scss/icons/interface/loading.png" alt="BadassBoard logo">
+          <section class="about__container__child__section__right flex">
+            <span class="about__container__child__section__right__item version flex">
+              <u>Current version</u>
+              <p> :</p>
               <p class="currentVersion"><%= currentVersion %></p>
               <button class="updateBtn btn" type="button">Check for updates</button>
             </span>
+            <span class="about__container__child__section__right__item dev flex">
+              <u>Developer</u>
+              <p> :</p>
+              <p>belgianGeek</p>
+            </span>
+            <span class="about__container__child__section__right__item license flex">
+              <u>License</u>
+              <p> :</p>
+              <p>GNU GPL v3</p>
+            </span>
+            <p class="about__container__child__section__right__item text">
+              BadassBoard is a multi-purpose, Node.js-powered application created and maintained with ❤️ in Belgium 🍺.
+            </p>
+            <span class="about__container__child__section__right__item links flex">
+              <a href="https://github.com/belgianGeek/BadassBoard" target="_blank" rel="noreferrer">GitHub homepage</a>
+              <a href="https://github.com/belgianGeek/BadassBoard/issues" target="_blank" rel="noreferrer">Issues</a>
+            </span>
           </section>
-          <img class="about__container__child__section__img" src="./src/scss/icons/interface/loading.png" alt="BadassBoard logo">
         </section>
       </div>
     </div>

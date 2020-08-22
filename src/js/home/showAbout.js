@@ -27,7 +27,7 @@ const showAbout = () => {
             .toggleClass('hidden flex')
             .removeAttr('style');
 
-          $('.mainContainer, .header').removeClass('blur');
+          $('.mainContainer, .header, .backgroundImage').removeClass('blur');
         });
     }
   });
