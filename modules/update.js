@@ -45,13 +45,13 @@ module.exports = function update(io, tag) {
                     });
 
                     zip.extractAllTo('./tmp/', true);
-                    fs.readdir(path.join(__dirname, unzippedDir), (err, files) => {
+                    fs.readdir(path.join(__dirname, '..', unzippedDir), (err, files) => {
                       if (err) {
                         console.error(`Error reading unzipped folder ${unzippedDir} : ${err}`);
                       } else {
                         console.log('Update unzipped, moving files...');
                         files.forEach((file, i) => {
-                          fs.moveSync(path.join(__dirname, unzippedDir, file), path.join(__dirname, file), {
+                          fs.moveSync(path.join(__dirname, '..', unzippedDir, file), path.join(__dirname, '..', file), {
                             overwrite: true
                           });
 
