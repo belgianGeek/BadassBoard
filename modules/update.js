@@ -76,7 +76,12 @@ module.exports = function update(io, tag) {
                               text: 'Cleaning up...'
                             });
                             console.log('Cleaning up...');
-                            fs.remove(unzippedDir);
+                            fs.remove(unzippedDir, () => {
+                              io.emit('update progress', {
+                                code: 200,
+                                text: 'Done !'
+                              });
+                            });
                           }
                         });
                       }

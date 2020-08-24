@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 
 module.exports = {
   existPath: (path, data, callback) => {
@@ -41,7 +41,7 @@ module.exports = {
       fs.readdir('./tmp', (err, files) => {
         if (!err) {
           for (const file of files) {
-            fs.unlink(`./tmp/${file}`, (err) => {
+            fs.remove(`./tmp/${file}`, (err) => {
               if (err) {
                 console.log(`Error deleting "${file}" from the temp folder :\n${err}`);
               }

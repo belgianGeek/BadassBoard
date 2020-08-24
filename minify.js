@@ -1,10 +1,10 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const minify = require('minify');
 
 let totalCode = '';
 
 // Remove the old minified file
-fs.unlink('./src/js/app.min.js', (err) => {
+fs.remove('./src/js/app.min.js', (err) => {
   if (err && err.code !== 'ENOENT') {
     console.log(`Error deleting outdated minified file : ${err}`);
   }

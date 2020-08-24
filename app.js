@@ -1,5 +1,5 @@
 const ytdl = require('ytdl-core');
-const fs = require('fs');
+const fs = require('fs-extra');
 const express = require('express');
 const app = express();
 const feedparser = require("feedparser-promised");
@@ -128,7 +128,7 @@ const customize = (io, customizationData) => {
           fs.stat(settings.bot.icon, (err, stats) => {
             if (!err) {
               // Remove the old wallpaper and rename the new one
-              fs.unlink(settings.bot.icon, (err) => {
+              fs.remove(settings.bot.icon, (err) => {
                 if (!err || err.code === 'ENOENT') {
                   rename();
                 } else {
@@ -151,7 +151,7 @@ const customize = (io, customizationData) => {
           fs.stat(settings.backgroundImage, (err, stats) => {
             if (!err) {
               // Remove the old wallpaper and rename the new one
-              fs.unlink(settings.backgroundImage, (err) => {
+              fs.remove(settings.backgroundImage, (err) => {
                 if (!err || err.code === 'ENOENT') {
                   rename();
                 } else {
