@@ -28,6 +28,9 @@ const showAbout = () => {
             .removeAttr('style');
 
           $('.mainContainer, .header, .backgroundImage').removeClass('blur');
+
+          // Restore scroll
+          restoreScroll();
         });
     }
   });

@@ -278,6 +278,18 @@ const updateSettings = () => {
   // Update the settings variable with the new data
   settings = fs.readFileSync(settingsPath, 'utf-8');
   settings = JSON.parse(settings);
+
+  // Sort settings elements by element to avoid frontend bugs while adding new content
+  settings.elements.forEach((item, i) => {
+    item.elements.sort((a, b) => {
+      if (a.element < b.element) {
+        return -1;
+      } else if (a.element > b.element) {
+        return 1;
+      }
+    });
+  });
+
   JSON.stringify(settings, null, 2);
 }
 
