@@ -46,7 +46,7 @@ const addContentOptions = (element) => {
 
           // Remove the content div
           $(element2remove).remove();
-          $(`.${contentContainerParent} .${contentContainerChild} .blank`).removeClass('invisible');
+          $(`.${contentContainerParent} .${contentContainerChild} .blank`).removeClass('hidden');
         });
 
         $('.confirmation__child__btnContainer__cancelBtn, .click').click(() => {

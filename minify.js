@@ -3,12 +3,17 @@ const minify = require('minify');
 
 let totalCode = '';
 
-// Remove the old minified file
-fs.remove('./src/js/app.min.js', (err) => {
-  if (err && err.code !== 'ENOENT') {
-    console.log(`Error deleting outdated minified file : ${err}`);
-  }
-})
+// Remove the old minified files
+const removeOldScript = filename => {
+  fs.remove(filename, (err) => {
+    if (err && err.code !== 'ENOENT') {
+      console.log(`Error deleting outdated minified file : ${err}`);
+    }
+  });
+}
+
+removeOldScript('./src/js/app.min.js');
+removeOldScript('./src/js/chat.min.js');
 
 let homeFiles = fs.readdirSync('./src/js/home');
 let chatFiles = fs.readdirSync('./src/js/chat');
@@ -45,7 +50,7 @@ for (let i = 0; i < homeFiles.length; i++) {
 for (let i = 0; i < chatFiles.length; i++) {
   let filename = `./src/js/chat/${chatFiles[i]}`;
   minify(filename).then(code => {
-      fs.appendFile('./src/js/app.min.js', code, err => {
+      fs.appendFile('./src/js/chat.min.js', code, err => {
         if (err) {
           console.log(`Error writing file : ${err}`);
         } else {

@@ -565,7 +565,6 @@
       }
 
       .blank {
-        display: flex;
         @include align(center, center);
         opacity: 0;
         transition: opacity 1000ms, transform 200ms;
@@ -583,11 +582,6 @@
 
       .flex {
         display: flex;
-      }
-
-      .invisible {
-        display: none;
-        opacity: 0;
       }
 
       .addContent,

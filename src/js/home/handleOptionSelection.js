@@ -12,7 +12,7 @@ const handleOptionSelection = (parent, child) => {
     } else if (selector === undefined) {
       $(`${parent} ${child} .addContent__feed`)
         .css('display', 'flex')
-        .addClass('invisible');
+        .addClass('hidden');
 
       $(`${parent} ${child} .addContent`).children().not(`.addContent__feed, select, option, label, .addContent__btnContainer, .addContent__submitBtn, .addContent__cancelBtn`).hide();
     }
@@ -21,11 +21,15 @@ const handleOptionSelection = (parent, child) => {
   const updateClass = () => {
     // Toggle classes to match a regular pattern
     if (parent === '.content1__container') {
-      iNewElt = lastContent.content1 + 1;
+      lastContent.content1++;
+      iNewElt = lastContent.content1;
+      console.log(lastContent, iNewElt);
     } else if (parent === '.content2__container') {
-      iNewElt = lastContent.content2 + 1;
+      lastContent.content2++;
+      iNewElt = lastContent.content2;
     } else if (parent === '.content3__container') {
-      iNewElt = lastContent.content3 + 1;
+      lastContent.content3++;
+      iNewElt = lastContent.content3;
     }
 
     $(`${parent} .newContent`)
@@ -47,7 +51,7 @@ const handleOptionSelection = (parent, child) => {
       $(`${parent} ${child} .addContent__select`).addClass('select');
 
       $(`${parent} ${child} .addContent__feed`)
-        .removeClass('invisible')
+        .removeClass('hidden')
         .addClass('flex')
         .css('display', '');
 

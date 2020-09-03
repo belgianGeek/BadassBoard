@@ -5,18 +5,20 @@ const addContent = (parent, element) => {
   $(element, svg).off();
 
   if (!$(`${parent} ${element} section`).length) {
-    $(svg).removeClass('invisible');
+    $(svg)
+      .removeClass('hidden')
+      .addClass('flex')
   }
 
   // Show the "addContent" form on svg click
-  $(svg).click(() => {
-    $(element).css('padding', '0');
+  $(svg).click(function() {
+    $(svg)
+      .removeClass('flex')
+      .addClass('hidden');
 
     $(`${parent} ${element} .addContent`)
       .css('display', '')
       .addClass('flex');
-
-    $(svg).hide();
 
     $(`${parent} ${element} .addContent`).ready(() => {
 

@@ -65,7 +65,7 @@ const functions = require('./modules/functions');
 
 // Settings object to be written in the settings file if it doesn't exist
 let settings = settingsTemplate = {
-  "backgroundImage": "./src/scss/wallpaper.png",
+  "backgroundImage": "./src/scss/wallpaper.jpg",
   "bot": {
     "name": "BadassBot",
     "icon": "./src/scss/icons/interface/bot.png"
@@ -392,8 +392,6 @@ app.get('/', (req, res) => {
                         parent: feedData.parent,
                         type: feedData.type
                       }]);
-
-                      callback();
                     })
                     .catch((err) => {
                       if (err == 'Error: Not a feed') {
@@ -438,8 +436,6 @@ app.get('/', (req, res) => {
               parent: feedData.parent,
               location: feedData.location
             }]);
-
-            callback();
           } else if (feedData.type === 'youtube search') {
             newElt.element = feedData.element;
             newElt.parent = feedData.parent;
@@ -450,9 +446,9 @@ app.get('/', (req, res) => {
               element: feedData.element,
               parent: feedData.parent,
             }]);
-
-            callback();
           }
+
+          callback();
         }
 
         processData(() => {
@@ -460,29 +456,33 @@ app.get('/', (req, res) => {
             if (newElt !== {}) {
               if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
                 for (const [k, kValue] of value.elements.entries()) {
+                  console.log(kValue);
                   // Remove the "feed" property for each element before updating the settings
                   delete kValue.feed;
                   if (iAddElt === 0) {
                     if (kValue.element === feedData.element && kValue.parent === feedData.parent) {
                       value.elements.splice(k, 1, newElt);
-                      iAddElt++;
                     } else if (kValue.element !== feedData.element && kValue.parent === feedData.parent) {
                       value.elements.push(newElt);
-                      iAddElt++;
                     }
+                    iAddElt++;
                   }
                 }
               } else if (value.elements[0] === undefined && iParent === j) {
                 // Append the new element to the "elements" settings array
+                // if this is the first element added to named content container
                 value.elements.push(newElt);
                 iAddElt++;
               }
             }
           }
-
-          // Reset the addings counter
-          iAddElt = 0;
         });
+
+        // Reset the addings counter
+        iAddElt = 0;
+
+
+        console.log(JSON.stringify(settings.elements, null, 2));
       });
 
       io.on('customization', (customizationData) => {
@@ -1071,7 +1071,7 @@ app.get('/', (req, res) => {
     });
   });
 
-process.on('SIGINT', () => {
+process.on('SIGINT, SIGKILL, SIGTERM', () => {
   let exitMsg = [
     `Shutdown signal received, over.`,
     `Bye !`,

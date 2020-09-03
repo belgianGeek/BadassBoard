@@ -54,13 +54,14 @@ const parseContent = () => {
 
             let svg = $(`${parent} .newContent .blank`);
 
-            $(svg).click(() => {
+            $(svg).click(function() {
+              $(this)
+                .addClass('hidden')
+                .removeClass('flex')
 
               $(`${parent} .newContent .addContent`)
                 .css('display', '')
                 .addClass('flex');
-
-              $(svg).hide();
 
               $(`${parent} .newContent .addContent`).ready(() => {
                 handleOptionSelection(parent, '.newContent');
@@ -69,7 +70,7 @@ const parseContent = () => {
 
             // Fix the content divs order
             $('.newContent').ready(() => {
-              $('.newContent .blank').removeClass('invisible');
+              $('.newContent .blank').removeClass('hidden');
               $('.content').each(function(index) {
 
                 // Exclude the ".newContent" div
@@ -227,7 +228,7 @@ const parseContent = () => {
           $('.youtubeSearchContainer *').keypress((event) => {
             if (event.keyCode === 13) {
               // Hide the results container
-              $('.youtubeSearchContainer__content__results').addClass('invisible');
+              $('.youtubeSearchContainer__content__results').addClass('hidden');
 
               $.ajax({
                 url: `https://invidio.us/api/v1/search?q=${$('.youtubeSearchContainer__content__input').val()}&language=json&type=all`,
@@ -336,7 +337,7 @@ const parseContent = () => {
                       if (i === 1) {
                         // Show the results container
                         $('.youtubeSearchContainer__content__results')
-                          .removeClass('invisible')
+                          .removeClass('hidden')
                           .css('visibility', 'visible');
                       }
                     }
@@ -355,7 +356,9 @@ const parseContent = () => {
           $(fullElementClassName).addClass('subRow');
         }
 
-        $(`${fullElementClassName} .blank`).addClass('invisible');
+        $(`${fullElementClassName} .blank`)
+          .removeClass('flex')
+          .addClass('hidden');
       });
     }
   });
