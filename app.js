@@ -124,10 +124,10 @@ const customize = (io, customizationData) => {
 
     if (imgType === 'avatar') {
       if (settings.bot.icon !== undefined) {
-        if (!settings.bot.icon.startsWith('http')) {
+        if (!settings.bot.icon.startsWith('http') && settings.bot.icon !== './src/scss/icons/interface/bot.png') {
           fs.stat(settings.bot.icon, (err, stats) => {
             if (!err) {
-              // Remove the old wallpaper and rename the new one
+              // Remove the old bot icon if this isn't the default and rename the new one
               fs.remove(settings.bot.icon, (err) => {
                 if (!err || err.code === 'ENOENT') {
                   rename();
@@ -147,10 +147,10 @@ const customize = (io, customizationData) => {
       }
     } else {
       if (settings.backgroundImage !== undefined) {
-        if (!settings.backgroundImage.startsWith('http')) {
+        if (!settings.backgroundImage.startsWith('http') && settings.backgroundImage !== './src/scss/wallpaper.jpg') {
           fs.stat(settings.backgroundImage, (err, stats) => {
             if (!err) {
-              // Remove the old wallpaper and rename the new one
+              // Remove the old wallpaper if this isn't the default and rename the new one
               fs.remove(settings.backgroundImage, (err) => {
                 if (!err || err.code === 'ENOENT') {
                   rename();

@@ -139,7 +139,7 @@ const showSettings = () => {
 
             // Update the <style> tag to fix the blur
             $('head style').remove();
-            $('head').append(`<style>.formContainer__container::before {background-image: url(${updatedSettings.backgroundImage});}</style>`);
+            $('head').append(`<style>#formContainer__container::before {background-image: url(${updatedSettings.backgroundImage});}</style>`);
           },
           error: (err) => {
             printError({
@@ -166,9 +166,9 @@ const showSettings = () => {
                 }
               }
 
-              $('head').append(`<style>.formContainer__container::before {background-image: url(${updatedSettings.backgroundImage}); !important}</style>`);
+              $('head').append(`<style>#formContainer__container::before {background-image: url(${updatedSettings.backgroundImage}); !important}</style>`);
             } else {
-              $('head').append(`<style>.formContainer__container::before {background-image: url(${updatedSettings.backgroundImage}); !important}</style>`);
+              $('head').append(`<style>#formContainer__container::before {background-image: url(${updatedSettings.backgroundImage}); !important}</style>`);
             }
           } else {
             error = true;

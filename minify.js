@@ -1,62 +1,15 @@
 const fs = require('fs-extra');
-const minify = require('minify');
+const exec = require('child_process').exec;
+const path = require('path');
 
-let totalCode = '';
+let files = fs.readdirSync('./src/js');
 
-// Remove the old minified files
-const removeOldScript = filename => {
-  fs.remove(filename, (err) => {
-    if (err && err.code !== 'ENOENT') {
-      console.log(`Error deleting outdated minified file : ${err}`);
-    }
-  });
-}
+// Filter the files array not to contain the old minified file
 
-removeOldScript('./src/js/app.min.js');
-removeOldScript('./src/js/chat.min.js');
-
-let homeFiles = fs.readdirSync('./src/js/home');
-let chatFiles = fs.readdirSync('./src/js/chat');
-
-for (let i = 0; i < homeFiles.length; i++) {
-  if (homeFiles[i] !== 'app.js') {
-    let filename = `./src/js/home/${homeFiles[i]}`;
-    minify(filename).then(code => {
-        fs.appendFile('./src/js/app.min.js', code, err => {
-          if (err) {
-            console.log(`Error writing file : ${err}`);
-          } else {
-            console.log(`Successfully minified file : ${homeFiles[i]}`);
-          }
-        });
-      })
-      .catch(console.error);
-  }
-
-  if (i === homeFiles.length - 1) {
-    minify('./src/js/home/app.js').then(code => {
-        fs.appendFile('./src/js/app.min.js', code, err => {
-          if (err) {
-            console.log(`Error writing file : ${err}`);
-          } else {
-            console.log(`Successfully minified file : app.js`);
-          }
-        });
-      })
-      .catch(console.error);
-  }
-}
-
-for (let i = 0; i < chatFiles.length; i++) {
-  let filename = `./src/js/chat/${chatFiles[i]}`;
-  minify(filename).then(code => {
-      fs.appendFile('./src/js/chat.min.js', code, err => {
-        if (err) {
-          console.log(`Error writing file : ${err}`);
-        } else {
-          console.log(`Successfully minified file : ${chatFiles[i]}`);
-        }
-      });
-    })
-    .catch(console.error);
-}
+let homeMinification = exec(`terser --mangle --compress -o app.min.js ${files.filter(item => item !== 'app.min.js').join(' ')}`, {
+  cwd: path.join(__dirname, '/src/js')
+}, (err, stdout, stderr) => {
+  if (err) console.error(err); else console.log('Minification succeeded !');
+  if (stderr) console.error(stderr);
+  return;
+});

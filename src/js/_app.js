@@ -97,7 +97,7 @@ socket.on('wallpaper', wallpaper => {
       dataType: '',
       statusCode: {
         200: () => {
-          headStyle = `<style>.formContainer__container::before {background-image: url(${wallpaper});}</style>`;
+          headStyle = `<style>#formContainer__container::before {background-image: url(${wallpaper});}</style>`;
           $('head').append(headStyle);
 
           $('.backgroundImage').css('backgroundImage', `url(${wallpaper})`);
