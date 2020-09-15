@@ -12,39 +12,6 @@ socket.on('username', username => {
   console.log(msgAuthor);
 });
 
-// Get the background image and add it to the page
-socket.on('wallpaper', wallpaper => {
-  const handle404ImageError = () => {
-    if (!$('.backgroundMsg').length) {
-      let backrgoundImageReply = $('<span></span>')
-        .addClass('msg reply backgroundMsg')
-        .text('Sorry, your background image couldn\'t be loaded... Maybe try another one')
-        .appendTo('.chatContainer__msgList__list');
-    }
-
-    $('.backgroundImage').css('backgroundImage', '');
-  }
-
-  $.ajax({
-      url: wallpaper,
-      method: 'GET',
-      statusCode: {
-        200: () => {
-          $('.backgroundImage').css('backgroundImage', `url(${wallpaper})`);
-        },
-        404: () => {
-          handle404ImageError();
-        }
-      }
-    })
-    .fail(err => {
-      // CORS error handling
-      if (err.statusText === 'error' && err.readyState === 0) {
-        handle404ImageError();
-      }
-    });
-});
-
 socket.on('bot avatar', avatar => {
   const handle404ImageError = () => {
     if (!$('.avatarMsg').length) {
@@ -87,5 +54,3 @@ $('.chatContainer__msgList__form').submit(event => {
 $('.header__homeIcon').click(() => {
   window.open('/', '_self');
 });
-
-showSettings();

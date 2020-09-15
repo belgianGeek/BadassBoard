@@ -90,96 +90,55 @@ let settings = settingsTemplate = {
 
 const tag = '0.3.0';
 
+const deleteNotProcessedFile = filename => fs.remove(path.join(__dirname, filename));
+
 const customize = (io, customizationData) => {
-  const handlePicture = (filename, imgType) => {
-    const rename = () => {
-      if (filename.match(' ')) {
-        let newFilename = filename.split(' ').join('_');
-        fs.rename(filename, newFilename, (err) => {
-          if (!err) {
-            if (imgType === 'wallpaper') {
-              settings.backgroundImage = newFilename;
-              io.emit('wallpaper', newFilename);
-            } else {
-              settings.bot.icon = newFilename;
-              io.emit('bot avatar', newFilename);
-            }
+  const handlePicture = type => {
+    if (type === 'avatar') {
+      if (settings.bot.icon !== undefined) {
+        customizationData.bot.icon = customizationData.bot.icon.split(';base64,').pop();
+
+        let filename = `./upload/avatar-${Date.now()}.png`;
+        fs.writeFile(filename, customizationData.bot.icon, {encoding: 'base64'}, err => {
+          if (err) {
+            console.error(`An error occurred while saving the new avatar : ${err}`);
           } else {
-            // Avoid errors saying the path does not exist after renaming
-            if (err.code !== 'ENOENT') {
-              console.log(`Error renaming background-image : ${err}`);
+            if (settings.bot.icon !== './src/scss/icons/interface/bot.png') {
+              deleteNotProcessedFile(settings.bot.icon);
             }
+
+            settings.bot.icon = filename;
+            io.emit('bot avatar', filename);
           }
         });
-      } else {
-        if (imgType === 'avatar') {
-          settings.bot.icon = filename;
-          io.emit('bot avatar', filename);
-        } else if (imgType === 'wallpaper') {
-          settings.backgroundImage = filename;
-          io.emit('wallpaper', filename);
-        }
-      }
-    }
-
-    if (imgType === 'avatar') {
-      if (settings.bot.icon !== undefined) {
-        if (!settings.bot.icon.startsWith('http') && settings.bot.icon !== './src/scss/icons/interface/bot.png') {
-          fs.stat(settings.bot.icon, (err, stats) => {
-            if (!err) {
-              // Remove the old bot icon if this isn't the default and rename the new one
-              fs.remove(settings.bot.icon, (err) => {
-                if (!err || err.code === 'ENOENT') {
-                  rename();
-                } else {
-                  console.log(`Error deleting the previous background image : ${err}`);
-                }
-              });
-            } else {
-              console.log(`Renaming file... ${err}`);
-              rename();
-            }
-          });
-        } else {
-          settings.bot.icon = filename;
-          io.emit('bot avatar', filename);
-        }
       }
     } else {
-      if (settings.backgroundImage !== undefined) {
-        if (!settings.backgroundImage.startsWith('http') && settings.backgroundImage !== './src/scss/wallpaper.jpg') {
-          fs.stat(settings.backgroundImage, (err, stats) => {
-            if (!err) {
-              // Remove the old wallpaper if this isn't the default and rename the new one
-              fs.remove(settings.backgroundImage, (err) => {
-                if (!err || err.code === 'ENOENT') {
-                  rename();
-                } else {
-                  console.log(`Error deleting the previous background image : ${err}`);
-                }
-              });
-            } else if (err && err.code === 'ENOENT') {
-              rename();
-            } else {
-              console.log(`Error renaming file : ${err}`);
-            }
-          });
+      customizationData.backgroundImage = customizationData.backgroundImage.split(';base64,').pop();
+
+      let filename = `./upload/wallpaper-${Date.now()}.jpg`;
+      fs.writeFile(filename, customizationData.backgroundImage, {encoding: 'base64'}, err => {
+        if (err) {
+          console.error(`An error occurred while saving the new wallpaper : ${err}`);
         } else {
+          if (settings.backgroundImage !== './src/scss/wallpaper.jpg') {
+            deleteNotProcessedFile(settings.backgroundImage);
+          }
+          
           settings.backgroundImage = filename;
           io.emit('wallpaper', filename);
         }
-      }
+      });
     }
-
   }
 
+
   if (customizationData.backgroundImage !== null && customizationData.backgroundImage !== undefined) {
-    handlePicture(customizationData.backgroundImage, 'wallpaper');
+    handlePicture('wallpaper');
   }
 
   if (customizationData.bot !== null && customizationData.bot !== undefined) {
     if (customizationData.bot.icon !== undefined) {
-      handlePicture(customizationData.bot.icon, 'avatar');
+      handlePicture('avatar');
 
       let answers = [
         `Whoa, that's much better !`,
@@ -311,7 +270,6 @@ functions.updatePrototypes();
 
 app.get('/', (req, res) => {
     res.render('home.ejs', {
-      wallpaper: settings.backgroundImage,
       currentVersion: tag
     });
 
@@ -361,6 +319,11 @@ app.get('/', (req, res) => {
             }
           }
         }
+      }
+
+      // Do not send the default wallpaper
+      if (settings.backgroundImage !== './src/scss/wallpaper.jpg') {
+        io.emit('wallpaper', settings.backgroundImage);
       }
 
       io.on('add content', feedData => {
@@ -452,6 +415,7 @@ app.get('/', (req, res) => {
         }
 
         processData(() => {
+          console.log('Process data !');
           for (const [j, value] of elements.entries()) {
             if (newElt !== {}) {
               if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
@@ -481,12 +445,12 @@ app.get('/', (req, res) => {
         // Reset the addings counter
         iAddElt = 0;
 
-
         console.log(JSON.stringify(settings.elements, null, 2));
       });
 
-      io.on('customization', (customizationData) => {
+      io.on('customization', customizationData => {
         customize(io, customizationData);
+        io.emit('customization data retrieved');
       });
 
       io.on('download', (id) => {
@@ -1009,7 +973,8 @@ app.get('/', (req, res) => {
         }
       });
 
-      io.on('customization', (customizationData) => {
+      io.on('customization', customizationData => {
+        console.log(`customizationData : ${customizationData}`);
         customize(io, customizationData);
       });
     })
@@ -1033,35 +998,6 @@ app.get('/', (req, res) => {
         msg: 'Sorry, the filename couln\'t be retrieved...'
       })
     }
-  })
-
-  .post('/upload', (req, res) => {
-    upload(req, res, (err) => {
-      if (req.files !== undefined) {
-        if (req.files.chatBotAvatarUploadInput !== undefined) {
-          let avatar = `${req.files.chatBotAvatarUploadInput[0].destination}/${req.files.chatBotAvatarUploadInput[0].filename}`;
-          if (err) {
-            console.log(`Error uploading file :(( :\n${err}`);
-          } else {
-            console.log(`${req.files.chatBotAvatarUploadInput[0].originalname} successfully uploaded !`);
-            io.emit('bot avatar', avatar);
-          }
-        } else if (req.files.backgroundImageUploadInput !== undefined) {
-          let wallpaper = `${req.files.backgroundImageUploadInput[0].destination}/${req.files.backgroundImageUploadInput[0].filename}`;
-          if (err) {
-            console.log(`Error uploading file :(( :\n${err}`);
-          } else {
-            console.log(`${req.files.backgroundImageUploadInput[0].originalname} successfully uploaded !`);
-          }
-        }
-      } else {
-        console.log(`Error uploading file :(( :\n${err}`);
-      }
-
-      if (err) {
-        console.log(`Error uploading file : ${JSON.stringify(err, null, 2)}`);
-      }
-    });
   })
 
   // 404 errors handling

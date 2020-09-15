@@ -66,9 +66,6 @@ $.ajax({
     searchEngine.url = 'https://duckduckgo.com/?q=';
 
     $('.searchEngineSelection__select').val(searchEngine.label);
-
-    // Send the search engine to the server
-    socket.emit('customization', searchEngine);
   }
 
   if (settings.bot.name !== 'BadassBot') {
@@ -95,16 +92,13 @@ socket.on('wallpaper', wallpaper => {
       url: wallpaper,
       method: 'GET',
       dataType: '',
-      statusCode: {
-        200: () => {
-          headStyle = `<style>#formContainer__container::before {background-image: url(${wallpaper});}</style>`;
-          $('head').append(headStyle);
+      success: () => {
+        // Remove the old style tag and replace it with an updated one
+        $('head style').remove();
+        headStyle = `<style>.formContainer__container::before {background-image: url(${wallpaper});}</style>`;
+        $('head').append(headStyle);
 
-          $('.backgroundImage').css('backgroundImage', `url(${wallpaper})`);
-        },
-        404: () => {
-          handle404ImageError();
-        }
+        $('.backgroundImage').css('backgroundImage', `url(${wallpaper})`);
       }
     })
     .fail(err => {
