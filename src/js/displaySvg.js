@@ -11,7 +11,7 @@ const displaySvg = (data) => {
         .click(() => {
           iPlaylist++;
           if (iPlaylist < data.videos.length && data.videos[iPlaylist] !== undefined) {
-            $('#audioSrc').attr('src', `https://www.invidio.us/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`);
+            $('#audioSrc').attr('src', `https://invidious.fdn.fr/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`);
             document.getElementById('audio__player').load();
             $('#streamTitle').text(data.videos[iPlaylist].title);
             $('#YtId').text(` (Youtube ID : ${data.videos[iPlaylist].videoId})`);
@@ -32,7 +32,7 @@ const displaySvg = (data) => {
         .click(() => {
           if (iPlaylist > 0) {
             iPlaylist--;
-            $('#audioSrc').attr('src', `https://www.invidio.us/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`);
+            $('#audioSrc').attr('src', `https://invidious.fdn.fr/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`);
             document.getElementById('audio__player').load();
             $('#streamTitle').text(data.videos[iPlaylist].title);
             $('#YtId').text(` (Youtube ID : ${data.videos[iPlaylist].videoId})`);

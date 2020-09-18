@@ -72,9 +72,9 @@ const suggestions = [
   },
   {
     label: '!iv',
-    desc: 'Invidio.us',
+    desc: 'invidious.fdn.fr',
     icon: './src/scss/icons/suggestions/invidious.png',
-    url: 'https://invidio.us/search?q='
+    url: 'https://invidious.fdn.fr/search?q='
   },
   {
     label: '!jq',
