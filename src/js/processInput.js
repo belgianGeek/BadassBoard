@@ -49,7 +49,7 @@ const processInput = (msg) => {
         let id = msg.match(/[0-9A-Za-z_-]{11}/)[0];
 
         $.ajax({
-          url: `https://invidio.us/api/v1/videos/${id}`,
+          url: `https://invidious.fdn.fr/api/v1/videos/${id}`,
           method: 'GET',
           dataType: 'json',
           statusCode: {
@@ -162,7 +162,7 @@ const processInput = (msg) => {
         // Reset the playlist counter
         iPlaylist = 0;
         let id = msg.match(/[a-zA-Z0-9-_]{15,34}/)[0];
-        let apiUrl = `https://invidio.us/api/v1/playlists/${id}`;
+        let apiUrl = `https://invidious.fdn.fr/api/v1/playlists/${id}`;
 
         socket.emit('parse playlist', apiUrl);
 
@@ -181,7 +181,7 @@ const processInput = (msg) => {
         // Reset the playlist counter
         iPlaylist = 0;
         let mixID = msg.match(/[0-9A-Za-z_-]{13}/);
-        let apiUrl = `https://invidio.us/api/v1/mixes/${mixID}`;
+        let apiUrl = `https://invidious.fdn.fr/api/v1/mixes/${mixID}`;
 
         socket.emit('parse playlist', apiUrl);
 
