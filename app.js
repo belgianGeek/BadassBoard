@@ -99,7 +99,9 @@ const customize = (io, customizationData) => {
         customizationData.bot.icon = customizationData.bot.icon.split(';base64,').pop();
 
         let filename = `./upload/avatar-${Date.now()}.png`;
-        fs.writeFile(filename, customizationData.bot.icon, {encoding: 'base64'}, err => {
+        fs.writeFile(filename, customizationData.bot.icon, {
+          encoding: 'base64'
+        }, err => {
           if (err) {
             console.error(`An error occurred while saving the new avatar : ${err}`);
           } else {
@@ -116,14 +118,16 @@ const customize = (io, customizationData) => {
       customizationData.backgroundImage = customizationData.backgroundImage.split(';base64,').pop();
 
       let filename = `./upload/wallpaper-${Date.now()}.jpg`;
-      fs.writeFile(filename, customizationData.backgroundImage, {encoding: 'base64'}, err => {
+      fs.writeFile(filename, customizationData.backgroundImage, {
+        encoding: 'base64'
+      }, err => {
         if (err) {
           console.error(`An error occurred while saving the new wallpaper : ${err}`);
         } else {
           if (settings.backgroundImage !== './src/scss/wallpaper.jpg') {
             deleteNotProcessedFile(settings.backgroundImage);
           }
-          
+
           settings.backgroundImage = filename;
           io.emit('wallpaper', filename);
         }
@@ -415,12 +419,10 @@ app.get('/', (req, res) => {
         }
 
         processData(() => {
-          console.log('Process data !');
           for (const [j, value] of elements.entries()) {
             if (newElt !== {}) {
               if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
                 for (const [k, kValue] of value.elements.entries()) {
-                  console.log(kValue);
                   // Remove the "feed" property for each element before updating the settings
                   delete kValue.feed;
                   if (iAddElt === 0) {
@@ -444,8 +446,6 @@ app.get('/', (req, res) => {
 
         // Reset the addings counter
         iAddElt = 0;
-
-        console.log(JSON.stringify(settings.elements, null, 2));
       });
 
       io.on('customization', customizationData => {
