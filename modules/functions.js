@@ -61,27 +61,19 @@ module.exports = {
 
     // To make the first letter of a string uppercase
     String.prototype.capitalize = function() {
-        return this.charAt(0).toUpperCase() + this.slice(1);
+      return this.charAt(0).toUpperCase() + this.slice(1);
     }
   },
   updateSettingsFile: (settingsPath, updatedSettings, callback) => {
-    for (const [i, elt] of updatedSettings.elements.entries()) {
-      for (const [j, value] of elt.elements.entries()) {
-        delete value.feed;
-
-        if (i === updatedSettings.elements.length - 1 && j === elt.elements.length - 1) {
-          fs.writeFile(settingsPath, JSON.stringify(updatedSettings, null, 2), 'utf-8', (err, data) => {
-            if (err) {
-              console.log(`Error saving settings : ${err}`);
-            } else {
-              console.log('Settings successfully saved !');
-              if (callback !== undefined) {
-                callback();
-              }
-            }
-          });
+    fs.writeFile(settingsPath, JSON.stringify(updatedSettings, null, 2), 'utf-8', (err, data) => {
+      if (err) {
+        console.log(`Error saving settings : ${err}`);
+      } else {
+        console.log('Settings successfully saved !');
+        if (callback !== undefined) {
+          callback();
         }
       }
-    }
+    });
   }
 }
