@@ -252,8 +252,6 @@ const updateSettings = () => {
       }
     });
   });
-
-  JSON.stringify(settings, null, 2);
 }
 
 setTimeout(() => {
@@ -306,8 +304,6 @@ app.get('/', (req, res) => {
                   eltsArray.push(subEltsValue);
 
                   sendData();
-
-                  delete subEltsValue.feed;
                 })
                 .catch((err) => {
                   if (err == 'Error: Not a feed') {
@@ -430,10 +426,11 @@ app.get('/', (req, res) => {
                   if (iAddElt === 0) {
                     if (kValue.element === feedData.element && kValue.parent === feedData.parent) {
                       value.elements.splice(k, 1, newElt);
+                      iAddElt++;
                     } else if (kValue.element !== feedData.element && kValue.parent === feedData.parent) {
                       value.elements.push(newElt);
+                      iAddElt++;
                     }
-                    iAddElt++;
                   }
                 }
               } else if (value.elements[0] === undefined && iParent === j) {
@@ -653,12 +650,12 @@ app.get('/', (req, res) => {
         });
       });
 
-      io.on('remove content', (content2remove) => {
+      io.on('remove content', content2remove => {
+        let found = false;
         for (const [i, settingsElts] of settings.elements.entries()) {
           // Set a variable to stop the loop as soon as the element is removed
-          let found = false;
           for (const [j, settingsElt] of settingsElts.elements.entries()) {
-            if (found !== true) {
+            if (!found) {
               if (content2remove.parent === settingsElt.parent && content2remove.element === settingsElt.element) {
                 settingsElts.elements.splice(j, 1);
                 found = true;
@@ -976,7 +973,6 @@ app.get('/', (req, res) => {
       });
 
       io.on('customization', customizationData => {
-        console.log(`customizationData : ${customizationData}`);
         customize(io, customizationData);
       });
     })
