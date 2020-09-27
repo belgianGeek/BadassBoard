@@ -82,6 +82,27 @@
     <%- include('settings'); %>
     <div class="rssTooltip flex"></div>
     <%- include('about'); %>
+    <div class="yt2rss hidden">
+      <section class="yt2rss__container flex">
+        <h2 class="yt2rss__container__title">Get a Youtube channel RSS feed</h2>
+        <div class="yt2rss__container__child flex">
+          <form id="yt2rss__container__child__left" class="yt2rss__container__child__left flex">
+            <input class="yt2rss__container__child__left__input input" type="text" placeholder="Channel ID">
+            <input class="yt2rss__container__child__left__output input" type="text" placeholder="Result">
+          </form>
+          <span class="yt2rss__container__child__right flex">
+            <button class="yt2rss__container__child__right__btn yt2rss__container__child__right__svgBtn flex" type="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              Copy the RSS feed URL
+            </button>
+            <button form="yt2rss__container__child__left" class="yt2rss__container__child__right__btn btn btn--red" type="reset">Reset all fields</button>
+          </span>
+        </div>
+      </section>
+    </div>
     <div class="confirmation click">
       <section class="confirmation__child flex">
         <h1 class="confirmation__child__title">Watch out !</h1>
