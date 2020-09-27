@@ -1,0 +1,174 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  @include align(flex-start, center);
+  z-index: 2;
+
+  &__menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+
+    &__icon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      width: 60px;
+      height: 60px;
+      padding: 0.55rem;
+      background-color: transparent;
+      @include align(center, center);
+      cursor: pointer;
+
+      &__bar {
+        position: relative;
+        width: 100%;
+        height: 2px;
+        background-color: #fff;
+        @include align(center, center);
+        transition: all 0.4s ease;
+
+        &::before {
+          top: -10px;
+        }
+
+        &::after {
+          top: 10px;
+        }
+
+        &::after,
+        &::before {
+          content: '';
+          position: absolute;
+          width: 100%;
+          background: inherit;
+          height: 2px;
+        }
+      }
+    }
+
+    &__switch {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      z-index: 2;
+      cursor: pointer;
+      // Make the input entirely cover the button closing the menu
+      &:checked {
+        z-index: 3;
+        margin: 0;
+        width: 60px;
+        height: 60px;
+      }
+    }
+
+    &__switch:checked ~ .menu {
+      transform: translateX($menu-item-width * 2);
+      transform-origin: left;
+      transition: transform 0.5s cubic-bezier(1,0,0,1);
+      @media (max-width: 720px) {
+        transform: translateX(60vw);
+      }
+    }
+
+    &__switch:checked,
+    &__switch:checked + &__icon {
+      transform: translateX(($menu-item-width * 1.5) - 2) rotate(135deg) scale(0.7);
+      transform-origin: left;
+      transition: transform 0.5s cubic-bezier(1,0,0,1);
+      top: -10px;
+      @media (max-width: 720px) {
+        transform: translateX(46vw) rotate(135deg) scale(0.7);
+      }
+    }
+
+    &__switch:checked + &__icon {
+      z-index: 2;
+      background-color: white;
+      border-radius: 50%;
+    }
+
+    &__switch:checked:hover + &__icon > div {
+      transform: rotate(.25turn);
+      transition: transform 0.1s linear;
+    }
+
+    &__switch:checked + &__icon > div::after,
+    &__switch:checked + &__icon > div::before {
+      top: 0;
+      transform: rotate(90deg);
+    }
+
+    &__switch:checked + &__icon > div,
+    &__switch:checked + &__icon > div::after,
+    &__switch:checked + &__icon > div::before {
+      background-color: black;
+    }
+  }
+
+  .menu {
+    position: absolute;
+    height: 100vh;
+    width: $menu-item-width * 1.5;
+    top: 0;
+    left: -$menu-item-width * 2;
+    background-color: opacify($contentBackground, 0.3);
+    z-index: 1;
+    flex-direction: column;
+    @include align(flex-start, flex-start);
+    @include box-shadow;
+    font-size: 1em;
+    @media (max-width: 720px) {
+      width: 50vw;
+      left: -60vw;
+    }
+
+    &__item {
+      padding: 0.5em 0;
+      margin: 0.5em;
+    }
+
+    &__item,
+    &__item a {
+      width: 100%;
+      @include align(flex-start, center);
+      box-sizing: border-box;
+      font-size: 1.05em;
+      cursor: pointer;
+
+      &__icon {
+        width: 30%;
+      }
+
+      &__legend {
+        width: 70%;
+      }
+    }
+
+    &__item.chatLink,
+    &__item.homeLink {
+      a {
+        font-size: 1em;
+        text-decoration: none;
+        padding: 0;
+        margin: 0;
+      }
+    }
+
+    &__item.settingsLink {
+      &:hover {
+        svg {
+          transform: rotate(-360deg);
+          transition: transform 1500ms;
+        }
+      }
+    }
+  }
+}

@@ -272,7 +272,8 @@ functions.updatePrototypes();
 
 app.get('/', (req, res) => {
     res.render('home.ejs', {
-      currentVersion: tag
+      currentVersion: tag,
+      isHomepage: true
     });
 
     // Open only one socket connection to avoid memory leaks
@@ -687,11 +688,24 @@ app.get('/', (req, res) => {
     res.render('chat.ejs', {
       botName: settings.bot.name,
       botIcon: settings.bot.icon,
+      currentVersion: tag,
+      isHomepage: false,
       wallpaper: settings.backgroundImage
     });
 
     io.once('connection', io => {
       let reply = '';
+
+      // Do not send the default wallpaper
+      if (settings.backgroundImage !== './src/scss/wallpaper.jpg') {
+        io.emit('wallpaper', settings.backgroundImage);
+      }
+
+      if (settings.bot !== undefined) {
+        if (settings.bot.icon !== undefined && settings.bot.icon !== './src/scss/icons/interface/bot.png') {
+          io.emit('bot avatar', settings.bot.icon);
+        }
+      }
 
       // Send the username to the frontend
       io.emit('username', username.capitalize());

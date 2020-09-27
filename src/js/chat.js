@@ -50,7 +50,3 @@ $('.chatContainer__msgList__form').submit(event => {
   msg.send();
   console.log(msg);
 });
-
-$('.header__homeIcon').click(() => {
-  window.open('/', '_self');
-});

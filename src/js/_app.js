@@ -103,7 +103,8 @@ socket.on('wallpaper', wallpaper => {
     })
     .fail(err => {
       // CORS error handling
-      if (err.statusText === 'error' && err.readyState === 0) {
+      console.log(JSON.stringify(err, null, 2));
+      if (err.status !== 200) {
         handle404ImageError();
       }
     });
@@ -170,11 +171,6 @@ if (!$('.msgContainer').text().match(/\w.+/)) {
 
 // Get current mouse position
 getMousePosition();
-
-// Redirect to the chat page
-$('.chatLink').click(() => {
-  window.open('/chat');
-});
 
 // Dynamically show the footer
 $('.footer').mouseenter(() => {
