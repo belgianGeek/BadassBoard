@@ -6,6 +6,7 @@ settings
 tmp
 
 # Files
+app.js.bak
 nlp.js
 youtube-dl.exe
 streamInfo.json

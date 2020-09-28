@@ -58,14 +58,23 @@ module.exports = function update(io, tag) {
                           if (i === files.length - 1) {
                             console.log('Update successfully extracted !');
                             console.log('Checking for dependencies updates...');
-                            cp('yarn install', (err, stdout, stderr) => {
+                            cp('npm install', (err, stdout, stderr) => {
                               if (err) {
                                 console.error(`Error checking for dependencies updates : ${err}`);
                               } else {
                                 if (!stderr) {
                                   console.log(stdout);
+                                  cp('npm prune', (err, stdout, stderr) => {
+                                    if (err) {
+                                      console.log(`Error removing unused dependencies : ${err}`);
+                                    } else {
+                                      if (!stderr) {
+                                        console.log(stdout);
+                                      } else console.log(`Error running npm prune : ${stderr}`);
+                                    }
+                                  });
                                 } else {
-                                  console.error(`Error running yarn install : ${stderr}`);
+                                  console.error(`Error running npm install : ${stderr}`);
                                 }
                               }
                             });

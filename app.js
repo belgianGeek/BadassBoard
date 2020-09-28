@@ -10,28 +10,7 @@ const {
 const os = require('os');
 const path = require('path');
 const process = require('process');
-const request = require('request');
-const multer = require('multer');
-
-// Upload configuration
-const storage = multer.diskStorage({
-  destination: './upload',
-  filename: (req, file, callback) => {
-    callback(null, file.originalname);
-  }
-});
-
-const upload = multer({
-  storage: storage,
-  // Limit image size to max 5Mo
-  limits: {
-    fileSize: 5000000
-  }
-}).fields([{
-  name: 'chatBotAvatarUploadInput'
-}, {
-  name: 'backgroundImageUploadInput'
-}]); // the name cannot be modified because it is linked to the input name in the formData object
+const axios = require('axios');
 
 const server = require('http').Server(app).listen(8080);
 const io = require('socket.io')(server);
@@ -341,9 +320,11 @@ app.get('/', (req, res) => {
 
         const processData = (callback) => {
           if (feedData.type === 'rss') {
-            request
-              .get(feedData.url)
-              .on('response', (res) => {
+            axios({
+                url: feedData.url,
+                method: 'GET'
+              })
+              .then(res => {
                 if (res.headers['content-type'].match(/xml/gi) || res.headers['content-type'].match(/rss/gi)) {
                   newElt.element = feedData.element;
                   newElt.parent = feedData.parent;
@@ -380,7 +361,7 @@ app.get('/', (req, res) => {
                   });
                 }
               })
-              .on('error', (err) => {
+              .catch(err => {
                 console.log(`Error parsing feed ${feedData.url} : ${err}`);
 
                 io.emit('errorMsg', {
@@ -613,19 +594,13 @@ app.get('/', (req, res) => {
       });
 
       io.on('parse playlist', (playlistUrl) => {
-        request(playlistUrl, (err, response, body) => {
-          if (err) {
-            if (err === 'socket hang up') {
-              console.log('The websocket died... :(');
-            } else {
-              io.emit('errorMsg', {
-                type: 'generic',
-                msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
-              });
-            }
-          } else {
+        axios({
+            url: playlistUrl,
+            method: 'GET'
+          })
+          .then(res => {
             try {
-              let result = JSON.parse(body);
+              let result = JSON.parse(res.data);
 
               if (result.error === undefined) {
                 fs.writeFile('./tmp/playlist.json', JSON.stringify(result, null, 2), 'utf-8', (err) => {
@@ -647,8 +622,17 @@ app.get('/', (req, res) => {
                 type: 'generic'
               });
             }
-          }
-        });
+          })
+          .catch(err => {
+            if (err === 'socket hang up') {
+              console.log('The websocket died... :(');
+            } else {
+              io.emit('errorMsg', {
+                type: 'generic',
+                msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
+              });
+            }
+          });
       });
 
       io.on('remove content', content2remove => {
@@ -722,9 +706,12 @@ app.get('/', (req, res) => {
           let location = msg.normalize('NFD');
           let url = `https://api.openweathermap.org/data/2.5/find?q=${location}&units=metric&lang=en&appid=9b013a34970de2ddd85f46ea9185dbc5`;
 
-          request(url, function(err, res, body) {
-            if (!err) {
-              let result = JSON.parse(body);
+          axios({
+              url: url,
+              method: 'GET'
+            })
+            .then(res => {
+              let result = JSON.parse(res.data);
               let count = result.count;
 
               if (count !== 0) {
@@ -744,11 +731,10 @@ app.get('/', (req, res) => {
                 msgTheme = 'weather';
                 return new Reply("Sorry, I can't find this place... Make sure of the location you have given me and retry...").send();
               }
-            } else {
+            })
+            .catch(err => {
               console.log(`Error getting weather forecast : ${err}`);
-            }
-
-          });
+            });
         }
 
         const revertGreetings = (msg) => {
@@ -780,28 +766,31 @@ app.get('/', (req, res) => {
 
         const searchWiki = (args, msg) => {
           return new Promise((fullfill, reject) => {
-            request(`https://en.wikipedia.org/api/rest_v1/page/summary/${args.join('_')}?redirect=true`, (err, res, body) => {
-              if (!err) {
-                let res = JSON.parse(body);
+            axios({
+                url: `https://en.wikipedia.org/api/rest_v1/page/summary/${args.join('_')}?redirect=true`,
+                method: 'GET'
+              })
+              .then(res => {
+                const body = res.data;
 
                 // Check if the API entry exists
-                if (!res.title.match(/not found/gi)) {
+                if (!body.title.match(/not found/gi)) {
                   let reply = {
                     icon: './src/scss/icons/suggestions/wikipedia.ico',
-                    title: res.title,
-                    url: res.content_urls.desktop.page,
+                    title: body.title,
+                    url: body.content_urls.desktop.page,
                     color: 'white',
-                    description: `<p>According to Wikipedia,</p> <article><i>${res.extract}</i></article>`
+                    description: `<p>According to Wikipedia,</p> <article><i>${body.extract}</i></article>`
                   };
 
-                  if (res.type === 'disambiguation') {
-                    reply.description += `<p>A disambiguation page is available here : <a href="${reply.url}">${res.title}</a></p>`;
+                  if (body.type === 'disambiguation') {
+                    reply.description += `<p>A disambiguation page is available here : <a href="${reply.url}">${body.title}</a></p>`;
                   } else {
-                    reply.description += `<p>More info : <a href="${reply.url}">${res.title}</a></p>`;
+                    reply.description += `<p>More info : <a href="${reply.url}">${body.title}</a></p>`;
                   }
 
-                  if (res.thumbnail !== undefined) {
-                    reply.img = res.thumbnail.source;
+                  if (body.thumbnail !== undefined) {
+                    reply.img = body.thumbnail.source;
                   }
 
                   // Modify the message theme to create the embed
@@ -812,20 +801,20 @@ app.get('/', (req, res) => {
                 } else {
                   reject(`Sorry ${msg.author}, Wikipedia does not have any entry for this...`);
                 }
-              } else {
+              })
+              .catch(err => {
                 console.log(`Error parsing Wikipedia API : ${err}`);
                 reject(`Sorry, ${msg.author}, I was unable to complete your request. Please check the logs for details.`);
-              }
-            });
+              });
           });
         }
 
         const wikiResponse = (args, msg) => {
           searchWiki(args, msg)
-            .then((res) => {
+            .then(res => {
               new Reply(res).send();
             })
-            .catch((err) => {
+            .catch(err => {
               new Reply(err).send();
             })
         }
@@ -839,6 +828,7 @@ app.get('/', (req, res) => {
 
             io.on('chat msg', msg => {
               reply = getWeatherForecast(msg.content);
+              return;
             });
           } else if (classifier.classify(msg.content) === 'news') {
             revertGreetings(msg);

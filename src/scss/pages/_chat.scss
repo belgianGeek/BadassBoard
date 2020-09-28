@@ -17,6 +17,7 @@
   width: 100%;
   align-items: center;
   font-size: 1.1em;
+  max-height: 95vh;
 
   &__msgList {
     width: 65%;
@@ -33,6 +34,7 @@
       margin-bottom: 1.5em;
       flex-direction: column;
       overflow: auto;
+      max-height: 95vh;
 
       .embed {
         * {
