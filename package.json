@@ -1,6 +1,6 @@
 {
   "name": "BadassBoard",
-  "version": "0.2.1",
+  "version": "0.4.0",
   "main": "app.js",
   "author": "Maxime Vanderwegen",
   "license": "AGPL-3.0-or-later",
