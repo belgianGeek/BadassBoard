@@ -71,6 +71,9 @@ const showSettings = () => {
             resolve(data);
           });
         }
+      } else if ($('.backgroundImageUploadForm__InputFile').val() === '' && $('.backgroundImageUploadForm__InputUrl').val() === '') {
+        let data;
+        resolve(data);
       } else {
         if ($('.backgroundImageUploadForm__InputFile').val() === '' && $('.backgroundImageUploadForm__InputUrl').val() !== '') {
           if ($('.backgroundImageUploadForm__InputUrl').val().match(/^(http|https):\/\/(www.|)[a-zA-Z0-9-\.\/]{1,}\.\w.+/i)) {
@@ -140,6 +143,9 @@ const showSettings = () => {
             resolve(data);
           });
         }
+      } else if ($('.chatCustomizationForm__inputFile').val() === '' && $('.chatCustomizationForm__inputUrl').val() === '') {
+        let data;
+        resolve(data);
       } else {
         if ($('.chatCustomizationForm__inputFile').val() === '' && $('.chatCustomizationForm__inputUrl').val() !== '') {
           if ($('.chatCustomizationForm__inputUrl').val().match(/^(http|https):\/\/(www.|)[a-zA-Z0-9-\.\/]{1,}\.\w.+/i)) {
@@ -276,47 +282,51 @@ const showSettings = () => {
 
     check4WallpaperUpload()
       .then(data => {
-        $('head style').remove();
+        if (data !== undefined) {
+          $('head style').remove();
 
-        headStyle = `<style>.formContainer__container::before {background-image: url(${data});}</style>`;
-        $('head').append(headStyle);
+          headStyle = `<style>.formContainer__container::before {background-image: url(${data});}</style>`;
+          $('head').append(headStyle);
 
-        $('.backgroundImage').css('backgroundImage', `url(${data})`);
-      })
-      .then(check4AvatarUpload()
-        .catch(err => console.error(err)))
-      .then(() => {
-        // If there aren't any errors, hide the div
-        if (!error) {
-
-          hideSettings();
-
-          // Send the updated settings to the server
-          socket.emit('customization', updatedSettings);
-
-          // Reset the file upload input value
-          $('.backgroundImageUploadForm__InputFile').val('');
-
-          if ($('.uploadWarning').length) {
-            $('.uploadWarning').remove();
-          }
-
-          if (updatedSettings.RSS !== undefined) {
-            // Reload the page if the RSS status is modified to be true
-            if (updatedSettings.RSS === true) {
-              location.reload();
-            } else {
-              $('.contentContainers').hide();
-            }
-          }
+          $('.backgroundImage').css('backgroundImage', `url(${data})`);
         }
+      })
+      .then(() => {
+        check4AvatarUpload()
+          .then(data => {
+            // If there aren't any errors, hide the div
+            if (!error) {
 
-        $('.backgroundImageUploadForm__InputFile, .chatCustomizationForm__inputFile').val('');
+              hideSettings();
 
-        // Reset the updatedSettings object to its default value
-        socket.on('customization data retrieved', () => {
-          updatedSettings = {};
-        });
+              // Send the updated settings to the server
+              socket.emit('customization', updatedSettings);
+
+              // Reset the file upload input value
+              $('.backgroundImageUploadForm__InputFile').val('');
+
+              if ($('.uploadWarning').length) {
+                $('.uploadWarning').remove();
+              }
+
+              if (updatedSettings.RSS !== undefined) {
+                // Reload the page if the RSS status is modified to be true
+                if (updatedSettings.RSS === true) {
+                  location.reload();
+                } else {
+                  $('.contentContainers').hide();
+                }
+              }
+            }
+
+            $('.backgroundImageUploadForm__InputFile, .chatCustomizationForm__inputFile').val('');
+
+            // Reset the updatedSettings object to its default value
+            socket.on('customization data retrieved', () => {
+              updatedSettings = {};
+            });
+          })
+          .catch(err => console.error(err));
       })
       .catch(err => console.error(err));
   });
