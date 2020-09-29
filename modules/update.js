@@ -90,6 +90,11 @@ module.exports = function update(io, tag) {
                                 code: 200,
                                 text: 'Done !'
                               });
+
+                              io.emit('update progress', {
+                                code: 200,
+                                text: 'Please restart BadassBoard'
+                              });
                             });
                           }
                         });
