@@ -6,45 +6,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Chat</title>
   <link rel="icon" type="image/png" href="src/favicon.png">
-  <link rel="stylesheet" href="src/scss/prefixed/chat.css">
+  <link rel="stylesheet" href="src/scss/prefixed/app.css">
 </head>
 
 <body>
-  <div class="backgroundImage"></div>
+  <div class="backgroundImage" style="background-image: url(<%= wallpaper %>)"></div>
   <div class="backgroundColor"></div>
   <div class="wrapper flex">
-    <header class="header flex">
-      <svg class="header__homeIcon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9" />
-        <path d="M9 22V12h6v10M2 10.6L12 2l10 8.6" />
-      </svg>
-      <svg class="header__settingsBtn" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f8f4f4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"></circle>
-        <path
-          d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-        </path>
-      </svg>
-    </header>
+    <%- include('header'); %>
     <main class="mainContainer flex">
       <section class="chatContainer flex">
         <div class="chatContainer__msgList flex">
           <div class="chatContainer__msgList__list flex"></div>
           <form class="chatContainer__msgList__form flex">
-            <input class="chatContainer__msgList__form__inputMsg" type="text" name="" value="" placeholder="Say something...">
-            <button class="chatContainer__msgList__form__sendBtn" type="submit" name="chatContainer__msgList__form__sendBtn">Send</button>
+            <input class="chatContainer__msgList__form__inputMsg input" type="text" name="" value="" placeholder="Say something...">
+            <button class="chatContainer__msgList__form__sendBtn btn" type="submit" name="chatContainer__msgList__form__sendBtn">Send</button>
           </form>
         </div>
         <section class="chatContainer__botInfo flex">
-          <img class="chatContainer__botInfo__icon" src="./src/scss/icons/interface/bot.png" alt="Bot icon">
-          <p><%=botName%></p>
+          <img class="chatContainer__botInfo__icon" src="<%= botIcon %>" alt="Bot icon">
+          <p><%= botName %></p>
         </section>
       </section>
     </main>
+    <%- include('about'); %>
     <%- include('settings'); %>
   </div>
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js" charset="utf-8" type="application/javascript"></script>
-  <script src="/socket.io/socket.io.js" type="application/javascript"></script>
-  <script src="/src/js/chat.min.js" charset="utf-8" type="application/javascript"></script>
+  <%- include('scripts'); %>
 </body>
 
 </html>

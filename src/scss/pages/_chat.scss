@@ -5,37 +5,6 @@
   position: fixed;
 }
 
-.header {
-  z-index: 2;
-  font-size: 1.2em;
-  width: 100%;
-  justify-content: flex-end;
-  margin: 0.5em 0;
-
-  svg {
-    align-self: center;
-    margin-right: 1em;
-    cursor: pointer;
-  }
-
-  &__settingsBtn {
-    &:hover {
-      transform: rotate(-360deg);
-      transition: transform 1500ms;
-    }
-  }
-}
-
-.wrapper {
-  height: 100vh;
-  flex-direction: column;
-  overflow: hidden;
-
-  ::placeholder {
-    @include placeholder();
-  }
-}
-
 .mainContainer {
   width: 100%;
   height: 100%;
@@ -45,8 +14,10 @@
 
 .chatContainer {
   height: 95%;
+  width: 100%;
   align-items: center;
   font-size: 1.1em;
+  max-height: 95vh;
 
   &__msgList {
     width: 65%;
@@ -63,6 +34,7 @@
       margin-bottom: 1.5em;
       flex-direction: column;
       overflow: auto;
+      max-height: 95vh;
 
       .embed {
         * {
@@ -118,7 +90,6 @@
 
     &__form {
       &__inputMsg {
-        @include input-style();
         width: 90%;
       }
 

@@ -32,19 +32,19 @@ $.ajax({
     if (settings.elements[0].elements.length > 0) {
       lastContent.content1 = Number(settings.elements[0].elements[settings.elements[0].elements.length - 1].element.substring(8, 9));
     } else {
-      lastContent.content1 = 0;
+      lastContent.content1 = 1;
     }
 
     if (settings.elements[1].elements.length > 0) {
       lastContent.content2 = Number(settings.elements[1].elements[settings.elements[1].elements.length - 1].element.substring(8, 9));
     } else {
-      lastContent.content2 = 0;
+      lastContent.content2 = 1;
     }
 
     if (settings.elements[2].elements.length > 0) {
       lastContent.content3 = Number(settings.elements[2].elements[settings.elements[2].elements.length - 1].element.substring(8, 9));
     } else {
-      lastContent.content3 = 0;
+      lastContent.content3 = 1;
     }
   }
 
@@ -66,9 +66,6 @@ $.ajax({
     searchEngine.url = 'https://duckduckgo.com/?q=';
 
     $('.searchEngineSelection__select').val(searchEngine.label);
-
-    // Send the search engine to the server
-    socket.emit('customization', searchEngine);
   }
 
   if (settings.bot.name !== 'BadassBot') {
@@ -95,21 +92,19 @@ socket.on('wallpaper', wallpaper => {
       url: wallpaper,
       method: 'GET',
       dataType: '',
-      statusCode: {
-        200: () => {
-          headStyle = `<style>.formContainer__container::before {background-image: url(${wallpaper});}</style>`;
-          $('head').append(headStyle);
+      success: () => {
+        // Remove the old style tag and replace it with an updated one
+        $('head style').remove();
+        headStyle = `<style>.formContainer__container::before {background-image: url(${wallpaper});}</style>`;
+        $('head').append(headStyle);
 
-          $('.backgroundImage').css('backgroundImage', `url(${wallpaper})`);
-        },
-        404: () => {
-          handle404ImageError();
-        }
+        $('.backgroundImage').css('backgroundImage', `url(${wallpaper})`);
       }
     })
     .fail(err => {
       // CORS error handling
-      if (err.statusText === 'error' && err.readyState === 0) {
+      console.log(JSON.stringify(err, null, 2));
+      if (err.status !== 200) {
         handle404ImageError();
       }
     });
@@ -127,9 +122,6 @@ if (!$('.subRow').length) {
     top: '90%'
   });
 }
-
-// Show the "about" page
-showAbout();
 
 // Show the "about" page
 showAbout();
@@ -179,11 +171,6 @@ if (!$('.msgContainer').text().match(/\w.+/)) {
 
 // Get current mouse position
 getMousePosition();
-
-// Redirect to the chat page
-$('.chatLink').click(() => {
-  window.open('/chat');
-});
 
 // Dynamically show the footer
 $('.footer').mouseenter(() => {

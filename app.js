@@ -1,5 +1,5 @@
 const ytdl = require('ytdl-core');
-const fs = require('fs');
+const fs = require('fs-extra');
 const express = require('express');
 const app = express();
 const feedparser = require("feedparser-promised");
@@ -10,34 +10,13 @@ const {
 const os = require('os');
 const path = require('path');
 const process = require('process');
-const request = require('request');
-const multer = require('multer');
+const axios = require('axios');
 
-// Upload configuration
-const storage = multer.diskStorage({
-  destination: './upload',
-  filename: (req, file, callback) => {
-    callback(null, file.originalname);
-  }
-});
-
-const upload = multer({
-  storage: storage,
-  // Limit image size to max 5Mo
-  limits: {
-    fileSize: 5000000
-  }
-}).fields([{
-  name: 'chatBotAvatarUploadInput'
-}, {
-  name: 'backgroundImageUploadInput'
-}]); // the name cannot be modified because it is linked to the input name in the formData object
-
-const server = require('http').Server(app);
+const server = require('http').Server(app).listen(8080);
 const io = require('socket.io')(server);
-const settingsPath = './settings/settings.json';
+const compression = require('compression');
 
-server.listen(8080);
+const settingsPath = './settings/settings.json';
 
 const nlp = require('natural');
 let classifier = new nlp.LogisticRegressionClassifier();
@@ -56,6 +35,7 @@ nlp.LogisticRegressionClassifier.load('classifier.json', null, function(err, loa
 });
 
 const rottenParser = require('./modules/rottenParser');
+const badassUpdate = require('./modules/update');
 
 const botTraining = require('./modules/nlp');
 botTraining.botTraining(classifier, tokenizer);
@@ -64,7 +44,7 @@ const functions = require('./modules/functions');
 
 // Settings object to be written in the settings file if it doesn't exist
 let settings = settingsTemplate = {
-  "backgroundImage": "./src/scss/wallpaper.png",
+  "backgroundImage": "./src/scss/wallpaper.jpg",
   "bot": {
     "name": "BadassBot",
     "icon": "./src/scss/icons/interface/bot.png"
@@ -87,96 +67,61 @@ let settings = settingsTemplate = {
   }
 }
 
+const tag = '0.4.0';
+
+const deleteNotProcessedFile = filename => fs.remove(path.join(__dirname, filename));
+
 const customize = (io, customizationData) => {
-  const handlePicture = (filename, imgType) => {
-    const rename = () => {
-      if (filename.match(' ')) {
-        let newFilename = filename.split(' ').join('_');
-        fs.rename(filename, newFilename, (err) => {
-          if (!err) {
-            if (imgType === 'wallpaper') {
-              settings.backgroundImage = newFilename;
-              io.emit('wallpaper', newFilename);
-            } else {
-              settings.bot.icon = newFilename;
-              io.emit('bot avatar', newFilename);
-            }
+  const handlePicture = type => {
+    if (type === 'avatar') {
+      if (settings.bot.icon !== undefined) {
+        customizationData.bot.icon = customizationData.bot.icon.split(';base64,').pop();
+
+        let filename = `./upload/avatar-${Date.now()}.png`;
+        fs.writeFile(filename, customizationData.bot.icon, {
+          encoding: 'base64'
+        }, err => {
+          if (err) {
+            console.error(`An error occurred while saving the new avatar : ${err}`);
           } else {
-            // Avoid errors saying the path does not exist after renaming
-            if (err.code !== 'ENOENT') {
-              console.log(`Error renaming background-image : ${err}`);
+            if (settings.bot.icon !== './src/scss/icons/interface/bot.png') {
+              deleteNotProcessedFile(settings.bot.icon);
             }
+
+            settings.bot.icon = filename;
+            io.emit('bot avatar', filename);
           }
         });
-      } else {
-        if (imgType === 'avatar') {
-          settings.bot.icon = filename;
-          io.emit('bot avatar', filename);
-        } else if (imgType === 'wallpaper') {
-          settings.backgroundImage = filename;
-          io.emit('wallpaper', filename);
-        }
-      }
-    }
-
-    if (imgType === 'avatar') {
-      if (settings.bot.icon !== undefined) {
-        if (!settings.bot.icon.startsWith('http')) {
-          fs.stat(settings.bot.icon, (err, stats) => {
-            if (!err) {
-              // Remove the old wallpaper and rename the new
-              fs.unlink(settings.bot.icon, (err) => {
-                if (!err || err.code === 'ENOENT') {
-                  rename();
-                } else {
-                  console.log(`Error deleting the previous background image : ${err}`);
-                }
-              });
-            } else {
-              console.log(`Renaming file... ${err}`);
-              rename();
-            }
-          });
-        } else {
-          settings.bot.icon = filename;
-          io.emit('bot avatar', filename);
-        }
       }
     } else {
-      if (settings.backgroundImage !== undefined) {
-        if (!settings.backgroundImage.startsWith('http')) {
-          fs.stat(settings.backgroundImage, (err, stats) => {
-            if (!err) {
-              // Remove the old wallpaper and rename the new
-              fs.unlink(settings.backgroundImage, (err) => {
-                if (!err || err.code === 'ENOENT') {
-                  rename();
-                } else {
-                  console.log(`Error deleting the previous background image : ${err}`);
-                }
-              });
-            } else if (err && err.code === 'ENOENT') {
-              rename();
-            } else {
-              console.log(`Error renaming file : ${err}`);
-            }
-          });
+      customizationData.backgroundImage = customizationData.backgroundImage.split(';base64,').pop();
+
+      let filename = `./upload/wallpaper-${Date.now()}.jpg`;
+      fs.writeFile(filename, customizationData.backgroundImage, {
+        encoding: 'base64'
+      }, err => {
+        if (err) {
+          console.error(`An error occurred while saving the new wallpaper : ${err}`);
         } else {
+          if (settings.backgroundImage !== './src/scss/wallpaper.jpg') {
+            deleteNotProcessedFile(settings.backgroundImage);
+          }
+
           settings.backgroundImage = filename;
           io.emit('wallpaper', filename);
         }
-      }
+      });
     }
-
   }
 
+
   if (customizationData.backgroundImage !== null && customizationData.backgroundImage !== undefined) {
-    handlePicture(customizationData.backgroundImage, 'wallpaper');
+    handlePicture('wallpaper');
   }
 
   if (customizationData.bot !== null && customizationData.bot !== undefined) {
     if (customizationData.bot.icon !== undefined) {
-      handlePicture(customizationData.bot.icon, 'avatar');
+      handlePicture('avatar');
 
       let answers = [
         `Whoa, that's much better !`,
@@ -246,6 +191,19 @@ app.use("/src", express.static(__dirname + "/src"))
   .use("/upload", express.static(__dirname + "/upload"))
   .use("/settings", express.static(__dirname + "/settings"))
   .use("/tmp", express.static(__dirname + "/tmp"))
+  .use((req, res, next) => {
+    // Set some security headers
+    res.setHeader('X-XSS-Protection', '1;mode=block')
+    res.setHeader('X-Frame-Options', 'DENY')
+    res.setHeader('Referrer-Policy', 'no-referrer')
+    res.setHeader('Feature-Policy', "accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; camera 'none'; encrypted-media 'none'; fullscreen 'self'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; payment 'none';  picture-in-picture 'none'; speaker 'none'; sync-xhr 'none'; usb 'none'; vr 'none';")
+    return next();
+  })
+  // Send compressed assets
+  .use(compression());
+
+// Cache views
+app.set('view cache', true);
 
 if (!ip.address().match(/169.254/) || !ip.address().match(/127.0/)) {
   console.log(`Hey ${username} ! You can connect to the web interface with your local IP (http://${ip.address()}:8080) or hostname (http://${os.hostname()}:8080).`);
@@ -262,7 +220,17 @@ const updateSettings = () => {
   // Update the settings variable with the new data
   settings = fs.readFileSync(settingsPath, 'utf-8');
   settings = JSON.parse(settings);
-  JSON.stringify(settings, null, 2);
+
+  // Sort settings elements by element to avoid frontend bugs while adding new content
+  settings.elements.forEach((item, i) => {
+    item.elements.sort((a, b) => {
+      if (a.element < b.element) {
+        return -1;
+      } else if (a.element > b.element) {
+        return 1;
+      }
+    });
+  });
 }
 
 setTimeout(() => {
@@ -282,7 +250,10 @@ setInterval(() => {
 functions.updatePrototypes();
 
 app.get('/', (req, res) => {
-    res.render('home.ejs');
+    res.render('home.ejs', {
+      currentVersion: tag,
+      isHomepage: true
+    });
 
     // Open only one socket connection to avoid memory leaks
     io.once('connection', io => {
@@ -333,7 +304,7 @@ app.get('/', (req, res) => {
       }
 
       // Do not send the default wallpaper
-      if (settings.backgroundImage !== undefined) {
+      if (settings.backgroundImage !== './src/scss/wallpaper.jpg') {
         io.emit('wallpaper', settings.backgroundImage);
       }
 
@@ -349,9 +320,11 @@ app.get('/', (req, res) => {
 
         const processData = (callback) => {
           if (feedData.type === 'rss') {
-            request
-              .get(feedData.url)
-              .on('response', (res) => {
+            axios({
+                url: feedData.url,
+                method: 'GET'
+              })
+              .then(res => {
                 if (res.headers['content-type'].match(/xml/gi) || res.headers['content-type'].match(/rss/gi)) {
                   newElt.element = feedData.element;
                   newElt.parent = feedData.parent;
@@ -366,8 +339,6 @@ app.get('/', (req, res) => {
                         parent: feedData.parent,
                         type: feedData.type
                       }]);
-
-                      callback();
                     })
                     .catch((err) => {
                       if (err == 'Error: Not a feed') {
@@ -390,7 +361,7 @@ app.get('/', (req, res) => {
                   });
                 }
               })
-              .on('error', (err) => {
+              .catch(err => {
                 console.log(`Error parsing feed ${feedData.url} : ${err}`);
 
                 io.emit('errorMsg', {
@@ -412,8 +383,6 @@ app.get('/', (req, res) => {
               parent: feedData.parent,
               location: feedData.location
             }]);
-
-            callback();
           } else if (feedData.type === 'youtube search') {
             newElt.element = feedData.element;
             newElt.parent = feedData.parent;
@@ -424,9 +393,9 @@ app.get('/', (req, res) => {
               element: feedData.element,
               parent: feedData.parent,
             }]);
-
-            callback();
           }
+
+          callback();
         }
 
         processData(() => {
@@ -448,19 +417,21 @@ app.get('/', (req, res) => {
                 }
               } else if (value.elements[0] === undefined && iParent === j) {
                 // Append the new element to the "elements" settings array
+                // if this is the first element added to named content container
                 value.elements.push(newElt);
                 iAddElt++;
               }
             }
           }
-
-          // Reset the addings counter
-          iAddElt = 0;
         });
+
+        // Reset the addings counter
+        iAddElt = 0;
       });
 
-      io.on('customization', (customizationData) => {
+      io.on('customization', customizationData => {
         customize(io, customizationData);
+        io.emit('customization data retrieved');
       });
 
       io.on('download', (id) => {
@@ -469,8 +440,8 @@ app.get('/', (req, res) => {
           '--audio-format',
           'mp3',
           '-o',
-          `./tmp/%(title)s.%(ext)s`,
-          id,
+          './tmp/%(title)s.%(ext)s',
+          'https://wwww.youtube.com/watch?v=' + id,
           '--youtube-skip-dash-manifest',
           '--embed-thumbnail',
           '--add-metadata'
@@ -623,19 +594,13 @@ app.get('/', (req, res) => {
       });
 
       io.on('parse playlist', (playlistUrl) => {
-        request(playlistUrl, (err, response, body) => {
-          if (err) {
-            if (err === 'socket hang up') {
-              console.log('The websocket died... :(');
-            } else {
-              io.emit('errorMsg', {
-                type: 'generic',
-                msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
-              });
-            }
-          } else {
+        axios({
+            url: playlistUrl,
+            method: 'GET'
+          })
+          .then(res => {
             try {
-              var result = JSON.parse(body);
+              let result = JSON.parse(res.data);
 
               if (result.error === undefined) {
                 fs.writeFile('./tmp/playlist.json', JSON.stringify(result, null, 2), 'utf-8', (err) => {
@@ -657,16 +622,25 @@ app.get('/', (req, res) => {
                 type: 'generic'
               });
             }
-          }
-        });
+          })
+          .catch(err => {
+            if (err === 'socket hang up') {
+              console.log('The websocket died... :(');
+            } else {
+              io.emit('errorMsg', {
+                type: 'generic',
+                msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
+              });
+            }
+          });
       });
 
-      io.on('remove content', (content2remove) => {
+      io.on('remove content', content2remove => {
+        let found = false;
         for (const [i, settingsElts] of settings.elements.entries()) {
           // Set a variable to stop the loop as soon as the element is removed
-          let found = false;
           for (const [j, settingsElt] of settingsElts.elements.entries()) {
-            if (found !== true) {
+            if (!found) {
               if (content2remove.parent === settingsElt.parent && content2remove.element === settingsElt.element) {
                 settingsElts.elements.splice(j, 1);
                 found = true;
@@ -674,6 +648,10 @@ app.get('/', (req, res) => {
             }
           }
         }
+      });
+
+      io.on('update check', () => {
+        badassUpdate(io, tag);
       });
     });
   })
@@ -692,24 +670,31 @@ app.get('/', (req, res) => {
     }
 
     res.render('chat.ejs', {
-      botName: settings.bot.name
+      botName: settings.bot.name,
+      botIcon: settings.bot.icon,
+      currentVersion: tag,
+      isHomepage: false,
+      wallpaper: settings.backgroundImage
     });
 
     io.once('connection', io => {
       let reply = '';
 
+      // Do not send the default wallpaper
+      if (settings.backgroundImage !== './src/scss/wallpaper.jpg') {
+        io.emit('wallpaper', settings.backgroundImage);
+      }
+
+      if (settings.bot !== undefined) {
+        if (settings.bot.icon !== undefined && settings.bot.icon !== './src/scss/icons/interface/bot.png') {
+          io.emit('bot avatar', settings.bot.icon);
+        }
+      }
+
       // Send the username to the frontend
       io.emit('username', username.capitalize());
 
       let welcomeMsg = new Reply(`Hi ! I'm ${settings.bot.name}, how can I help you ?`).send();
-
-      if (settings.backgroundImage !== undefined) {
-        io.emit('wallpaper', settings.backgroundImage);
-      }
-
-      if (settings.bot.icon !== './src/scss/icons/interface/bot.png') {
-        io.emit('bot avatar', settings.bot.icon);
-      }
 
       io.on('chat msg', msg => {
         const tokenize = (msg) => {
@@ -721,9 +706,12 @@ app.get('/', (req, res) => {
           let location = msg.normalize('NFD');
           let url = `https://api.openweathermap.org/data/2.5/find?q=${location}&units=metric&lang=en&appid=9b013a34970de2ddd85f46ea9185dbc5`;
 
-          request(url, function(err, res, body) {
-            if (!err) {
-              let result = JSON.parse(body);
+          axios({
+              url: url,
+              method: 'GET'
+            })
+            .then(res => {
+              let result = JSON.parse(res.data);
               let count = result.count;
 
               if (count !== 0) {
@@ -743,11 +731,10 @@ app.get('/', (req, res) => {
                 msgTheme = 'weather';
                 return new Reply("Sorry, I can't find this place... Make sure of the location you have given me and retry...").send();
               }
-            } else {
+            })
+            .catch(err => {
               console.log(`Error getting weather forecast : ${err}`);
-            }
-
-          });
+            });
         }
 
         const revertGreetings = (msg) => {
@@ -779,28 +766,31 @@ app.get('/', (req, res) => {
 
         const searchWiki = (args, msg) => {
           return new Promise((fullfill, reject) => {
-            request(`https://en.wikipedia.org/api/rest_v1/page/summary/${args.join('_')}?redirect=true`, (err, res, body) => {
-              if (!err) {
-                let res = JSON.parse(body);
+            axios({
+                url: `https://en.wikipedia.org/api/rest_v1/page/summary/${args.join('_')}?redirect=true`,
+                method: 'GET'
+              })
+              .then(res => {
+                const body = res.data;
 
                 // Check if the API entry exists
-                if (!res.title.match(/not found/gi)) {
+                if (!body.title.match(/not found/gi)) {
                   let reply = {
                     icon: './src/scss/icons/suggestions/wikipedia.ico',
-                    title: res.title,
-                    url: res.content_urls.desktop.page,
+                    title: body.title,
+                    url: body.content_urls.desktop.page,
                     color: 'white',
-                    description: `<p>According to Wikipedia,</p> <article><i>${res.extract}</i></article>`
+                    description: `<p>According to Wikipedia,</p> <article><i>${body.extract}</i></article>`
                   };
 
-                  if (res.type === 'disambiguation') {
-                    reply.description += `<p>A disambiguation page is available here : <a href="${reply.url}">${res.title}</a></p>`;
+                  if (body.type === 'disambiguation') {
+                    reply.description += `<p>A disambiguation page is available here : <a href="${reply.url}">${body.title}</a></p>`;
                   } else {
-                    reply.description += `<p>More info : <a href="${reply.url}">${res.title}</a></p>`;
+                    reply.description += `<p>More info : <a href="${reply.url}">${body.title}</a></p>`;
                   }
 
-                  if (res.thumbnail !== undefined) {
-                    reply.img = res.thumbnail.source;
+                  if (body.thumbnail !== undefined) {
+                    reply.img = body.thumbnail.source;
                   }
 
                   // Modify the message theme to create the embed
@@ -811,20 +801,20 @@ app.get('/', (req, res) => {
                 } else {
                   reject(`Sorry ${msg.author}, Wikipedia does not have any entry for this...`);
                 }
-              } else {
+              })
+              .catch(err => {
                 console.log(`Error parsing Wikipedia API : ${err}`);
                 reject(`Sorry, ${msg.author}, I was unable to complete your request. Please check the logs for details.`);
-              }
-            });
+              });
           });
         }
 
         const wikiResponse = (args, msg) => {
           searchWiki(args, msg)
-            .then((res) => {
+            .then(res => {
               new Reply(res).send();
             })
-            .catch((err) => {
+            .catch(err => {
               new Reply(err).send();
             })
         }
@@ -838,6 +828,7 @@ app.get('/', (req, res) => {
 
             io.on('chat msg', msg => {
               reply = getWeatherForecast(msg.content);
+              return;
             });
           } else if (classifier.classify(msg.content) === 'news') {
             revertGreetings(msg);
@@ -985,7 +976,7 @@ app.get('/', (req, res) => {
         }
       });
 
-      io.on('customization', (customizationData) => {
+      io.on('customization', customizationData => {
         customize(io, customizationData);
       });
     })
@@ -1011,46 +1002,14 @@ app.get('/', (req, res) => {
     }
   })
 
-  .post('/upload', (req, res) => {
-    upload(req, res, (err) => {
-      if (req.files !== undefined) {
-        if (req.files.chatBotAvatarUploadInput !== undefined) {
-          let avatar = `${req.files.chatBotAvatarUploadInput[0].destination}/${req.files.chatBotAvatarUploadInput[0].filename}`;
-          if (err) {
-            console.log(`Error uploading file :(( :\n${err}`);
-          } else {
-            console.log(`${req.files.chatBotAvatarUploadInput[0].originalname} successfully uploaded !`);
-            io.emit('bot avatar', avatar);
-          }
-        } else if (req.files.backgroundImageUploadInput !== undefined) {
-          let wallpaper = `${req.files.backgroundImageUploadInput[0].destination}/${req.files.backgroundImageUploadInput[0].filename}`;
-          if (err) {
-            console.log(`Error uploading file :(( :\n${err}`);
-          } else {
-            console.log(`${req.files.backgroundImageUploadInput[0].originalname} successfully uploaded !`);
-          }
-        }
-      } else {
-        console.log(`Error uploading file :(( :\n${err}`);
-      }
-
-      if (err) {
-        console.log(`Error uploading file : ${JSON.stringify(err, null, 2)}`);
-      }
-    });
-  })
-
   // 404 errors handling
   .use((req, res, next) => {
-    res.status(404).render('404.ejs');
-    io.once('connection', (io) => {
-      if (settings.backgroundImage !== undefined) {
-        io.emit('wallpaper', settings.backgroundImage);
-      }
+    res.status(404).render('404.ejs', {
+      wallpaper: settings.backgroundImage
     });
   });
 
-process.on('SIGINT', () => {
+process.on('SIGINT, SIGKILL, SIGTERM', () => {
   let exitMsg = [
     `Shutdown signal received, over.`,
     `Bye !`,

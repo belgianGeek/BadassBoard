@@ -12,7 +12,7 @@ const autocomplete = (search) => {
 
   if (matches !== [] && search.length >= 2 && search.startsWith('!')) {
     // Check if matches are not null
-    if (matches !== [] && matches.length > 0) {
+    if (matches.length > 0) {
       const html = matches.map(match => `
             <div class="suggestion flex">
               <img class="suggestion__icon" src="${match.icon}" alt="${match.desc} icon" height="20px" />

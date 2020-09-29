@@ -1,30 +1,30 @@
 {
   "name": "BadassBoard",
-  "version": "0.2.1",
+  "version": "0.4.0",
   "main": "app.js",
   "author": "Maxime Vanderwegen",
   "license": "AGPL-3.0-or-later",
   "browserslist": "last 4 versions",
   "scripts": {
     "start": "node app.js",
-    "sass": "sass ./src/scss/home/app.scss:./src/scss/home/app.css --style compressed && sass ./src/scss/chat/chat.scss:./src/scss/chat/chat.css --style compressed",
-    "minify": "node minify_home.js && node minify_chat.js",
-    "prefix": "postcss ./src/scss/404.css --use autoprefixer -d ./src/scss/prefixed && postcss ./src/scss/home/app.css --use autoprefixer -d ./src/scss/prefixed && postcss ./src/scss/chat/chat.css --use autoprefixer -d ./src/scss/prefixed"
+    "sass": "sass ./src/scss/index.scss:./src/scss/app.css --style compressed",
+    "minify": "node minify.js",
+    "prefix": "postcss ./src/scss/404.css --use autoprefixer -d ./src/scss/prefixed && postcss ./src/scss/app.css --use autoprefixer -d ./src/scss/prefixed"
   },
   "dependencies": {
-    "adm-zip": "^0.4.14",
+    "adm-zip": "^0.4.16",
     "axios": "^0.19.2",
     "cheerio": "^1.0.0-rc.3",
+    "compression": "^1.7.4",
     "ejs": "^3.0.2",
     "express": "^4.17.1",
     "feedparser-promised": "^2.0.1",
     "http": "^0.0.1-security",
     "ip": "^1.1.5",
-    "multer": "^1.4.1",
+    "lodash": "^4.17.19",
     "natural": "^0.6.3",
     "opusscript": "^0.0.7",
     "puppeteer": "^2.1.1",
-    "request": "^2.88.2",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
     "ytdl-core": "^2.0.1"

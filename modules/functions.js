@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 
 module.exports = {
   existPath: (path, data, callback) => {
@@ -41,7 +41,7 @@ module.exports = {
       fs.readdir('./tmp', (err, files) => {
         if (!err) {
           for (const file of files) {
-            fs.unlink(`./tmp/${file}`, (err) => {
+            fs.remove(`./tmp/${file}`, (err) => {
               if (err) {
                 console.log(`Error deleting "${file}" from the temp folder :\n${err}`);
               }
@@ -61,25 +61,30 @@ module.exports = {
 
     // To make the first letter of a string uppercase
     String.prototype.capitalize = function() {
-        return this.charAt(0).toUpperCase() + this.slice(1);
+      return this.charAt(0).toUpperCase() + this.slice(1);
     }
   },
   updateSettingsFile: (settingsPath, updatedSettings, callback) => {
-    for (const [i, elt] of updatedSettings.elements.entries()) {
-      for (const [j, value] of elt.elements.entries()) {
-        delete value.feed;
+    for (const [bigI, value] of updatedSettings.elements.entries()) {
+      var subElts = value.elements;
 
-        if (i === updatedSettings.elements.length - 1 && j === elt.elements.length - 1) {
-          fs.writeFile(settingsPath, JSON.stringify(updatedSettings, null, 2), 'utf-8', (err, data) => {
-            if (err) {
-              console.log(`Error saving settings : ${err}`);
-            } else {
-              console.log('Settings successfully saved !');
-              if (callback !== undefined) {
-                callback();
+      for (const [i, subEltsValue] of subElts.entries()) {
+        if (subEltsValue.type === 'rss') {
+          delete subEltsValue.feed;
+          updatedSettings.elements[bigI].elements = subElts;
+
+          if (bigI === updatedSettings.elements.length - 1 && i === subElts.length - 1) {
+            fs.writeFile(settingsPath, JSON.stringify(updatedSettings, null, 2), 'utf-8', (err, data) => {
+              if (err) {
+                console.log(`Error saving settings : ${err}`);
+              } else {
+                console.log('Settings successfully saved !');
+                if (callback !== undefined) {
+                  callback();
+                }
               }
-            }
-          });
+            });
+          }
         }
       }
     }

@@ -1,4 +1,4 @@
-const request = require('request');
+const axios = require('axios');
 let $ = require('cheerio');
 const puppeteer = require('puppeteer');
 
@@ -7,12 +7,15 @@ module.exports = {
     let args = title.split(' ');
     const url = `https://rottentomatoes.com/m/${args.join('_')}`;
     return new Promise((fullfill, reject) => {
-      request(url, (err, response, body) => {
-        if (err) throw err;
+      axios({
+        url: url,
+        method: 'GET'
+      })
+      .then(res => {
         let rottenTitle, rottenRating, rottenSynopsis, rottenConsensus, rottenPoster;
 
-        if (!err && response.statusCode === 200) {
-          $ = $.load(body);
+        if (res.status === 200) {
+          $ = $.load(res.data);
 
           // Title
           if ($('.mop-ratings-wrap__title--top').length) {
@@ -43,8 +46,8 @@ module.exports = {
           }
 
           // Poster
-          if ($('#poster_link img').length) {
-            rottenPoster = $('#poster_link img').attr('data-src');
+          if ($('.posterImage').length) {
+            rottenPoster = $('.posterImage').attr('data-src');
           }
 
           let result = {
@@ -57,9 +60,13 @@ module.exports = {
           };
 
           fullfill(result);
-        } else if (!err && response.statusCode === 404) {
+        } else if (res.status === 404) {
           reject(new Error(`Page not found !`));
         }
+      })
+      .catch(err => {
+        console.error(`Couldn't get this movie review : ${err}`);
+        reject(new Error(`An error occurred : ${err}`));
       });
     });
   },

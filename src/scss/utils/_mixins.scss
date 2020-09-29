@@ -37,6 +37,9 @@
   border-top: none;
   border-bottom: 1px solid $underline-input;
   max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 @mixin placeholder($color: lightgray) {
   color: $color;

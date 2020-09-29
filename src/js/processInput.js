@@ -44,11 +44,12 @@ const processInput = (msg) => {
 
     if (msg.startsWith('!p ')) {
       // Play audio function
-      if (msg.match(/[0-9A-Za-z_-]{11}/) && !msg.match(/[0-9A-Za-z_-]{15,34}/)) {
+      if (msg.match(/[0-9A-Za-z_-]{11}/) && !msg.match(/[0-9A-Za-z_-]{13,34}/)) {
+        // Match a single video
         let id = msg.match(/[0-9A-Za-z_-]{11}/)[0];
 
         $.ajax({
-          url: `https://invidio.us/api/v1/videos/${id}`,
+          url: `https://invidious.fdn.fr/api/v1/videos/${id}`,
           method: 'GET',
           dataType: 'json',
           statusCode: {
@@ -155,13 +156,32 @@ const processInput = (msg) => {
             }
           }
         });
-      } else if (msg.match(/[a-zA-Z0-9-_]{15,34}/)[0] !== null) {
+      } else if (msg.match(/[a-zA-Z0-9-_]{15,34}/)) {
         // Check if the keyword match a playlist pattern
 
         // Reset the playlist counter
         iPlaylist = 0;
         let id = msg.match(/[a-zA-Z0-9-_]{15,34}/)[0];
-        let apiUrl = `https://invidio.us/api/v1/playlists/${id}`;
+        let apiUrl = `https://invidious.fdn.fr/api/v1/playlists/${id}`;
+
+        socket.emit('parse playlist', apiUrl);
+
+        socket.on('playlist parsed', () => {
+          $.ajax({
+            url: './tmp/playlist.json',
+            dataType: 'json',
+            method: 'GET'
+          }).done((data) => {
+            listen2Playlist(data);
+          });
+        });
+      } else if (msg.match(/[0-9A-Za-z_-]{13}/) && !msg.match(/[0-9A-Za-z_-]{14,34}/)) {
+        // Match a mix pattern
+
+        // Reset the playlist counter
+        iPlaylist = 0;
+        let mixID = msg.match(/[0-9A-Za-z_-]{13}/);
+        let apiUrl = `https://invidious.fdn.fr/api/v1/mixes/${mixID}`;
 
         socket.emit('parse playlist', apiUrl);
 

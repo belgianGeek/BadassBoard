@@ -1,12 +1,24 @@
+# Folders
 node_modules
+stable
+upload
+settings
+tmp
+
+# Files
+app.js.bak
 nlp.js
 youtube-dl.exe
 streamInfo.json
 wiki.json
 backupSettings.json
-upload
-settings
-tmp
+classifier.json
+bot.png
+stream.json
+settings.json
+invidious.js
+zip*
+yarn-*
 classifier.json
 .yarnrc
 bot.png

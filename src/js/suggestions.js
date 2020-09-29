@@ -72,15 +72,21 @@ const suggestions = [
   },
   {
     label: '!iv',
-    desc: 'Invidio.us',
+    desc: 'invidious.fdn.fr',
     icon: './src/scss/icons/suggestions/invidious.png',
-    url: 'https://invidio.us/search?q='
+    url: 'https://invidious.fdn.fr/search?q='
   },
   {
     label: '!jq',
     desc: 'Jquery API',
     icon: './src/scss/icons/suggestions/jquery.ico',
     url: 'https://api.jquery.com/?ns0=1&s='
+  },
+  {
+    label: '!k',
+    desc: 'korben.info',
+    icon: './src/scss/icons/suggestions/korben.png',
+    url: 'https://korben.info/search/'
   },
   {
     label: '!ldlc',

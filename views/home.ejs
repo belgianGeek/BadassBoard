@@ -10,50 +10,11 @@
 </head>
 
 <body>
-  <div class="backgroundImage"></div>
+  <div id="backgroundImage" class="backgroundImage"></div>
   <div class="wrapper flex">
-    <header class="header flex">
-      <span class="header__menu">
-        <input class="header__menu__switch" type="checkbox">
-        <span class="header__menu__icon flex">
-          <div class="header__menu__icon__bar flex"></div>
-        </span>
-        <nav class="menu flex">
-          <span class="menu__item unitsLink flex">
-            <svg class="menu__item__icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 2.1l4 4-4 4" />
-              <path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8M7 21.9l-4-4 4-4" />
-              <path d="M21 11.8v2a4 4 0 0 1-4 4H4.2" /></svg>
-            <p class="menu__item__legend">Units converter</p>
-          </span>
-          <span class="menu__item chatLink flex">
-            <svg class="menu__item__icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-            </svg>
-            <p class="menu__item__legend">Talk with the Bot !</p>
-          </span>
-          <span class="menu__item settingsLink flex">
-            <svg class="menu__item__icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f8f4f4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path
-                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-              </path>
-            </svg>
-            <p class="menu__item__legend">Settings</p>
-          </span>
-          <span class="menu__item aboutLink flex">
-            <svg class="menu__item__icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="16" x2="12" y2="12"></line>
-              <line x1="12" y1="8" x2="12.01" y2="8"></line>
-            </svg>
-            <p class="menu__item__legend">About</p>
-          </span>
-        </nav>
-      </span>
-    </header>
+    <%- include('header'); %>
     <main class="mainContainer flex">
-      <div class="formContainer__container">
+      <div id="formContainer__container" class="formContainer__container">
         <div class="formContainer flex">
           <form class="form" method="get">
             <input class="questionBox" type="text" name="question" placeholder="What are you searching for ?">
@@ -78,7 +39,7 @@
             <option value="Gigabyte">Gigabyte</option>
             <option value="Terabyte">Terabyte</option>
           </select>
-          <input class="converter__body__input" placeholder="Enter a value here">
+          <input class="converter__body__input input" placeholder="Enter a value here">
           <select class="converter__body__value2 flex">
             <option value="Choose a value">Choose a value</option>
             <option value="Byte">Byte</option>
@@ -87,7 +48,7 @@
             <option value="Gigabyte">Gigabyte</option>
             <option value="Terabyte">Terabyte</option>
           </select>
-          <input class="converter__body__result">
+          <input class="converter__body__result input">
         </section>
       </span>
       <div class="msgContainer">
@@ -120,11 +81,27 @@
     </main>
     <%- include('settings'); %>
     <div class="rssTooltip flex"></div>
-    <div class="about__container hidden">
-      <div class="about__container__child flex">
-        <h2 class="about__container__child__title">About BadassBoard</h2>
-
-      </div>
+    <%- include('about'); %>
+    <div class="yt2rss hidden">
+      <section class="yt2rss__container flex">
+        <h2 class="yt2rss__container__title">Get a Youtube channel RSS feed</h2>
+        <div class="yt2rss__container__child flex">
+          <form id="yt2rss__container__child__left" class="yt2rss__container__child__left flex">
+            <input class="yt2rss__container__child__left__input input" type="text" placeholder="Channel ID">
+            <input class="yt2rss__container__child__left__output input" type="text" placeholder="Result">
+          </form>
+          <span class="yt2rss__container__child__right flex">
+            <button class="yt2rss__container__child__right__btn yt2rss__container__child__right__svgBtn flex" type="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              Copy the RSS feed URL
+            </button>
+            <button form="yt2rss__container__child__left" class="yt2rss__container__child__right__btn btn btn--red" type="reset">Reset all fields</button>
+          </span>
+        </div>
+      </section>
     </div>
     <div class="confirmation click">
       <section class="confirmation__child flex">
@@ -133,8 +110,8 @@
           <p class="confirmation__child__content__msg">Do you really want to remove this content ?</p>
         </span>
         <span class="confirmation__child__btnContainer flex">
-          <button class="confirmation__child__btnContainer__cancelBtn" type="button" name="confirmation__child__btnContainer__cancelBtn">Nooooooo !</button>
-          <button class="confirmation__child__btnContainer__saveBtn" type="button" name="confirmation__child__btnContainer__saveBtn">Yep yep</button>
+          <button class="confirmation__child__btnContainer__cancelBtn btn btn--red" type="button" name="confirmation__child__btnContainer__cancelBtn">Nooooooo !</button>
+          <button class="confirmation__child__btnContainer__saveBtn btn btn--green" type="button" name="confirmation__child__btnContainer__saveBtn">Yep yep</button>
         </span>
       </section>
     </div>
@@ -143,9 +120,7 @@
     </div>
     <%- include('footer'); %>
   </div>
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js" charset="utf-8" type="application/javascript"></script>
-  <script src="/socket.io/socket.io.js" type="application/javascript"></script>
-  <script src="/src/js/app.min.js" charset="utf-8" type="application/javascript"></script>
+  <%- include('scripts'); %>
 </body>
 
 </html>

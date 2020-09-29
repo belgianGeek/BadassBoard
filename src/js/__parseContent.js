@@ -54,13 +54,14 @@ const parseContent = () => {
 
             let svg = $(`${parent} .newContent .blank`);
 
-            $(svg).click(() => {
+            $(svg).click(function() {
+              $(this)
+                .addClass('hidden')
+                .removeClass('flex')
 
               $(`${parent} .newContent .addContent`)
                 .css('display', '')
                 .addClass('flex');
-
-              $(svg).hide();
 
               $(`${parent} .newContent .addContent`).ready(() => {
                 handleOptionSelection(parent, '.newContent');
@@ -69,7 +70,7 @@ const parseContent = () => {
 
             // Fix the content divs order
             $('.newContent').ready(() => {
-              $('.newContent .blank').removeClass('invisible');
+              $('.newContent .blank').removeClass('hidden');
               $('.content').each(function(index) {
 
                 // Exclude the ".newContent" div
@@ -189,7 +190,7 @@ const parseContent = () => {
               .append(headerText);
 
             let youtubeSearchInput = $('<input>')
-              .addClass('youtubeSearchContainer__content__input')
+              .addClass('youtubeSearchContainer__content__input input')
               .attr('placeholder', 'Type here to search Youtube...');
 
             let youtubeSearchResults = $('<div></div>')
@@ -227,10 +228,10 @@ const parseContent = () => {
           $('.youtubeSearchContainer *').keypress((event) => {
             if (event.keyCode === 13) {
               // Hide the results container
-              $('.youtubeSearchContainer__content__results').addClass('invisible');
+              $('.youtubeSearchContainer__content__results').addClass('hidden');
 
               $.ajax({
-                url: `https://invidio.us/api/v1/search?q=${$('.youtubeSearchContainer__content__input').val()}&language=json&type=all`,
+                url: `https://invidious.fdn.fr/api/v1/search?q=${$('.youtubeSearchContainer__content__input').val()}&language=json&type=all`,
                 method: 'GET',
                 dataType: 'json',
                 statusCode: {
@@ -294,7 +295,7 @@ const parseContent = () => {
 
                       if (res[i].type === 'video') {
                         title = $(`<a></a>`)
-                          .attr('href', `https://invidio.us/watch?v=${res[i].videoId}`)
+                          .attr('href', `https://invidious.fdn.fr/watch?v=${res[i].videoId}`)
                           .text(res[i].title);
 
                         id = $('<p></p>').text(res[i].videoId).prepend('<u>Video ID</u> : ');
@@ -302,13 +303,14 @@ const parseContent = () => {
                         duration = $('<p></p>').text(getDuration()).prepend('<u>Duration</u> : ');
                       } else if (res[i].type === 'channel') {
                         title = $(`<a></a>`)
-                          .attr('href', `https://invidio.us${res[i].authorUrl}`)
+                          .attr('href', `https://invidious.fdn.fr${res[i].authorUrl}`)
                           .text(res[i].author);
 
                         duration = $('<p></p>').text(res[i].videoCount).prepend('<u>Number of videos</u> : ');
+                        id = $('<p></p>').text(res[i].authorId).prepend('<u>Channel ID</u> : ');
                       } else if (res[i].type === 'playlist') {
                         title = $(`<a></a>`)
-                          .attr('href', `https://invidio.us/playlist?list=${res[i].playlistId}`)
+                          .attr('href', `https://invidious.fdn.fr/playlist?list=${res[i].playlistId}`)
                           .text(res[i].title);
 
                         id = $('<p></p>').text(`${res[i].playlistId}`).prepend('<u>Playlist ID</u> : ');
@@ -336,7 +338,7 @@ const parseContent = () => {
                       if (i === 1) {
                         // Show the results container
                         $('.youtubeSearchContainer__content__results')
-                          .removeClass('invisible')
+                          .removeClass('hidden')
                           .css('visibility', 'visible');
                       }
                     }
@@ -355,7 +357,9 @@ const parseContent = () => {
           $(fullElementClassName).addClass('subRow');
         }
 
-        $(`${fullElementClassName} .blank`).addClass('invisible');
+        $(`${fullElementClassName} .blank`)
+          .removeClass('flex')
+          .addClass('hidden');
       });
     }
   });
