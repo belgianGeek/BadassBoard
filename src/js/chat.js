@@ -27,18 +27,13 @@ socket.on('bot avatar', avatar => {
   $.ajax({
       url: avatar,
       method: 'GET',
-      statusCode: {
-        200: () => {
-          $('.chatContainer__botInfo__icon').attr('src', avatar);
-        },
-        404: () => {
-          handle404ImageError();
-        }
+      success: () => {
+        $('.chatContainer__botInfo__icon').attr('src', avatar);
       }
     })
     .fail(err => {
       // CORS error handling
-      if (err.statusText === 'error' && err.readyState === 0) {
+      if (err.status !== 200) {
         handle404ImageError();
       }
     });
