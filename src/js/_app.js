@@ -103,7 +103,6 @@ socket.on('wallpaper', wallpaper => {
     })
     .fail(err => {
       // CORS error handling
-      console.log(JSON.stringify(err, null, 2));
       if (err.status !== 200) {
         handle404ImageError();
       }

@@ -600,7 +600,7 @@ app.get('/', (req, res) => {
           })
           .then(res => {
             try {
-              let result = JSON.parse(res.data);
+              let result = res.data;
 
               if (result.error === undefined) {
                 fs.writeFile('./tmp/playlist.json', JSON.stringify(result, null, 2), 'utf-8', (err) => {
@@ -685,12 +685,6 @@ app.get('/', (req, res) => {
         io.emit('wallpaper', settings.backgroundImage);
       }
 
-      if (settings.bot !== undefined) {
-        if (settings.bot.icon !== undefined && settings.bot.icon !== './src/scss/icons/interface/bot.png') {
-          io.emit('bot avatar', settings.bot.icon);
-        }
-      }
-
       // Send the username to the frontend
       io.emit('username', username.capitalize());
 
@@ -704,14 +698,14 @@ app.get('/', (req, res) => {
         const getWeatherForecast = (msg) => {
           // Strip accents and diacritics
           let location = msg.normalize('NFD');
-          let url = `https://api.openweathermap.org/data/2.5/find?q=${location}&units=metric&lang=en&appid=9b013a34970de2ddd85f46ea9185dbc5`;
+          let url = `https://api.openweathermap.org/data/2.5/find?q=${location}&units=metric&lang=en&appid=${settings.owmToken}`;
 
           axios({
               url: url,
               method: 'GET'
             })
             .then(res => {
-              let result = JSON.parse(res.data);
+              let result = res.data;
               let count = result.count;
 
               if (count !== 0) {
