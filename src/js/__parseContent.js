@@ -295,7 +295,7 @@ const parseContent = () => {
 
                       if (res[i].type === 'video') {
                         title = $(`<a></a>`)
-                          .attr('href', `https://invidious.fdn.fr/watch?v=${res[i].videoId}`)
+                          .attr('href', `https://invidious.fdn.fr/watch?v=${res[i].videoId}&local=true`)
                           .text(res[i].title);
 
                         id = $('<p></p>').text(res[i].videoId).prepend('<u>Video ID</u> : ');
@@ -310,7 +310,7 @@ const parseContent = () => {
                         id = $('<p></p>').text(res[i].authorId).prepend('<u>Channel ID</u> : ');
                       } else if (res[i].type === 'playlist') {
                         title = $(`<a></a>`)
-                          .attr('href', `https://invidious.fdn.fr/playlist?list=${res[i].playlistId}`)
+                          .attr('href', `https://invidious.fdn.fr/playlist?list=${res[i].playlistId}&local=true`)
                           .text(res[i].title);
 
                         id = $('<p></p>').text(`${res[i].playlistId}`).prepend('<u>Playlist ID</u> : ');
