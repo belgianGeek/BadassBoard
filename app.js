@@ -67,7 +67,7 @@ let settings = settingsTemplate = {
   }
 }
 
-const tag = '0.4.0';
+const tag = '0.4.1';
 
 const deleteNotProcessedFile = filename => fs.remove(path.join(__dirname, filename));
 
