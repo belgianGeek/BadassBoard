@@ -9,7 +9,6 @@ Array.prototype.random = function() {
 
 socket.on('username', username => {
   msgAuthor = username;
-  console.log(msgAuthor);
 });
 
 socket.on('bot avatar', avatar => {
