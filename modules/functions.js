@@ -71,20 +71,21 @@ module.exports = {
       for (const [i, subEltsValue] of subElts.entries()) {
         if (subEltsValue.type === 'rss') {
           delete subEltsValue.feed;
-          updatedSettings.elements[bigI].elements = subElts;
+        }
+        
+        updatedSettings.elements[bigI].elements = subElts;
 
-          if (bigI === updatedSettings.elements.length - 1 && i === subElts.length - 1) {
-            fs.writeFile(settingsPath, JSON.stringify(updatedSettings, null, 2), 'utf-8', (err, data) => {
-              if (err) {
-                console.log(`Error saving settings : ${err}`);
-              } else {
-                console.log('Settings successfully saved !');
-                if (callback !== undefined) {
-                  callback();
-                }
+        if (bigI === updatedSettings.elements.length - 1 && i === subElts.length - 1) {
+          fs.writeFile(settingsPath, JSON.stringify(updatedSettings, null, 2), 'utf-8', (err, data) => {
+            if (err) {
+              console.log(`Error saving settings : ${err}`);
+            } else {
+              console.log('Settings successfully saved !');
+              if (callback !== undefined) {
+                callback();
               }
-            });
-          }
+            }
+          });
         }
       }
     }
