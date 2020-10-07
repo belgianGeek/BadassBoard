@@ -593,46 +593,60 @@ app.get('/', (req, res) => {
         }
       });
 
-      io.on('parse playlist', (playlistUrl) => {
-        axios({
-            url: playlistUrl,
-            method: 'GET'
-          })
-          .then(res => {
-            try {
-              let result = res.data;
+      io.on('parse playlist', playlistData => {
+        let success = false;
 
-              if (result.error === undefined) {
-                fs.writeFile('./tmp/playlist.json', JSON.stringify(result, null, 2), 'utf-8', (err) => {
-                  if (err) throw err;
-                  io.emit('playlist parsed');
-                });
-              } else if (result.error !== undefined && result.error === 'Playlist is empty') {
-                io.emit('errorMsg', {
-                  msg: 'Invalid playlist reference :((',
-                  type: 'generic'
-                });
-              } else {
-                console.log(result.error);
+        const handlePlaylistRequest = (url, id) => {
+          axios({
+              url: url,
+              method: 'GET'
+            })
+            .then(res => {
+              if (success) {
+                try {
+                  let result = res.data;
+
+                  if (result.error === undefined) {
+                    fs.writeFile('./tmp/playlist.json', JSON.stringify(result, null, 2), 'utf-8', (err) => {
+                      if (err) throw err;
+                      io.emit('playlist parsed');
+
+                      success = true;
+                    });
+                  } else if (result.error !== undefined && result.error === 'Playlist is empty') {
+                    io.emit('errorMsg', {
+                      msg: 'Invalid playlist reference :((',
+                      type: 'generic'
+                    });
+                  } else {
+                    console.log(result.error);
+                  }
+                } catch (e) {
+                  console.log(`Error parsing playlist : ${e}`);
+                  io.emit('errorMsg', {
+                    msg: 'Error parsing playlist :((',
+                    type: 'generic'
+                  });
+                }
               }
-            } catch (e) {
-              console.log(`Error parsing playlist : ${e}`);
-              io.emit('errorMsg', {
-                msg: 'Error parsing playlist :((',
-                type: 'generic'
-              });
-            }
-          })
-          .catch(err => {
-            if (err === 'socket hang up') {
-              console.log('The websocket died... :(');
-            } else {
-              io.emit('errorMsg', {
-                type: 'generic',
-                msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
-              });
-            }
-          });
+            })
+            .catch(err => {
+              if (err === 'socket hang up') {
+                console.log('The websocket died... :(');
+              } else {
+                handlePlaylistRequest(`https://invidious.snopyta.org/api/v1${id}`, id);
+
+                if (playlistData.url.match('snopyta.org')) {
+                  io.emit('errorMsg', {
+                    type: 'generic',
+                    msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
+                  });
+                }
+              }
+            });
+        }
+
+        handlePlaylistRequest(playlistData.url, playlistData.id);
       });
 
       io.on('remove content', content2remove => {
