@@ -164,7 +164,10 @@ const processInput = (msg) => {
         let id = msg.match(/[a-zA-Z0-9-_]{15,34}/)[0];
         let apiUrl = `https://invidious.fdn.fr/api/v1/playlists/${id}`;
 
-        socket.emit('parse playlist', apiUrl);
+        socket.emit('parse playlist', {
+          url: apiUrl,
+          id: `/playlists/${id}`
+        });
 
         socket.on('playlist parsed', () => {
           $.ajax({
@@ -183,7 +186,10 @@ const processInput = (msg) => {
         let mixID = msg.match(/[0-9A-Za-z_-]{13}/);
         let apiUrl = `https://invidious.fdn.fr/api/v1/mixes/${mixID}`;
 
-        socket.emit('parse playlist', apiUrl);
+        socket.emit('parse playlist', {
+          url: apiUrl,
+          id: `/mixes/${mixID}`
+        });
 
         socket.on('playlist parsed', () => {
           $.ajax({
