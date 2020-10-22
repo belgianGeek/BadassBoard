@@ -81,19 +81,27 @@ module.exports = {
             let openingMovies = [];
 
             // Avoid ES6 because it breaks $(this)...
-            $('.media_list_item').each(function() {
+            $('.media-list__item').each(function() {
               let movie = {};
 
               movie.link = `https://www.rottentomatoes.com/${$(this).find('.media-list__movie-info').attr('href')}`;
               movie.poster = $(this).find('.media-list__poster').attr('src');
-              movie.releaseDate = $(this).find('.media-list__release-date').text();
+
+              if ($('.media-list__release-date').text() !== '') {
+                movie.releaseDate = $(this).find('.media-list__release-date').text();
+              } else {
+                movie.releaseDate = 'Not yet known';
+              }
+
               movie.title = $(this).find('.media-list__title').text();
 
               // Define the movie score
               if ($(this).find('.media-list__consensus').length) {
-                movie.score = $(this).find('.media-list__consensus-text').text();
-              } else {
-                movie.score = 'No consensus yet...';
+                if ($('.media-list__consensus').text() !== '') {
+                  movie.score = $(this).find('.media-list__consensus-text').text();
+                } else {
+                  movie.score = 'No consensus yet...';
+                }
               }
 
               console.log(movie);
