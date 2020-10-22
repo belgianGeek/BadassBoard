@@ -1,6 +1,9 @@
+const axios = require('axios');
 const os = require('os');
 const rottenParser = require('../modules/rottenParser');
-const nlp = require('../nlp');
+const nlp = require('../modules/nlp');
+const customize = require('../modules/customize');
+const Reply = require('../modules/reply');
 
 // Get current the logged in user name
 let username = os.userInfo().username;
@@ -11,21 +14,6 @@ let replyID = 0;
 let msgTheme = 'none';
 
 module.exports = function(app, io, settings) {
-  function Reply(content) {
-    this.author = settings.bot.name;
-    this.content = content;
-    this.id = replyID;
-    this.dateTime = new Date();
-    this.theme = msgTheme;
-    this.send = function() {
-      return new Promise((fullfill, reject) => {
-        io.emit('reply', this);
-        replyID++;
-        fullfill(this);
-      });
-    }
-  }
-
   app.get('/chat', (req, res) => {
     // Define emoijis
     let emoijis = {
@@ -64,7 +52,7 @@ module.exports = function(app, io, settings) {
       // Send the username to the frontend
       io.emit('username', username.capitalize());
 
-      let welcomeMsg = new Reply(`Hi ! I'm ${settings.bot.name}, how can I help you ?`).send();
+      let welcomeMsg = new Reply(`Hi ! I'm ${settings.bot.name}, how can I help you ?`, io, settings, replyID, msgTheme).send();
 
       io.on('chat msg', msg => {
         const tokenize = (msg) => nlp.classifier.getClassifications(nlp.tokenizer.tokenize(msg.toLowerCase()));
@@ -94,10 +82,10 @@ module.exports = function(app, io, settings) {
                 msgTheme = 'weather';
 
                 return new Reply(`Currently in ${previsions.city}, the temperature is ${previsions.temp} C°, ${previsions.description}. ` +
-                  `Humidity is about ${previsions.humidity}%, and the wind blows at ${previsions.windSpeed} km/h.`).send();
+                  `Humidity is about ${previsions.humidity}%, and the wind blows at ${previsions.windSpeed} km/h.`, io, settings, replyID, msgTheme).send();
               } else {
                 msgTheme = 'weather';
-                return new Reply("Sorry, I can't find this place... Make sure of the location you have given me and retry...").send();
+                return new Reply("Sorry, I can't find this place... Make sure of the location you have given me and retry...", io, settings, replyID, msgTheme).send();
               }
             })
             .catch(err => {
@@ -126,7 +114,7 @@ module.exports = function(app, io, settings) {
 
             io.on('chat msg', msg => {
               if (msg.content.match(/nothing/i)) {
-                reply = new Reply('Ok then, I\'ll leave you alone.').send();
+                reply = new Reply('Ok then, I\'ll leave you alone.', io, settings, replyID, msgTheme).send();
               }
             });
           }
@@ -180,10 +168,10 @@ module.exports = function(app, io, settings) {
         const wikiResponse = (args, msg) => {
           searchWiki(args, msg)
             .then(res => {
-              new Reply(res).send();
+              new Reply(res, io, settings, replyID, msgTheme).send();
             })
             .catch(err => {
-              new Reply(err).send();
+              new Reply(err, io, settings, replyID, msgTheme).send();
             })
         }
 
@@ -303,7 +291,7 @@ module.exports = function(app, io, settings) {
 
                   msgTheme = 'movie review';
 
-                  new Reply(reply).send();
+                  new Reply(reply, io, settings, replyID, msgTheme).send();
                 })
                 .catch((err) => {
                   console.log(err);
@@ -312,7 +300,8 @@ module.exports = function(app, io, settings) {
 
                   new Reply(
                     `Sorry, I couldn't get this movie review... ${emoijis.expressionless} \n` +
-                    `Please try again using another keywords or go to this results page : ${linkTag}`
+                    `Please try again using another keywords or go to this results page : ${linkTag}`,
+                    io, settings, replyID, msgTheme
                   ).send();
                 });
             });
@@ -323,7 +312,7 @@ module.exports = function(app, io, settings) {
 
         // Check if the reply is not empty before sending it
         if (reply !== '') {
-          let answer = new Reply(reply).send();
+          let answer = new Reply(reply, io, settings, replyID, msgTheme).send();
 
           let content = nlp.tokenizer.tokenize(msg.content);
 
@@ -345,7 +334,7 @@ module.exports = function(app, io, settings) {
       });
 
       io.on('customization', customizationData => {
-        customize(io, customizationData);
+        customize(io, settings, customizationData);
       });
     })
   });

@@ -6,12 +6,9 @@ settings
 tmp
 
 # Files
-app.js.bak
-nlp.js
 youtube-dl.exe
 streamInfo.json
 wiki.json
-backupSettings.json
 classifier.json
 bot.png
 stream.json
@@ -19,4 +16,3 @@ settings.json
 invidious.js
 zip*
 yarn-*
-classifier.json
