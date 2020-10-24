@@ -169,13 +169,13 @@ const processInput = (msg) => {
           id: `/playlists/${id}`
         });
 
-        socket.on('playlist parsed', () => {
+        socket.on('playlist parsed', domain => {
           $.ajax({
             url: './tmp/playlist.json',
             dataType: 'json',
             method: 'GET'
-          }).done((data) => {
-            listen2Playlist(data);
+          }).done(data => {
+            listen2Playlist(domain, data);
           });
         });
       } else if (msg.match(/[0-9A-Za-z_-]{13}/) && !msg.match(/[0-9A-Za-z_-]{14,34}/)) {
@@ -191,13 +191,13 @@ const processInput = (msg) => {
           id: `/mixes/${mixID}`
         });
 
-        socket.on('playlist parsed', () => {
+        socket.on('playlist parsed', domain => {
           $.ajax({
             url: './tmp/playlist.json',
             dataType: 'json',
             method: 'GET'
-          }).done((data) => {
-            listen2Playlist(data);
+          }).done(data => {
+            listen2Playlist(domain, data);
           });
         });
       } else {

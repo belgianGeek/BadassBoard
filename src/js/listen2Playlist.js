@@ -1,4 +1,4 @@
-const listen2Playlist = (data) => {
+const listen2Playlist = (domain, data) => {
   if (data.videos[iPlaylist] === undefined) {
     printError({
       type: 'generic',
@@ -39,12 +39,12 @@ const listen2Playlist = (data) => {
         let audioSrc = $('<source>')
           .attr({
             id: 'audioSrc',
-            src: `https://invidious.fdn.fr/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`,
+            src: `https://invidious.${domain}/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`,
             type: ' audio/mpeg',
           })
           .appendTo('.audio__player');
       } else {
-        $('#audioSrc').attr('src', `https://invidious.fdn.fr/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`);
+        $('#audioSrc').attr('src', `https://invidious.${domain}/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`);
 
         // Add playlist controls if they do not exist
         if (!$('.audio__leftSvg').length) {

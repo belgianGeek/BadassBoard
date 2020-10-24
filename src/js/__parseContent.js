@@ -225,126 +225,144 @@ const parseContent = () => {
             addContentOptions(fullElementClassName);
           }
 
-          $('.youtubeSearchContainer *').keypress((event) => {
+          $('.youtubeSearchContainer').keypress(event => {
             if (event.keyCode === 13) {
               // Hide the results container
               $('.youtubeSearchContainer__content__results').addClass('hidden');
 
-              $.ajax({
-                url: `https://invidious.fdn.fr/api/v1/search?q=${$('.youtubeSearchContainer__content__input').val()}&language=json&type=all`,
-                method: 'GET',
-                dataType: 'json',
-                statusCode: {
-                  200: (res) => {
-                    for (let i = 0; i < res.length; i++) {
-                      let title = '';
-                      let id = '';
-                      let duration = '';
-                      let resultContent = '';
-                      let thumbnail = '';
+              const handleResults = (res, domain) => {
+                for (let i = 0; i < res.length; i++) {
+                  let title = '';
+                  let id = '';
+                  let duration = '';
+                  let resultContent = '';
+                  let thumbnail = '';
 
-                      const getDuration = () => {
-                        let time = res[i].lengthSeconds;
-                        let minutes = Math.floor(time / 60);
-                        let seconds = time % 60;
-                        let hours = Math.floor(time / 3600);
-                        let totalTime = '';
+                  const getDuration = () => {
+                    let time = res[i].lengthSeconds;
+                    let minutes = Math.floor(time / 60);
+                    let seconds = time % 60;
+                    let hours = Math.floor(time / 3600);
+                    let totalTime = '';
 
-                        if (hours !== 0) {
-                          totalTime += `${hours}:`;
-                        }
+                    if (hours !== 0) {
+                      totalTime += `${hours}:`;
+                    }
 
-                        if (minutes !== 0 && minutes < 60) {
-                          totalTime += `${minutes}:`;
-                        }
+                    if (minutes !== 0 && minutes < 60) {
+                      totalTime += `${minutes}:`;
+                    }
 
-                        if (seconds !== 0 && seconds < 60) {
-                          totalTime += `${seconds}`;
-                        }
+                    if (seconds !== 0 && seconds < 60) {
+                      totalTime += `${seconds}`;
+                    }
 
-                        return totalTime;
-                      }
+                    return totalTime;
+                  }
 
-                      const processResults = () => {
-                        let result = $('<span></span>')
-                          .addClass(`youtubeSearchContainer__content__results__result youtube__result${i} flex`)
-                          .append(resultContent)
-                          .appendTo('.youtubeSearchContainer__content__results');
+                  const processResults = () => {
+                    let result = $('<span></span>')
+                      .addClass(`youtubeSearchContainer__content__results__result youtube__result${i} flex`)
+                      .append(resultContent)
+                      .appendTo('.youtubeSearchContainer__content__results');
 
-                        let thumbnailContainer = $('<div></div>')
-                          .addClass('youtubeSearchContainer__content__results__result__thumbnailContainer flex')
-                          .prependTo(result);
+                    let thumbnailContainer = $('<div></div>')
+                      .addClass('youtubeSearchContainer__content__results__result__thumbnailContainer flex')
+                      .prependTo(result);
 
-                        if (res[i].type !== 'channel' && res[i].type !== 'playlist') {
-                          thumbnail = $('<img>')
-                            .attr('alt', `${res[i].title} thumbnail`)
-                            .attr('src', res[i].videoThumbnails[0].url)
-                            .prependTo(thumbnailContainer);
-                        } else if (res[i].type === 'channel') {
-                          thumbnail = $('<img>')
-                            .attr('alt', `${res[i].author} channel thumbnail`)
-                            .attr('src', res[i].authorThumbnails[0].url)
-                            .prependTo(thumbnailContainer);
-                        } else if (res[i].type === 'playlist') {
-                          thumbnail = $('<img>')
-                            .attr('alt', `${res[i].title} thumbnail`)
-                            .attr('src', res[i].playlistThumbnail)
-                            .prependTo(thumbnailContainer);
-                        }
-                      }
-
-                      if (res[i].type === 'video') {
-                        title = $(`<a></a>`)
-                          .attr('href', `https://invidious.fdn.fr/watch?v=${res[i].videoId}`)
-                          .text(res[i].title);
-
-                        id = $('<p></p>').text(res[i].videoId).prepend('<u>Video ID</u> : ');
-
-                        duration = $('<p></p>').text(getDuration()).prepend('<u>Duration</u> : ');
-                      } else if (res[i].type === 'channel') {
-                        title = $(`<a></a>`)
-                          .attr('href', `https://invidious.fdn.fr${res[i].authorUrl}`)
-                          .text(res[i].author);
-
-                        duration = $('<p></p>').text(res[i].videoCount).prepend('<u>Number of videos</u> : ');
-                        id = $('<p></p>').text(res[i].authorId).prepend('<u>Channel ID</u> : ');
-                      } else if (res[i].type === 'playlist') {
-                        title = $(`<a></a>`)
-                          .attr('href', `https://invidious.fdn.fr/playlist?list=${res[i].playlistId}`)
-                          .text(res[i].title);
-
-                        id = $('<p></p>').text(`${res[i].playlistId}`).prepend('<u>Playlist ID</u> : ');
-
-                        duration = $('<p></p>').text(res[i].videoCount).prepend('<u>Number of videos</u> : ');
-                      }
-
-                      if (id !== '') {
-                        resultContent = $('<span></span>')
-                          .addClass('youtubeSearchContainer__content__results__result__content flex')
-                          .append(title, duration, id);
-                      } else {
-                        resultContent = $('<span></span>')
-                          .addClass('youtubeSearchContainer__content__results__result__content flex')
-                          .append(title, duration);
-                      }
-
-                      if (!$(`.youtube__result${i}`).length) {
-                        processResults();
-                      } else if ($('.youtubeSearchContainer__content__results').length) {
-                        $('.youtubeSearchContainer__content__results').empty();
-                        processResults();
-                      }
-
-                      if (i === 1) {
-                        // Show the results container
-                        $('.youtubeSearchContainer__content__results')
-                          .removeClass('hidden')
-                          .css('visibility', 'visible');
-                      }
+                    if (res[i].type !== 'channel' && res[i].type !== 'playlist') {
+                      thumbnail = $('<img>')
+                        .attr('alt', `${res[i].title} thumbnail`)
+                        .attr('src', res[i].videoThumbnails[0].url)
+                        .prependTo(thumbnailContainer);
+                    } else if (res[i].type === 'channel') {
+                      thumbnail = $('<img>')
+                        .attr('alt', `${res[i].author} channel thumbnail`)
+                        .attr('src', res[i].authorThumbnails[0].url)
+                        .prependTo(thumbnailContainer);
+                    } else if (res[i].type === 'playlist') {
+                      thumbnail = $('<img>')
+                        .attr('alt', `${res[i].title} thumbnail`)
+                        .attr('src', res[i].playlistThumbnail)
+                        .prependTo(thumbnailContainer);
                     }
                   }
+
+                  if (res[i].type === 'video') {
+                    title = $(`<a></a>`)
+                      .attr('href', `https://invidious.${domain}/watch?v=${res[i].videoId}`)
+                      .text(res[i].title);
+
+                    id = $('<p></p>').text(res[i].videoId).prepend('<u>Video ID</u> : ');
+
+                    duration = $('<p></p>').text(getDuration()).prepend('<u>Duration</u> : ');
+                  } else if (res[i].type === 'channel') {
+                    title = $(`<a></a>`)
+                      .attr('href', `https://invidious.${domain}${res[i].authorUrl}`)
+                      .text(res[i].author);
+
+                    duration = $('<p></p>').text(res[i].videoCount).prepend('<u>Number of videos</u> : ');
+                    id = $('<p></p>').text(res[i].authorId).prepend('<u>Channel ID</u> : ');
+                  } else if (res[i].type === 'playlist') {
+                    title = $(`<a></a>`)
+                      .attr('href', `https://invidious.${domain}/playlist?list=${res[i].playlistId}`)
+                      .text(res[i].title);
+
+                    id = $('<p></p>').text(`${res[i].playlistId}`).prepend('<u>Playlist ID</u> : ');
+
+                    duration = $('<p></p>').text(res[i].videoCount).prepend('<u>Number of videos</u> : ');
+                  }
+
+                  if (id !== '') {
+                    resultContent = $('<span></span>')
+                      .addClass('youtubeSearchContainer__content__results__result__content flex')
+                      .append(title, duration, id);
+                  } else {
+                    resultContent = $('<span></span>')
+                      .addClass('youtubeSearchContainer__content__results__result__content flex')
+                      .append(title, duration);
+                  }
+
+                  if (!$(`.youtube__result${i}`).length) {
+                    processResults();
+                  } else if ($('.youtubeSearchContainer__content__results').length) {
+                    $('.youtubeSearchContainer__content__results').empty();
+                    processResults();
+                  }
+
+                  if (i === 1) {
+                    // Show the results container
+                    $('.youtubeSearchContainer__content__results')
+                      .removeClass('hidden')
+                      .css('visibility', 'visible');
+                  }
                 }
-              });
+              }
+
+              const ytSearch = domain => {
+                console.log('search', domain);
+                $.ajax({
+                    url: `https://invidious.${domain}/api/v1/search?q=${$('.youtubeSearchContainer__content__input').val()}&language=json&type=all`,
+                    method: 'GET',
+                    dataType: 'json'
+                  })
+                  .done(res => {
+                    console.log(res);
+                    if (res.length !== 0) {
+                      handleResults(res, domain);
+                    } else {
+                      console.log('else');
+                      if (domain === 'fdn.fr') {
+                        ytSearch('xyz');
+                      }
+                    }
+                  })
+                  .fail(err => {
+                    ytSearch('xyz');
+                  });
+              }
+
+              ytSearch('fdn.fr');
             }
           });
 

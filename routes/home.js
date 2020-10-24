@@ -71,7 +71,7 @@ module.exports = function(app, io, settings) {
           io.emit('wallpaper', settings.backgroundImage);
         }
 
-        io.on('add content', feedData => {
+        io.once('add content', feedData => {
           var elements = settings.elements;
 
           settings.RSS = true;
@@ -192,12 +192,12 @@ module.exports = function(app, io, settings) {
           iAddElt = 0;
         });
 
-        io.on('customization', customizationData => {
+        io.once('customization', customizationData => {
           customize(io, settings, customizationData);
           io.emit('customization data retrieved');
         });
 
-        io.on('download', (id) => {
+        io.once('download', (id) => {
           let options = [
             '-x',
             '--audio-format',
@@ -317,7 +317,7 @@ module.exports = function(app, io, settings) {
           }
         });
 
-        io.on('audio info request', (streamData) => {
+        io.once('audio info request', (streamData) => {
           let id = streamData.id;
           ytdl(id, (err, info) => {
             if (err) {
@@ -334,7 +334,7 @@ module.exports = function(app, io, settings) {
           });
         });
 
-        io.on('update feed', (feed2update) => {
+        io.once('update feed', (feed2update) => {
           for (const i of settings.elements) {
             for (const j of i.elements) {
               let eltRegex = new RegExp(j.element, 'gi');
@@ -356,8 +356,9 @@ module.exports = function(app, io, settings) {
           }
         });
 
-        io.on('parse playlist', playlistData => {
+        io.once('parse playlist', playlistData => {
           const handlePlaylistRequest = (url, id) => {
+            let domain = 'fdn.fr';
             axios({
                 url: url,
                 method: 'GET'
@@ -368,7 +369,7 @@ module.exports = function(app, io, settings) {
                 if (result.error === undefined) {
                   fs.writeFile('./tmp/playlist.json', JSON.stringify(result, null, 2), 'utf-8', (err) => {
                     if (err) throw err;
-                    io.emit('playlist parsed');
+                    io.emit('playlist parsed', domain);
 
                     success = true;
                   });
@@ -386,9 +387,10 @@ module.exports = function(app, io, settings) {
                   console.log('The websocket died... :(');
                 } else {
                   console.log(JSON.stringify(err, null, 2));
-                  if (url.match('fdn.fr')) {
-                    handlePlaylistRequest(`https://invidious.snopyta.org/api/v1${id}`, id);
-                  } else if (url.match('snopyta.org')) {
+                  if (domain === 'fdn.fr') {
+                    domain = 'snopyta.org';
+                    handlePlaylistRequest(`https://invidious.${domain}/api/v1${id}`, id);
+                  } else if (domain === 'snopyta.org') {
                     io.emit('errorMsg', {
                       type: 'generic',
                       msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
@@ -401,7 +403,7 @@ module.exports = function(app, io, settings) {
           handlePlaylistRequest(playlistData.url, playlistData.id);
         });
 
-        io.on('remove content', content2remove => {
+        io.once('remove content', content2remove => {
           let found = false;
           for (const [i, settingsElts] of settings.elements.entries()) {
             // Set a variable to stop the loop as soon as the element is removed
@@ -416,7 +418,7 @@ module.exports = function(app, io, settings) {
           }
         });
 
-        io.on('update check', () => {
+        io.once('update check', () => {
           badassUpdate(io, tag);
         });
       });
