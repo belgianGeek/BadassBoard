@@ -100,7 +100,7 @@ const addContentOptions = (element) => {
                 .addClass('updateContentBtn')
                 .attr({
                   alt: 'Update content',
-                  src: './src/scss/icons/interface/refresh.svg'
+                  src: './client/scss/icons/interface/refresh.svg'
                 })
                 .appendTo(contentOptions);
 
@@ -108,7 +108,7 @@ const addContentOptions = (element) => {
                 .addClass('removeContentBtn')
                 .attr({
                   alt: 'Remove content',
-                  src: './src/scss/icons/interface/cross.svg'
+                  src: './client/scss/icons/interface/cross.svg'
                 })
                 .appendTo(contentOptions);
 

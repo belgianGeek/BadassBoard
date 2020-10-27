@@ -57,7 +57,7 @@ const processInput = (msg) => {
               const findUrl = () => {
                 for (const [i, resValue] of res.adaptiveFormats.entries()) {
                   if (resValue.type.match(/audio/)) {
-                    return resValue.url;
+                    return `https://invidious.fdn.fr/latest_version?id=${id}&itag=251&local=true`;
                   } else {
                     if (i === res.adaptiveFormats.length - 1) {
                       printError({

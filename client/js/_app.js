@@ -80,7 +80,7 @@ $.ajax({
 socket.on('wallpaper', wallpaper => {
   console.log('wallpaper', wallpaper);
   const handle404ImageError = () => {
-    headStyle = `<style>.formContainer__container::before {background-image: url('./src/scss/wallpaper.jpg');}</style>`;
+    headStyle = `<style>.formContainer__container::before {background-image: url('./client/scss/wallpaper.jpg');}</style>`;
     $('head').append(headStyle);
 
     $('.msgContainer').text('Sorry, your background image couldn\'t be loaded... Maybe try another one')

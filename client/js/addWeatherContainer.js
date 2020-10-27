@@ -87,7 +87,7 @@ const addWeatherContainer = (forecast, fullElementClassName) => {
       .addClass('forecastIcon')
       .attr({
         alt: 'wind icon',
-        src: './src/scss/icons/interface/wind.svg'
+        src: './client/scss/icons/interface/wind.svg'
       })
       .prependTo(windSpeed);
 
@@ -127,7 +127,7 @@ const addWeatherContainer = (forecast, fullElementClassName) => {
       .addClass('updateContentBtn')
       .attr({
         alt: 'Update content',
-        src: './src/scss/icons/interface/refresh.svg'
+        src: './client/scss/icons/interface/refresh.svg'
       })
       .appendTo(contentOptions);
 
@@ -135,7 +135,7 @@ const addWeatherContainer = (forecast, fullElementClassName) => {
       .addClass('removeContentBtn')
       .attr({
         alt: 'Remove content',
-        src: './src/scss/icons/interface/cross.svg'
+        src: './client/scss/icons/interface/cross.svg'
       })
       .appendTo(contentOptions);
 

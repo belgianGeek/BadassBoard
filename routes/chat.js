@@ -38,13 +38,13 @@ module.exports = function(app, io, settings) {
       let reply = '';
 
       // Do not send the default wallpaper
-      if (settings.backgroundImage !== './src/scss/wallpaper.jpg') {
+      if (settings.backgroundImage !== './client/scss/wallpaper.jpg') {
         io.emit('wallpaper', settings.backgroundImage);
       }
 
 
       if (settings.bot !== undefined) {
-        if (settings.bot.icon !== undefined && settings.bot.icon !== './src/scss/icons/interface/bot.png') {
+        if (settings.bot.icon !== undefined && settings.bot.icon !== './client/scss/icons/interface/bot.png') {
           io.emit('bot avatar', settings.bot.icon);
         }
       }
@@ -132,7 +132,7 @@ module.exports = function(app, io, settings) {
                 // Check if the API entry exists
                 if (!body.title.match(/not found/gi)) {
                   let reply = {
-                    icon: './src/scss/icons/suggestions/wikipedia.ico',
+                    icon: './client/scss/icons/suggestions/wikipedia.ico',
                     title: body.title,
                     url: body.content_urls.desktop.page,
                     color: 'white',

@@ -16,7 +16,7 @@ module.exports = function(io, settings, customizationData) {
           if (err) {
             console.error(`An error occurred while saving the new avatar : ${err}`);
           } else {
-            if (settings.bot.icon !== './src/scss/icons/interface/bot.png') {
+            if (settings.bot.icon !== './client/scss/icons/interface/bot.png') {
               deleteNotProcessedFile(settings.bot.icon);
             }
 
@@ -35,7 +35,7 @@ module.exports = function(io, settings, customizationData) {
         if (err) {
           console.error(`An error occurred while saving the new wallpaper : ${err}`);
         } else {
-          if (settings.backgroundImage !== './src/scss/wallpaper.jpg') {
+          if (settings.backgroundImage !== './client/scss/wallpaper.jpg') {
             deleteNotProcessedFile(settings.backgroundImage);
           }
 

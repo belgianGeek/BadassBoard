@@ -16,7 +16,7 @@ const updateWeatherIcon = (previsions) => {
 
     let mistIcon = $('<img>')
       .attr({
-        src: './src/scss/icons/interface/mist.svg',
+        src: './client/scss/icons/interface/mist.svg',
         alt: 'Mist icon'
       });
 

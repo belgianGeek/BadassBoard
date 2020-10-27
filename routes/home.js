@@ -67,7 +67,7 @@ module.exports = function(app, io, settings) {
         }
 
         // Do not send the default wallpaper
-        if (settings.backgroundImage !== './src/scss/wallpaper.jpg') {
+        if (settings.backgroundImage !== './client/scss/wallpaper.jpg') {
           io.emit('wallpaper', settings.backgroundImage);
         }
 
@@ -388,9 +388,9 @@ module.exports = function(app, io, settings) {
                 } else {
                   console.log(JSON.stringify(err, null, 2));
                   if (domain === 'fdn.fr') {
-                    domain = 'snopyta.org';
+                    domain = 'kavin.rocks';
                     handlePlaylistRequest(`https://invidious.${domain}/api/v1${id}`, id);
-                  } else if (domain === 'snopyta.org') {
+                  } else {
                     io.emit('errorMsg', {
                       type: 'generic',
                       msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`

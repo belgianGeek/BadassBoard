@@ -156,7 +156,7 @@ const parseContent = () => {
                 .addClass('updateContentBtn')
                 .attr({
                   alt: 'Update content',
-                  src: './src/scss/icons/interface/refresh.svg'
+                  src: './client/scss/icons/interface/refresh.svg'
                 })
                 .appendTo(contentOptions);
 
@@ -164,7 +164,7 @@ const parseContent = () => {
                 .addClass('removeContentBtn')
                 .attr({
                   alt: 'Remove content',
-                  src: './src/scss/icons/interface/cross.svg'
+                  src: './client/scss/icons/interface/cross.svg'
                 })
                 .appendTo(contentOptions);
 
@@ -210,7 +210,7 @@ const parseContent = () => {
               .addClass('contentOptions__clearResultsbtn')
               .attr({
                 alt: 'Clear search results',
-                src: './src/scss/icons/interface/clear.svg'
+                src: './client/scss/icons/interface/clear.svg'
               })
               .appendTo(contentOptions);
 
@@ -218,7 +218,7 @@ const parseContent = () => {
               .addClass('removeContentBtn')
               .attr({
                 alt: 'Remove content',
-                src: './src/scss/icons/interface/cross.svg'
+                src: './client/scss/icons/interface/cross.svg'
               })
               .appendTo(contentOptions);
 
@@ -353,12 +353,14 @@ const parseContent = () => {
                     } else {
                       console.log('else');
                       if (domain === 'fdn.fr') {
-                        ytSearch('xyz');
+                        domain = 'kavin.rocks';
+                        ytSearch(domain);
                       }
                     }
                   })
                   .fail(err => {
-                    ytSearch('xyz');
+                    domain = 'kavin.rocks';
+                    ytSearch(domain);
                   });
               }
 

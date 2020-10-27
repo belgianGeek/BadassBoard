@@ -33,10 +33,10 @@ functions.existPath('./settings/');
 
 // Settings object to be written in the settings file if it doesn't exist
 let settings = settingsTemplate = {
-  "backgroundImage": "./src/scss/wallpaper.jpg",
+  "backgroundImage": "./client/scss/wallpaper.jpg",
   "bot": {
     "name": "BadassBot",
-    "icon": "./src/scss/icons/interface/bot.png"
+    "icon": "./client/scss/icons/interface/bot.png"
   },
   "elements": [{
       "elements": []
@@ -97,7 +97,7 @@ setInterval(() => {
   });
 }, 300000);
 
-app.use("/src", express.static(__dirname + "/src"))
+app.use("/client", express.static(__dirname + "/client"))
   .use("/upload", express.static(__dirname + "/upload"))
   .use("/settings", express.static(__dirname + "/settings"))
   .use("/tmp", express.static(__dirname + "/tmp"))

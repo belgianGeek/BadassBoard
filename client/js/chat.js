@@ -20,7 +20,7 @@ socket.on('bot avatar', avatar => {
         .appendTo('.chatContainer__msgList__list');
     }
 
-    $('.chatContainer__botInfo__icon').attr('src', './src/scss/icons/interface/bot.png');
+    $('.chatContainer__botInfo__icon').attr('src', './client/scss/icons/interface/bot.png');
   }
 
   $.ajax({

@@ -5,8 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Home</title>
-  <link rel="icon" type="image/png" href="src/favicon.png">
-  <link rel="stylesheet" href="src/scss/prefixed/app.css">
+  <link rel="icon" type="image/png" href="client/favicon.png">
+  <link rel="stylesheet" href="client/scss/prefixed/app.css">
 </head>
 
 <body>
@@ -30,7 +30,7 @@
       </div>
       <span class="converter">
         <section class="converter__body flex">
-          <img class="converter__body__remove flex" alt="Hide the converter" src="./src/scss/icons/interface/cross.svg">
+          <img class="converter__body__remove flex" alt="Hide the converter" src="./client/scss/icons/interface/cross.svg">
           <select class="converter__body__value1 flex">
             <option value="Choose a value">Choose a value</option>
             <option value="Byte">Byte</option>
@@ -55,7 +55,7 @@
         <%= typeof msg != 'undefined' ? msg : '' %>
       </div>
       <div class="audio">
-        <img class="audio__remove removeContentBtn flex" alt="Remove the audio player" src="./src/scss/icons/interface/cross.svg">
+        <img class="audio__remove removeContentBtn flex" alt="Remove the audio player" src="./client/scss/icons/interface/cross.svg">
         <span class="audio__container flex">
           <div class="audio__container__msg flex"></div>
           <div class="audio__container__player flex"></div>
@@ -116,7 +116,7 @@
       </section>
     </div>
     <div class="loading flex">
-      <img class="loading__img" alt="Loading image" src="src/scss/icons/interface/loading.png" />
+      <img class="loading__img" alt="Loading image" src="client/scss/icons/interface/loading.png" />
     </div>
     <%- include('footer'); %>
   </div>
