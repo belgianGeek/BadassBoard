@@ -273,7 +273,7 @@ const parseContent = () => {
                     if (res[i].type !== 'channel' && res[i].type !== 'playlist') {
                       thumbnail = $('<img>')
                         .attr('alt', `${res[i].title} thumbnail`)
-                        .attr('src', res[i].videoThumbnails[0].url)
+                        .attr('src', res[i].videoThumbnails[1].url)
                         .prependTo(thumbnailContainer);
                     } else if (res[i].type === 'channel') {
                       thumbnail = $('<img>')
