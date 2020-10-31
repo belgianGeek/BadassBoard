@@ -108,7 +108,7 @@ const listen2Playlist = (domain, data) => {
       document.getElementById('audio__player').onended = () => {
         iPlaylist++;
         if (data.videos[iPlaylist] !== undefined) {
-          listen2Playlist(data);
+          listen2Playlist(domain, data);
         } else {
           $('.audio__leftSvg, .audio__remove').hide();
 
@@ -150,7 +150,7 @@ const listen2Playlist = (domain, data) => {
       });
     } else if (data.videos[iPlaylist].title.match(/(deleted video) || (private video)/gi)) {
       iPlaylist++;
-      listen2Playlist(data);
+      listen2Playlist(domain, data);
     }
   }
 }
