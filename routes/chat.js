@@ -12,6 +12,7 @@ let replyID = 0;
 // Define the user request theme to avoid training the bot with unecessary data
 // like city names or stupid stuff (msgTheme == 'function' in that case)
 let msgTheme = 'none';
+let isReplyNeeded = true;
 
 module.exports = function(app, io, settings) {
   app.get('/chat', (req, res) => {
@@ -55,6 +56,7 @@ module.exports = function(app, io, settings) {
       let welcomeMsg = new Reply(`Hi ! I'm ${settings.bot.name}, how can I help you ?`, io, settings, replyID, msgTheme).send();
 
       io.on('chat msg', msg => {
+        console.log(nlp.classifier.getClassifications(nlp.tokenizer.tokenize(msg.content.toLowerCase())));
         const tokenize = (msg) => nlp.classifier.getClassifications(nlp.tokenizer.tokenize(msg.toLowerCase()));
 
         const getWeatherForecast = (msg) => {
@@ -175,160 +177,169 @@ module.exports = function(app, io, settings) {
             })
         }
 
-        if (tokenize(msg.content)[0].value > 0.5) {
-          if (nlp.classifier.classify(msg.content) === 'greetings') {
-            revertGreetings(msg);
-          } else if (nlp.classifier.classify(msg.content) === 'weather') {
-            reply = `Which city do you want to get the forecast for ?`;
-            msgTheme = 'weather';
-
-            io.on('chat msg', msg => {
-              reply = getWeatherForecast(msg.content);
-              return;
-            });
-          } else if (nlp.classifier.classify(msg.content) === 'news') {
-            revertGreetings(msg);
-          } else if (nlp.classifier.classify(msg.content) === 'activity') {
-            reply = `I'm just talking to you ${msg.author}.`;
-            msgTheme = 'activity';
-          } else if (nlp.classifier.classify(msg.content) === 'love') {
-            let answers = [
-              `Sorry ${msg.author}, I don't think human and robots can love each other...`,
-              `Welcome to the Friendzone dude !`,
-              `Forgive me but I can't express any feelings`
-            ];
-
-            reply = answers.random();
-            msgTheme = 'love';
-          } else if (nlp.classifier.classify(msg.content) === 'gross') {
-            let answers = [
-              `Don't be so gross ${msg.author} !`,
-              `I'm not equiped for that kind of... activity, sorry.`,
-              `What if I told you to go fuck yourself ${msg.author} ?`,
-            ];
-
-            reply = answers.random();
-            msgTheme = 'gross';
-          } else if (nlp.classifier.classify(msg.content) === 'insults') {
-            let answers = [
-              `Didn't you Mother teach you politeness ?`,
-              `So you think you're better than me ? Interesting...`
-            ];
-
-            reply = answers.random();
-            msgTheme = 'insults';
-          } else if (nlp.classifier.classify(msg.content) === 'thanks') {
-            let answers = [
-              `You're welcome ${msg.author} !`,
-              `Glad I could help you !`,
-              `Now you owe me one ${emoijis.innocent}`,
-            ];
-
-            reply = answers.random();
-            msgTheme = 'thanks';
-          } else if (nlp.classifier.classify(msg.content) === 'joke') {
-            reply = `I don't have any jokes for now...`;
-            msgTheme = 'joke';
-          } else if (nlp.classifier.classify(msg.content) === 'wiki') {
-            let args = msg.content.split(' ');
-            msgTheme = 'wiki';
-
-            if (msg.content.match(/^define/i)) {
-              args.shift();
-              wikiResponse(args, msg);
-            } else if (msg.content.match(/^search for/i)) {
-              args.splice(0, 2);
-              wikiResponse(args, msg);
-            } else {
-              reply = `Sorry ${msg.author}, I couldn't understand... What are you searching for ?`;
+        if (isReplyNeeded) {
+          if (tokenize(msg.content)[0].value > 0.5) {
+            if (nlp.classifier.classify(msg.content) === 'greetings') {
+              revertGreetings(msg);
+            } else if (nlp.classifier.classify(msg.content) === 'weather') {
+              reply = `Which city do you want to get the forecast for ?`;
+              msgTheme = 'weather';
+              isReplyNeeded = false;
 
               io.on('chat msg', msg => {
-                let args = msg.content.split(' ');
-                wikiResponse(args, msg);
+                reply = getWeatherForecast(msg.content);
+                isReplyNeeded = true;
               });
-            }
-          } else if (nlp.classifier.classify(msg.content) === 'movie review') {
-            let answers = [
-              `Which movie do you want a review for ?`,
-              `Which movie are you interested in ?`
-            ];
+            } else if (nlp.classifier.classify(msg.content) === 'news') {
+              revertGreetings(msg);
+            } else if (nlp.classifier.classify(msg.content) === 'activity') {
+              reply = `I'm just talking to you ${msg.author}.`;
+              msgTheme = 'activity';
+            } else if (nlp.classifier.classify(msg.content) === 'love') {
+              let answers = [
+                `Sorry ${msg.author}, I don't think human and robots can love each other...`,
+                `Welcome to the Friendzone dude !`,
+                `Forgive me but I can't express any feelings`
+              ];
 
-            reply = answers.random();
+              reply = answers.random();
+              msgTheme = 'love';
+            } else if (nlp.classifier.classify(msg.content) === 'gross') {
+              let answers = [
+                `Don't be so gross ${msg.author} !`,
+                `I'm not equiped for that kind of... activity, sorry.`,
+                `What if I told you to go fuck yourself ${msg.author} ?`,
+              ];
 
-            io.on('chat msg', msg => {
+              reply = answers.random();
+              msgTheme = 'gross';
+            } else if (nlp.classifier.classify(msg.content) === 'insults') {
+              let answers = [
+                `Didn't you Mother teach you politeness ?`,
+                `So you think you're better than me ? Interesting...`,
+                `Come on, I know you're better than that ${msg.author} ! ${emoijis.wink}`
+              ];
+
+              reply = answers.random();
+              msgTheme = 'insults';
+            } else if (nlp.classifier.classify(msg.content) === 'thanks') {
+              let answers = [
+                `You're welcome ${msg.author} !`,
+                `Glad I could help you !`,
+                `Now you owe me one ${emoijis.innocent}`,
+              ];
+
+              reply = answers.random();
+              msgTheme = 'thanks';
+            } else if (nlp.classifier.classify(msg.content) === 'joke') {
+              reply = `I don't have any jokes for now...`;
+              msgTheme = 'joke';
+            } else if (nlp.classifier.classify(msg.content) === 'wiki') {
               let args = msg.content.split(' ');
+              msgTheme = 'wiki';
 
-              rottenParser.getMovieReview(msg.content)
-                .then(movieData => {
+              if (msg.content.match(/^define/i)) {
+                args.shift();
+                wikiResponse(args, msg);
+              } else if (msg.content.match(/^search for/i)) {
+                args.splice(0, 2);
+                wikiResponse(args, msg);
+              } else {
+                reply = `Sorry ${msg.author}, I couldn't understand... What are you searching for ?`;
+                isReplyNeeded = false;
 
-                  let reply = {
-                    title: movieData.title,
-                    img: movieData.poster,
-                    url: movieData.url,
-                    description: `<u>Synopsis</u> : ${movieData.synopsis}`,
-                    fields: [
-                      `<u>Rating</u> : ${movieData.rating}`,
-                      `<u>Critics consensus</u> : ${movieData.consensus}`
-                    ]
-                  };
+                io.on('chat msg', msg => {
+                  let args = msg.content.split(' ');
+                  wikiResponse(args, msg);
+                  isReplyNeeded = true;
+                });
+              }
+            } else if (nlp.classifier.classify(msg.content) === 'movie review') {
+              let answers = [
+                `Which movie do you want a review for ?`,
+                `Which movie are you interested in ?`
+              ];
 
-                  if (!movieData.rating.match(/No rating found/i)) {
-                    if (movieData.rating > '80%') {
-                      reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/cf-lg.3c29eff04f2.png';
-                      reply.color = 'gold';
-                    } else if (movieData.rating > '50%' && movieData.rating < '80%') {
-                      reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-fresh-lg.12e316e31d2.png';
-                      reply.color = 'red';
-                    } else {
-                      reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-rotten-lg.ecdfcf9596f.png';
-                      reply.color = 'green';
-                    }
-                  } else {
+              msgTheme = 'movie review';
+              reply = answers.random();
+              isReplyNeeded = false;
+            }
+          } else if (tokenize(msg.content)[0].value === 0.5) {
+            reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
+          }
+
+          // Check if the reply is not empty before sending it
+          if (reply !== '') {
+            let answer = new Reply(reply, io, settings, replyID, msgTheme).send();
+
+            let content = nlp.tokenizer.tokenize(msg.content);
+
+            // Add the last user message to nlp.classifier and train the bot with it
+            if (tokenize(msg.content)[0].label !== 'none') {
+              nlp.classifier.addDocument(content, msgTheme);
+              nlp.classifier.train();
+
+              // Save the nlp.classifier for further usage
+              nlp.classifier.save('classifier.json', function(err, classifier) {
+                if (err) {
+                  console.log(`Error saving changes to the nlp.classifier : ${err}`);
+                }
+              });
+            } else {
+              console.log(`The message "${msg.content}" was not classified because it didn't have a valid class...`);
+            }
+          }
+        } else {
+          console.log('no reply needed');
+
+          if (msgTheme === 'movie review') {
+            let args = msg.content.split(' ');
+
+            rottenParser.getMovieReview(msg.content)
+              .then(movieData => {
+
+                let reply = {
+                  title: movieData.title,
+                  img: movieData.poster,
+                  url: movieData.url,
+                  description: `<u>Synopsis</u> : ${movieData.synopsis}`,
+                  fields: [
+                    `<u>Rating</u> : ${movieData.rating}`,
+                    `<u>Critics consensus</u> : ${movieData.consensus}`
+                  ]
+                };
+
+                if (!movieData.rating.match(/No rating found/i)) {
+                  if (movieData.rating > '80%') {
+                    reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/cf-lg.3c29eff04f2.png';
+                    reply.color = 'gold';
+                  } else if (movieData.rating > '50%' && movieData.rating < '80%') {
                     reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-fresh-lg.12e316e31d2.png';
                     reply.color = 'red';
+                  } else {
+                    reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-rotten-lg.ecdfcf9596f.png';
+                    reply.color = 'green';
                   }
+                } else {
+                  reply.icon = 'https://www.rottentomatoes.com/assets/pizza-pie/images/icons/global/new-fresh-lg.12e316e31d2.png';
+                  reply.color = 'red';
+                }
 
+                new Reply(reply, io, settings, replyID, msgTheme).send();
+              })
+              .catch(err => {
+                console.log(err);
+                let link = `https://www.rottentomatoes.com/search/?search=${args.join(' ')}`;
+                let linkTag = `<a class="embed__link" href="${link}">${link}</a>`;
 
-                  msgTheme = 'movie review';
+                new Reply(
+                  `Sorry, I couldn't get this movie review... ${emoijis.expressionless} \n` +
+                  `Please try again using another keywords or go to this results page : ${linkTag}`,
+                  io, settings, replyID, msgTheme
+                ).send();
+              });
 
-                  new Reply(reply, io, settings, replyID, msgTheme).send();
-                })
-                .catch((err) => {
-                  console.log(err);
-                  let link = `https://www.rottentomatoes.com/search/?search=${args.join(' ')}`;
-                  let linkTag = `<a class="embed__link" href="${link}">${link}</a>`;
-
-                  new Reply(
-                    `Sorry, I couldn't get this movie review... ${emoijis.expressionless} \n` +
-                    `Please try again using another keywords or go to this results page : ${linkTag}`,
-                    io, settings, replyID, msgTheme
-                  ).send();
-                });
-            });
-          }
-        } else if (tokenize(msg.content)[0].value === 0.5) {
-          reply = `Sorry, I didn't understand you because I'm not clever enough for now...`;
-        }
-
-        // Check if the reply is not empty before sending it
-        if (reply !== '') {
-          let answer = new Reply(reply, io, settings, replyID, msgTheme).send();
-
-          let content = nlp.tokenizer.tokenize(msg.content);
-
-          // Add the last user message to nlp.classifier and train the bot with it
-          if (tokenize(msg.content)[0].value !== 'none') {
-            nlp.classifier.addDocument(content, msgTheme);
-            nlp.classifier.train();
-
-            // Save the nlp.classifier for further usage
-            nlp.classifier.save('classifier.json', function(err, classifier) {
-              if (err) {
-                console.log(`Error saving changes to the nlp.classifier : ${err}`);
-              }
-            });
-          } else {
-            console.log(`The message "${msg.content}" was not classified because it didn't have a valid class...`);
+            isReplyNeeded = true;
           }
         }
       });

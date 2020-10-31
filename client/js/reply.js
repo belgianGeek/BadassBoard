@@ -39,7 +39,7 @@ socket.on('reply', reply => {
         replyElt.append(`<img src="${reply.content.img}" alt="${reply.content.title} picture" class="embed__pic"/>`)
       }
     } else {
-      replyElt.text(reply.content);
+      replyElt.append(`<span>${reply.content}</span>`);
     }
 
     replyElt.appendTo('.chatContainer__msgList__list');
