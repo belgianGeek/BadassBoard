@@ -9,7 +9,7 @@ const youtube2rss = () => {
     $('.mainContainer, header, .backgroundImage').addClass('blur');
 
     $('.yt2rss__container__child__left__input').on('input', function() {
-      if ($(this).val().match(/[A-Za-z0-9]{24}/)) {
+      if ($(this).val().match(/[A-Za-z0-9-]{24}/)) {
         let result = `https://www.youtube.com/feeds/videos.xml?channel_id=${$(this).val()}`;
         $('.yt2rss__container__child__left__output').val(result);
       }
