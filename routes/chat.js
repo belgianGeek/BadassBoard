@@ -99,27 +99,11 @@ module.exports = function(app, io, settings) {
           if (msg.content.match(/(how are (you|u)|what's up)/gi)) {
             reply = `I'm fine. What about you ?`;
             msgTheme = 'news';
-
-            io.on('chat msg', msg => {
-              msgTheme = 'news';
-
-              let answers = [
-                'Nice to hear !',
-                'Great !'
-              ];
-
-              reply = answers.random();
-            });
           } else {
             reply = `Hey ${msg.author} ! What can I do for you ?`;
             msgTheme = 'greetings';
-
-            io.on('chat msg', msg => {
-              if (msg.content.match(/nothing/i)) {
-                reply = new Reply('Ok then, I\'ll leave you alone.', io, settings, replyID, msgTheme).send();
-              }
-            });
           }
+          isReplyNeeded = false;
         }
 
         const searchWiki = (args, msg) => {
@@ -292,7 +276,12 @@ module.exports = function(app, io, settings) {
         } else {
           console.log('no reply needed');
 
-          if (msgTheme === 'movie review') {
+          if (msgTheme === 'greetings') {
+            if (msg.content.match(/nothing/i)) {
+              new Reply('Ok then, I\'ll leave you alone.', io, settings, replyID, msgTheme).send();
+              isReplyNeeded = true;
+            }
+          } else if (msgTheme === 'movie review') {
             let args = msg.content.split(' ');
 
             rottenParser.getMovieReview(msg.content)
@@ -339,6 +328,14 @@ module.exports = function(app, io, settings) {
                 ).send();
               });
 
+            isReplyNeeded = true;
+          } else if (msgTheme === 'news') {
+            let answers = [
+              'Nice to hear !',
+              'Great !'
+            ];
+
+            new Reply(answers.random(), io, settings, replyID, msgTheme).send();
             isReplyNeeded = true;
           }
         }
