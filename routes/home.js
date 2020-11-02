@@ -8,6 +8,7 @@ module.exports = function(app, io, settings) {
   const badassUpdate = require('../modules/update');
   const fs = require('fs-extra');
   const customize = require('../modules/customize');
+  const os = require('os');
 
   // Define a counter to prevent multiple addings
   let iAddElt = 0;
