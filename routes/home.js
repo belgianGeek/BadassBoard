@@ -255,7 +255,7 @@ module.exports = function(app, io, settings) {
 
           download.on('close', () => {
             console.log(downloadLog);
-            if (downloadLog !== null) {
+            if (downloadLog !== null && downloadLog !== undefined) {
               filename = downloadLog
                 .match(/(tmp\\|tmp\/).*(.mp3)/i)[0]
                 .substring(4, 100);
@@ -301,6 +301,7 @@ module.exports = function(app, io, settings) {
           fs.stat('/usr/local/bin/youtube-dl', (err, stats) => {
             if (err) {
               if (err.code === 'ENOENT') {
+                console.error('Youtube-dl executable not found /usr/bin folder, using manual download method instead...');
                 manualAudioDownload();
               } else {
                 io.emit('errorMsg', {
