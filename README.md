@@ -1,5 +1,3 @@
-[![Runme](https://runme.io/static/button.svg)](https://runme.io/run?app_id=9ee2c4a3-e601-4a3a-a82f-3e1846b4e624)
-
 #  ̿̿ ̿̿ ̿'̿'\̵͇̿̿\з= ( ▀ ͜͞ʖ▀) =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿
 
 ![Screenshot](https://raw.githubusercontent.com/belgianGeek/BadassBoard/dev/screenshots/home.jpg)
@@ -8,14 +6,14 @@
 
 This project intent to be an open source, self-hosted replacement for services like _start.me_.
 
-Please not that this a project intented for me to LEARN. So do not exepect a beautifully amazing state-of-the-art stuff :innocent: . This might contains bugs or missing features you would LOVE to use. You're in that case ? Well, the deal is really simple : open a GitHub issue or email me :wink: .
+Please not that this a project intented to LEARN web development. So do not expect a beautifully amazing state-of-the-art stuff :innocent: . This might contains bugs or missing features you would LOVE to use. You're in that case ? Well, the deal is really simple : open a GitHub issue, a pull request or email me :wink: .
 
 Its features includes :
 
 - RSS reader ;
 - Weather forecast (thanks to the _OpenWeatherMap_ API) => you'll need a token to use this thing ;
 - Web shortcuts to several websites (based on the DuckDuckGo _Bangs_ system) ;
-- Audio streaming from YouTube thanks to the _Invidio.us_ API (playlist and videos are both supported) ;
+- Audio streaming from YouTube thanks to the _Invidious_ API (both playlists, mixes and videos are supported) ;
 - IT units converter (only from bytes to terabytes for now) ;
 - Instant Youtube Search ;
 - Basic chatbot ;
@@ -67,7 +65,7 @@ _BadassBoard_ can provide you weather forecast thanks to the _OpenWeatherMap_ AP
 
 ## Audio streaming
 
-As mentioned above, you can stream YouTube videos or playlists (thanks to the _Invidio.us_ API). Because _Invidio.us_ is becoming more and more popular, you might encounter some issues while using this feature. In this case, a message will inform you that your request couldn't be completed. If you're facing it, I invite you to open an issue with the more details that you can provide. But keep in mind that this might be related to _Invidio.us_ itself, as the audio streaming feature is based on it.
+As mentioned above, you can stream YouTube videos or playlists (thanks to the _Invidious_ API). Because _Invidious_ is becoming more and more popular, you might encounter some issues while using this feature. In this case, a message will inform you that your request couldn't be completed. If you're facing it, I invite you to open an issue with the more details that you can provide. But keep in mind that this might be related to the  _Invidious_ instance being used, as the audio streaming feature is based on it.
 
 ## Chatbot
 
@@ -99,15 +97,14 @@ Like mentioned in the `package.json` file, the CSS code can be compiled with the
 
 A special thank to the maintainers and creators of :
 
-- [Express](https://github.com/expressjs/express) and [Multer](https://github.com/expressjs/multer) ;
-- [Socket.io](https://socket.io) ;
-- [Ytdl-core](https://github.com/fent/node-ytdl-core) ;
-- [Feedparser-promised](https://github.com/alabeduarte/feedparser-promised) ;
-- [Request](https://github.com/request/request) ;
-- [IP](https://github.com/indutny/node-ip) ;
-- [opusscript](https://github.com/abalabahaha/opusscript) ;
 - [Cheerio](https://cheerio.js.org/) ;
+- [Express](https://github.com/expressjs/express) ;
+- [Feedparser-promised](https://github.com/alabeduarte/feedparser-promised) ;
+- [IP](https://github.com/indutny/node-ip) ;
+- [Minify](https://github.com/coderaiser/minify) ;
 - [Natural](https://github.com/NaturalNode/natural) ;
+- [opusscript](https://github.com/abalabahaha/opusscript) ;
 - [Puppeteer](https://pptr.dev/) ;
 - [SCSS](https://yarnpkg.com/en/package/scss) ;
-- [Minify](https://github.com/coderaiser/minify) ;
+- [Socket.io](https://socket.io) ;
+- [Ytdl-core](https://github.com/fent/node-ytdl-core) ;
