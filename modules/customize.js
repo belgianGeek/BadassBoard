@@ -3,7 +3,7 @@ const path = require('path');
 const Reply = require('./reply');
 
 module.exports = function(io, settings, customizationData) {
-  const deleteNotProcessedFile = filename => fs.remove(path.join(__dirname, filename));
+  const deleteNotProcessedFile = filename => fs.remove(path.join(__dirname,  `.${filename}`));
   const handlePicture = type => {
     if (type === 'avatar') {
       if (settings.bot.icon !== undefined) {
