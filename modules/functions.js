@@ -72,7 +72,7 @@ module.exports = {
         if (subEltsValue.type === 'rss') {
           delete subEltsValue.feed;
         }
-        
+
         updatedSettings.elements[bigI].elements = subElts;
 
         if (bigI === updatedSettings.elements.length - 1 && i === subElts.length - 1) {
@@ -80,7 +80,7 @@ module.exports = {
             if (err) {
               console.log(`Error saving settings : ${err}`);
             } else {
-              console.log('Settings successfully saved !');
+              console.log(`Settings successfully saved on ${new Date(Date.now()).toUTCString()} !`);
               if (callback !== undefined) {
                 callback();
               }
