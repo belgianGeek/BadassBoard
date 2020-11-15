@@ -1,4 +1,4 @@
-const autocomplete = (search) => {
+const autocomplete = search => {
   let matches = suggestions.filter(suggestion => {
     const regex = new RegExp(`^${search}`, 'gi');
     return suggestion.label.match(regex);

@@ -116,13 +116,6 @@ socket.on('RSS status retrieved', rssStatus => {
   checkRSSstatus(rssStatus);
 });
 
-if (!$('.subRow').length) {
-  $('footer').css({
-    position: 'absolute',
-    top: '90%'
-  });
-}
-
 // Show the "about" page
 showAbout();
 
