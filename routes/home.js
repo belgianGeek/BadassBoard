@@ -73,7 +73,7 @@ module.exports = function(app, io, settings) {
         io.emit('wallpaper', settings.backgroundImage);
       }
 
-      io.once('add content', feedData => {
+      io.on('add content', feedData => {
         var elements = settings.elements;
 
         settings.RSS = true;
@@ -194,12 +194,12 @@ module.exports = function(app, io, settings) {
         iAddElt = 0;
       });
 
-      io.once('customization', customizationData => {
+      io.on('customization', customizationData => {
         customize(io, settings, customizationData);
         io.emit('customization data retrieved');
       });
 
-      io.once('download', (id) => {
+      io.on('download', (id) => {
         let options = [
           '-x',
           '--audio-format',
@@ -320,24 +320,17 @@ module.exports = function(app, io, settings) {
         }
       });
 
-      io.once('audio info request', (streamData) => {
-        let id = streamData.id;
-        ytdl(id, (err, info) => {
-          if (err) {
-            console.log(`Error getting audio info with ytdl : ${err}`);
-          } else {
-            fs.writeFile('./streamInfo.json', JSON.stringify(info, null, 2), 'utf-8', (err) => {
-              if (err) throw err;
-            });
-
+      io.on('audio info request', streamData => {
+        ytdl(streamData)
+          .on('error', err => console.error(`Error getting audio info with ytdl : ${err}`))
+          .on('info', info => {
             io.emit('audio info retrieved', {
-              title: info.player_response.videoDetails.title
+              title: info.playerResponse.videoDetails.title
             });
-          }
-        });
+          });
       });
 
-      io.once('update feed', (feed2update) => {
+      io.on('update feed', (feed2update) => {
         for (const i of settings.elements) {
           for (const j of i.elements) {
             let eltRegex = new RegExp(j.element, 'gi');
@@ -359,9 +352,9 @@ module.exports = function(app, io, settings) {
         }
       });
 
-      io.once('parse playlist', playlistData => {
+      io.on('parse playlist', playlistData => {
+        let domain = 'fdn.fr';
         const handlePlaylistRequest = (url, id) => {
-          let domain = 'fdn.fr';
           axios({
               url: url,
               method: 'GET'
@@ -370,7 +363,7 @@ module.exports = function(app, io, settings) {
               let result = res.data;
 
               if (result.error === undefined) {
-                fs.writeFile('../tmp/playlist.json', JSON.stringify(result, null, 2), 'utf-8', (err) => {
+                fs.writeFile(path.join(__dirname, '../tmp', 'playlist.json'), JSON.stringify(result, null, 2), 'utf-8', (err) => {
                   if (err) throw err;
                   io.emit('playlist parsed', domain);
 
@@ -406,7 +399,7 @@ module.exports = function(app, io, settings) {
         handlePlaylistRequest(playlistData.url, playlistData.id);
       });
 
-      io.once('remove content', content2remove => {
+      io.on('remove content', content2remove => {
         let found = false;
         for (const [i, settingsElts] of settings.elements.entries()) {
           // Set a variable to stop the loop as soon as the element is removed
@@ -421,7 +414,7 @@ module.exports = function(app, io, settings) {
         }
       });
 
-      io.once('update check', () => {
+      io.on('update check', () => {
         badassUpdate(io, tag);
       });
     });

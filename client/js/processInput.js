@@ -14,9 +14,7 @@ const processInput = (msg) => {
         socket.emit('download', id);
 
         // Ask for some audio info
-        socket.emit('audio info request', {
-          id: id
-        });
+        socket.emit('audio info request', id);
 
         socket.on('audio info retrieved', (audioInfo) => {
           if (audioInfo.title !== undefined && audioInfo.title !== null) {
