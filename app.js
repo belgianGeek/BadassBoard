@@ -24,7 +24,7 @@ app.downloadedFile = {
   name: ''
 }
 
-app.tag = '0.4.0';
+app.tag = '0.4.2';
 
 // Check if folders exist
 functions.existPath('./upload/');
