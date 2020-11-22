@@ -135,42 +135,44 @@ const parseContent = () => {
             buildRssContainer(feed, (feed, rssContainer) => {
               rssContainer.appendTo(fullElementClassName);
 
-              let rssContainerHeader = $('<div></div>')
-                .addClass('rssContainer__header')
-                .prependTo(`${fullElementClassName} .rssContainer`);
+              if (!$(`${fullElementClassName} .rssContainer__header`).length) {
+                let rssContainerHeader = $('<div></div>')
+                  .addClass('rssContainer__header')
+                  .prependTo(`${fullElementClassName} .rssContainer`);
 
-              let feedTitle = $('<a></a>')
-                .addClass('feedTitle')
-                .attr({
-                  href: feed[0].meta.link
-                })
-                .text(feed[0].meta.title)
-                .prependTo(`${fullElementClassName} .rssContainer__header`);
+                let feedTitle = $('<a></a>')
+                  .addClass('feedTitle')
+                  .attr({
+                    href: feed[0].meta.link
+                  })
+                  .text(feed[0].meta.title)
+                  .prependTo(`${fullElementClassName} .rssContainer__header`);
 
-              // Add content options
-              let contentOptions = $('<span></span>')
-                .addClass('contentOptions')
-                .appendTo(rssContainerHeader);
+                // Add content options
+                let contentOptions = $('<span></span>')
+                  .addClass('contentOptions')
+                  .appendTo(rssContainerHeader);
 
-              let updateContentBtn = $('<img>')
-                .addClass('updateContentBtn')
-                .attr({
-                  alt: 'Update content',
-                  src: './client/scss/icons/interface/refresh.svg'
-                })
-                .appendTo(contentOptions);
+                let updateContentBtn = $('<img>')
+                  .addClass('updateContentBtn')
+                  .attr({
+                    alt: 'Update content',
+                    src: './client/scss/icons/interface/refresh.svg'
+                  })
+                  .appendTo(contentOptions);
 
-              let removeContentBtn = $('<img>')
-                .addClass('removeContentBtn')
-                .attr({
-                  alt: 'Remove content',
-                  src: './client/scss/icons/interface/cross.svg'
-                })
-                .appendTo(contentOptions);
+                let removeContentBtn = $('<img>')
+                  .addClass('removeContentBtn')
+                  .attr({
+                    alt: 'Remove content',
+                    src: './client/scss/icons/interface/cross.svg'
+                  })
+                  .appendTo(contentOptions);
+
+                addContentOptions(fullElementClassName);
+              }
 
               displayArticleSummary();
-
-              addContentOptions(fullElementClassName);
             });
           }
         }
