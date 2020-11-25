@@ -45,6 +45,7 @@ module.exports = function(app, io, settings) {
             if (subEltsValue.type === 'rss') {
               feedparser.parse(subEltsValue.url)
                 .then(items => {
+                  fs.writeFile(`rss_${items.meta.title}.json`, JSON.stringify(items, null, 2), err => console.error(err));
                   subEltsValue.feed = items;
                   eltsArray.push(subEltsValue);
 
