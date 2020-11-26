@@ -134,7 +134,6 @@ const parseContent = () => {
           if (!$(`${fullElementClassName} .rssContainer`).length) {
             buildRssContainer(feed, fullElementClassName, (feed, rssContainer) => {
               rssContainer.appendTo(fullElementClassName);
-              console.log(feed[0].meta.link);
 
               if (!$(`${fullElementClassName} .rssContainer__header`).length) {
                 let rssContainerHeader = $('<div></div>')
