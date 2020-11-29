@@ -7,9 +7,9 @@
   "browserslist": "last 4 versions",
   "scripts": {
     "start": "node app.js",
-    "sass": "sass ./src/scss/index.scss:./src/scss/app.css --style compressed",
+    "sass": "sass ./client/scss/index.scss:./client/scss/app.css --style compressed",
     "minify": "node minify.js",
-    "prefix": "postcss ./src/scss/404.css --use autoprefixer -d ./src/scss/prefixed && postcss ./src/scss/app.css --use autoprefixer -d ./src/scss/prefixed"
+    "prefix": "postcss ./client/scss/404.css --use autoprefixer -d ./client/scss/prefixed && postcss ./client/scss/app.css --use autoprefixer -d ./client/scss/prefixed"
   },
   "dependencies": {
     "adm-zip": "^0.4.16",

@@ -133,7 +133,9 @@ const parseContent = () => {
           // Create the RSS container if they don't exist
           if (!$(`${fullElementClassName} .rssContainer`).length) {
             buildRssContainer(feed, fullElementClassName, (feed, rssContainer) => {
-              rssContainer.appendTo(fullElementClassName);
+              rssContainer
+                .appendTo(fullElementClassName)
+                .addClass(`rssContainer__${document.querySelector(`${fullElementClassName} .rssContainer`).childElementCount}`);
 
               if (!$(`${fullElementClassName} .rssContainer__header`).length) {
                 let rssContainerHeader = $('<div></div>')
