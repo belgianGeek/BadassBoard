@@ -10,9 +10,7 @@ const buildRssContainer = (feed, fullElementClassName, callback) => {
   let iContainer = 0;
 
   for (let i = 0; i < length; i++) {
-    if (feed[i] !== undefined && i <= 49) {
-      if (feed[i].meta.title === 'Korben') console.log(i, feed[i].title);
-      else console.log(i, feed[i].meta.title);
+    if (feed[i] !== undefined && i <= length - 1) {
       let article = $('<div></div>')
         .addClass('article flex')
         .appendTo(linksContainer);
@@ -35,6 +33,43 @@ const buildRssContainer = (feed, fullElementClassName, callback) => {
           .appendTo(rssContainer);
 
         rssContainer.addClass(`rssContainer__${iContainer + 1}`);
+
+        if (!$(`${fullElementClassName} .rssContainer__${iContainer + 1} .rssContainer__header`).length) {
+          let rssContainerHeader = $('<div></div>')
+            .addClass('rssContainer__header')
+            .prependTo(`${fullElementClassName} .rssContainer__${iContainer + 1}`);
+
+          let feedTitle = $('<a></a>')
+            .addClass('feedTitle')
+            .attr({
+              href: feed[0].meta.link
+            })
+            .text(feed[0].meta.title)
+            .prependTo(rssContainerHeader);
+
+          // Add content options
+          let contentOptions = $('<span></span>')
+            .addClass('contentOptions')
+            .appendTo(rssContainerHeader);
+
+          let updateContentBtn = $('<img>')
+            .addClass('updateContentBtn')
+            .attr({
+              alt: 'Update content',
+              src: './client/scss/icons/interface/refresh.svg'
+            })
+            .appendTo(contentOptions);
+
+          let removeContentBtn = $('<img>')
+            .addClass('removeContentBtn')
+            .attr({
+              alt: 'Remove content',
+              src: './client/scss/icons/interface/cross.svg'
+            })
+            .appendTo(contentOptions);
+
+          addContentOptions(fullElementClassName);
+        }
 
         if (i > 10) rssContainer.addClass('rssContainer hidden')
         else rssContainer.addClass('rssContainer flex');

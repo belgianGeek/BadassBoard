@@ -133,46 +133,7 @@ const parseContent = () => {
           // Create the RSS container if they don't exist
           if (!$(`${fullElementClassName} .rssContainer`).length) {
             buildRssContainer(feed, fullElementClassName, (feed, rssContainer) => {
-              rssContainer
-                .appendTo(fullElementClassName)
-                .addClass(`rssContainer__${document.querySelector(`${fullElementClassName} .rssContainer`).childElementCount}`);
-
-              if (!$(`${fullElementClassName} .rssContainer__header`).length) {
-                let rssContainerHeader = $('<div></div>')
-                  .addClass('rssContainer__header')
-                  .prependTo(`${fullElementClassName} .rssContainer`);
-
-                let feedTitle = $('<a></a>')
-                  .addClass('feedTitle')
-                  .attr({
-                    href: feed[0].meta.link
-                  })
-                  .text(feed[0].meta.title)
-                  .prependTo(`${fullElementClassName} .rssContainer__header`);
-
-                // Add content options
-                let contentOptions = $('<span></span>')
-                  .addClass('contentOptions')
-                  .appendTo(rssContainerHeader);
-
-                let updateContentBtn = $('<img>')
-                  .addClass('updateContentBtn')
-                  .attr({
-                    alt: 'Update content',
-                    src: './client/scss/icons/interface/refresh.svg'
-                  })
-                  .appendTo(contentOptions);
-
-                let removeContentBtn = $('<img>')
-                  .addClass('removeContentBtn')
-                  .attr({
-                    alt: 'Remove content',
-                    src: './client/scss/icons/interface/cross.svg'
-                  })
-                  .appendTo(contentOptions);
-
-                addContentOptions(fullElementClassName);
-              }
+              rssContainer.appendTo(fullElementClassName);
 
               displayArticleSummary();
             });
