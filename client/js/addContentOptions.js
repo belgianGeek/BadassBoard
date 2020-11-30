@@ -1,9 +1,6 @@
 const addContentOptions = (element) => {
 
-  const emptyConfirmationContent = () => {
-    // Empty the confirmation content
-    $('.confirmation__child__content section').remove();
-  }
+  const emptyConfirmationContent = () => $('.confirmation__child__content section').remove();
 
   const removeContent = (parent, element2remove, child) => {
     if ($(element2remove).length) {

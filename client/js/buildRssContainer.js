@@ -7,6 +7,8 @@ const buildRssContainer = (feed, fullElementClassName, callback) => {
   if (feed.length <= length) length = feed.length;
 
   let pageCount = (length - 1).toString().split('');
+  let iContainer = 0;
+
   for (let i = 0; i < length; i++) {
     if (feed[i] !== undefined && i <= 49) {
       if (feed[i].meta.title === 'Korben') console.log(i, feed[i].title);
@@ -32,6 +34,8 @@ const buildRssContainer = (feed, fullElementClassName, callback) => {
           .addClass('linksContainer')
           .appendTo(rssContainer);
 
+        rssContainer.addClass(`rssContainer__${iContainer + 1}`);
+
         if (i > 10) rssContainer.addClass('rssContainer hidden')
         else rssContainer.addClass('rssContainer flex');
 
@@ -54,6 +58,8 @@ const buildRssContainer = (feed, fullElementClassName, callback) => {
         rssContainer = $('<section></section>');
         linksContainer = $('<div></div>');
       }
+    } else {
+      iContainer = 0;
     }
   }
 }
