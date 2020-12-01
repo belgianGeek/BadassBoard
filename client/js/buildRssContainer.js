@@ -74,8 +74,27 @@ const buildRssContainer = (feed, fullElementClassName, callback) => {
         if (i > 10) rssContainer.addClass('rssContainer hidden')
         else rssContainer.addClass('rssContainer flex');
 
-        let leftArrow = $('<svg class="rssContainer__arrows__left" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>');
-        let rightArrow = $('<svg class="rssContainer__arrows__right" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>');
+        let leftArrow = $('<svg class="rssContainer__arrows__left" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>')
+          .click(function() {
+            let rssContainerClass = $(this).parents('.rssContainer').attr('class').split(' ')[0];
+            let rssContainerId = Number(rssContainerClass.match(/\d{1,}/));
+
+            $(`${fullElementClassName} .${rssContainerClass}, ${fullElementClassName} .rssContainer__${rssContainerId - 1}`).toggleClass('hidden flex');
+
+            if (iContainer === totalPages) $(this).removeClass('flex').addClass('hidden');
+            else $(this).removeClass('hidden').addClass('flex');
+          });
+
+        let rightArrow = $('<svg class="rssContainer__arrows__right" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>')
+          .click(function() {
+            let rssContainerClass = $(this).parents('.rssContainer').attr('class').split(' ')[0];
+            let rssContainerId = Number(rssContainerClass.match(/\d{1,}/));
+
+            $(`${fullElementClassName} .${rssContainerClass}, ${fullElementClassName} .rssContainer__${rssContainerId + 1}`).toggleClass('hidden flex');
+
+            if (iContainer + 1 === totalPages) $(this).removeClass('flex').addClass('hidden');
+            else $(this).removeClass('hidden').addClass('flex');
+          });
 
         let totalPages;
         if (pageCount[1] > 0) totalPages = Number(pageCount[0]) + 1;
@@ -84,7 +103,7 @@ const buildRssContainer = (feed, fullElementClassName, callback) => {
         let arrowsContainer = $('<span></span>')
           .addClass('rssContainer__arrows')
           .prepend(leftArrow)
-          .append(`<span>1 / ${totalPages}</span>`)
+          .append(`<span>${iContainer + 1} / ${totalPages}</span>`)
           .append(rightArrow)
           .appendTo(rssContainer);
 
