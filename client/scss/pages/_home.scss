@@ -608,6 +608,22 @@
       align-items: center;
     }
 
+    .rssContainer__arrows {
+      width: 100%;
+      flex-direction: row;
+      justify-content: space-evenly;
+      align-items: center;
+
+      & span,
+      & svg {
+        width: 33%;
+      }
+
+      & span {
+        text-align: center;
+      }
+    }
+
     .feedTitle,
     .youtubeSearchContainer__header p {
       display: block;
@@ -869,11 +885,6 @@
             margin-right: 5%;
           }
         }
-      }
-
-      .rssContainer__arrows {
-        width: 100%;
-        justify-content: space-evenly;
       }
 
       .youtubeSearchContainer {
