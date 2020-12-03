@@ -95,8 +95,15 @@ const buildRssContainer = (feed, fullElementClassName, callback) => {
           if (rssContainerId > 1) {
             $(`${fullElementClassName} .${rssContainerClass}, ${fullElementClassName} .rssContainer__${rssContainerId - 1}`).toggleClass('hidden flex');
 
-            if ((rssContainerId - 1) === 1) $(`${fullElementClassName} .rssContainer__${rssContainerId - 1} .rssContainer__arrows svg`).toggleClass('flex opacity0');
-            else $(`${fullElementClassName} .rssContainer__${rssContainerId - 1} .rssContainer__arrows__right`).removeClass('opacity0').addClass('flex');
+            if ((rssContainerId - 1) === 1) {
+              $(`${fullElementClassName} .rssContainer__${rssContainerId - 1} .rssContainer__arrows__right`)
+                .removeClass('opacity0')
+                .addClass('flex');
+
+              $(`${fullElementClassName} .rssContainer__${rssContainerId - 1} .rssContainer__arrows__left`)
+                .removeClass('flex')
+                .addClass('opacity0');
+            } else $(`${fullElementClassName} .rssContainer__${rssContainerId - 1} .rssContainer__arrows__right`).removeClass('opacity0').addClass('flex');
           }
         });
 
