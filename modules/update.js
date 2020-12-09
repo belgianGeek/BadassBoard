@@ -4,12 +4,14 @@ const axios = require('axios');
 const path = require('path');
 const cp = require('child_process').exec;
 
-module.exports = function update(io, tag) {
+module.exports = function(io, tag) {
+  console.log(tag);
   axios({
       url: 'https://api.github.com/repositories/204866456/releases',
       method: 'GET'
     })
     .then(res => {
+      console.log(res.status);
       if (res.status === 200) {
         if (res.data[0].tag_name > tag) {
           axios({
@@ -23,10 +25,7 @@ module.exports = function update(io, tag) {
 
               if (res.status === 200) {
                 // Send update progress to the client
-                io.emit('update progress', {
-                  code: 200,
-                  text: 'Downloading...'
-                });
+                io.emit('update progress', 'Downloading...');
 
                 res.data.pipe(downloadWriteStream);
                 downloadWriteStream.on('error', err => {
@@ -39,10 +38,7 @@ module.exports = function update(io, tag) {
                     let unzippedDir = `tmp/${zipEntries[0].entryName}`;
 
                     // Send update progress to the client
-                    io.emit('update progress', {
-                      code: 200,
-                      text: 'Unzipping...'
-                    });
+                    io.emit('update progress', 'Unzipping...');
 
                     zip.extractAllTo('./tmp/', true);
                     fs.readdir(path.join(__dirname, '..', unzippedDir), (err, files) => {
@@ -80,21 +76,12 @@ module.exports = function update(io, tag) {
                             });
 
                             // Send update progress to the client
-                            io.emit('update progress', {
-                              code: 200,
-                              text: 'Cleaning up...'
-                            });
+                            io.emit('update progress', 'Cleaning up...');
                             console.log('Cleaning up...');
                             fs.remove(unzippedDir, () => {
-                              io.emit('update progress', {
-                                code: 200,
-                                text: 'Done !'
-                              });
+                              io.emit('update progress', 'Done !');
 
-                              io.emit('update progress', {
-                                code: 200,
-                                text: 'Please restart BadassBoard'
-                              });
+                              io.emit('update progress', 'Please restart BadassBoard');
                             });
                           }
                         });
@@ -112,18 +99,12 @@ module.exports = function update(io, tag) {
             .catch(err => {
               console.error(err);
             });
-        } else if (res.data[0].tag_name === tag) {
+        } else if (res.data[0].tag_name >= tag) {
           console.log("You're already up-to-date, you badass");
-          io.emit('update progress', {
-            code: 200,
-            text: 'Done !'
-          });
+          io.emit('update progress', 'Done !');
 
           setTimeout(() => {
-            io.emit('update progress', {
-              code: 200,
-              text: 'Check for updates'
-            });
+            io.emit('update progress', 'Check for updates');
           }, 2500);
         }
       } else if (res.status === 404) {
@@ -132,6 +113,9 @@ module.exports = function update(io, tag) {
         console.log('Hey, you\'re not allowed to visit this page !');
       } else if (res.status === 500) {
         console.log('GitHub server error :((');
+      } else {
+        console.error(`An unknown error occurred while checking for update... The server sent a ${res.status} status code.`);
       }
-    });
+    })
+    .catch(err => console.error(`An Axios error occurred while checking for BadassBoard updates : ${err}`));
 };

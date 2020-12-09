@@ -15,6 +15,7 @@ const showAbout = () => {
   });
 
   socket.on('update progress', msg => {
+    console.log(msg);
     $('.updateBtn').text(msg.text);
   });
 

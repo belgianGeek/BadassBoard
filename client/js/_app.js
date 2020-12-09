@@ -1,6 +1,3 @@
-// Store the current version number
-let currentVersion = '0.3.0';
-
 // Define a variable to store the ID of the currently played track
 let iPlaylist = 0;
 
@@ -131,7 +128,7 @@ socket.on('refresh app', () => {
   location.reload();
 });
 
-socket.on('errorMsg', (err) => {
+socket.on('errorMsg', err => {
   printError(err);
 });
 

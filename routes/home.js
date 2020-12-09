@@ -415,7 +415,7 @@ module.exports = function(app, io, settings) {
       });
 
       io.on('update check', () => {
-        badassUpdate(io, tag);
+        badassUpdate(io, app.tag);
       });
     });
   });
