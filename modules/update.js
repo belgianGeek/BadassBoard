@@ -5,13 +5,11 @@ const path = require('path');
 const cp = require('child_process').exec;
 
 module.exports = function(io, tag) {
-  console.log(tag);
   axios({
       url: 'https://api.github.com/repositories/204866456/releases',
       method: 'GET'
     })
     .then(res => {
-      console.log(res.status);
       if (res.status === 200) {
         if (res.data[0].tag_name > tag) {
           axios({
