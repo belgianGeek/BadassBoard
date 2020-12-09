@@ -39,10 +39,10 @@ const buildRssContainer = (feed, fullElementClassName, callback) => {
 
         rssContainer.addClass(`rssContainer__${iContainer + 1}`);
 
-        if (!$(`${fullElementClassName} .rssContainer__${iContainer + 1} .rssContainer__header`).length) {
+        if (!rssContainer.children('.rssContainer__header').length) {
           let rssContainerHeader = $('<div></div>')
             .addClass('rssContainer__header')
-            .prependTo(`${fullElementClassName} .rssContainer__${iContainer + 1}`);
+            .prependTo(rssContainer);
 
           let feedTitle = $('<a></a>')
             .addClass('feedTitle')
@@ -130,6 +130,8 @@ const buildRssContainer = (feed, fullElementClassName, callback) => {
             }
           });
         }
+
+        iContainer++;
 
         callback(feed, rssContainer);
 
