@@ -325,7 +325,7 @@ module.exports = function(app, io, settings) {
           .on('error', err => console.error(`Error getting audio info with ytdl : ${err}`))
           .on('info', info => {
             io.emit('audio info retrieved', {
-              title: info.playerResponse.videoDetails.title
+              title: info.player_response.videoDetails.title
             });
           });
       });
