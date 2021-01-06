@@ -6,35 +6,34 @@
 
 This project intent to be an open source, self-hosted replacement for services like _start.me_.
 
-Please not that this a project intented to LEARN web development. So do not expect a beautifully amazing state-of-the-art stuff :innocent: . This might contains bugs or missing features you would LOVE to use. You're in that case ? Well, the deal is really simple : open a GitHub issue, a pull request or email me :wink: .
+Please note that this a project intented to LEARN web development. So do not expect a beautifully amazing state-of-the-art stuff :innocent: . This might contains bugs or missing features you would LOVE to use. You're in such case ? Well, the deal is really simple : open a GitHub issue or a pull request :wink: .
 
 Its features includes :
 
 - RSS reader ;
-- Weather forecast (thanks to the _OpenWeatherMap_ API) => you'll need a token to use this thing ;
+- Weather forecast (thanks to the _OpenWeatherMap_ API) ;
 - Web shortcuts to several websites (based on the DuckDuckGo _Bangs_ system) ;
 - Audio streaming from YouTube thanks to the _Invidious_ API (both playlists, mixes and videos are supported) ;
 - IT units converter (only from bytes to terabytes for now) ;
 - Instant Youtube Search ;
 - Basic chatbot ;
+- A YouTube channel ID to RSS converter ;
 
 All of that available through a (nice ?) and customizable UI.
-
-**NB: This is still in beta stage, so please be patient and indulgent :grin:**
 
 # Installation
 
 You must have [Node.js](http://nodejs.org) installed on your system. If this is not the case, please follow this link : https://nodejs.org/en/download/.
 
-Then, you can clone this repo or download the files using the download button in upper right corner of the main page, or by downloading the `.zip` file in the releases tab.
+Then, you can clone this repo or download the files using the download button in upper right corner of the main page, or by downloading the `.zip` file in the [releases](https://github.com/belgianGeek/BadassBoard/releases) tab.
 
-Once Node.js is installed, open a terminal/console in the project's root directory on your computer and install the dependencies by running the command `npm install` or `yarn install`.
+Once Node.js is installed, open a terminal/console in the project's root directory on your computer and install the dependencies by running the command `npm install`.
 
 :point_right: **Please note that this last step won't work if you do not have Node.js installed**.
 
 # How to use it ?
 
-First, make sure you are in the project's root directory. Then, you can launch the app by running the command `npm run start` or `yarn start` in your console.
+First, make sure you are in the project's root directory. Then, you can launch the app by running the command `npm run start` in your console.
 
 If you are connected to the Internet, you should get a nice message in your console, saying that you can connect to the app by typing `http://<your_IP>:8080` or `http://<your_hostname>:8080`in your web browser.
 
@@ -57,11 +56,11 @@ As mentioned above, you can download audio streams from YouTube. There is two wa
 - <u>The most efficient way</u> : you can use the most recent version of _[Youtube-dl](https://github.com/ytdl-org/youtube-dl/)_. It is way faster and will provide you audio files with some metadata.
 
 **Windows users please put the Youtube-dl executable into the project's directory**
-**Linux users please put Youtube-dl into the /usr/bin folder**
+**Linux users please put Youtube-dl (or a symbolic link to it) into the /usr/bin folder**
 
 ## Weather forecast
 
-_BadassBoard_ can provide you weather forecast thanks to the _OpenWeatherMap_ API. In order to use this feature, you'll need an _OpenWeatherMap_ token. As there is already one provided, you can use it as it is. But, if you want, you can use your own. More info [here](https://openweathermap.org/api).
+_BadassBoard_ can provide you weather forecast thanks to the _OpenWeatherMap_ API. This feature require a token. As there is already one provided, you can use it as it is. But, if you want, you can use your own. More info [here](https://openweathermap.org/api).
 
 ## Audio streaming
 
@@ -89,7 +88,7 @@ To make development easier, the client-side JS code is minified using the _Minif
 
 The CSS code is generated with the help of the SCSS package.
 
-Please note that these packages need to be installed globally on your system to function properly. In order to do that, just type `npm i -g <package name>` or `yarn global add <package name>` in your terminal.
+Please note that these packages need to be installed globally on your system to function properly. In order to do that, just type `npm i -g <package name>` in your terminal.
 
 Like mentioned in the `package.json` file, the CSS code can be compiled with the `sass` command, and the JS code can be minified by running `node minify`.
 
