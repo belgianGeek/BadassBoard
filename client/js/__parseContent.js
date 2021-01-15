@@ -130,7 +130,7 @@ const parseContent = () => {
         if (value.type === 'rss') {
           let feed = value.feed;
 
-          // Create the RSS container if they don't exist
+          // Create the RSS containers if they don't exist
           if (!$(`${fullElementClassName} .rssContainer`).length) {
             buildRssContainer(feed, fullElementClassName, (feed, rssContainer) => {
               rssContainer.appendTo(fullElementClassName);

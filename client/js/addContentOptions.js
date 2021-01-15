@@ -62,6 +62,7 @@ const addContentOptions = (element) => {
     if ($(element).length) {
 
       $(`${element} .updateContentBtn`).click(function() {
+        console.log($(this));
         // Update RSS
         if (element.match(/rss/i)) {
           socket.emit('update feed', {
@@ -69,11 +70,11 @@ const addContentOptions = (element) => {
             parent: `.${$(this).parents('.content__container').attr('id')}`
           });
 
-          socket.on('feed updated', (parsedData) => {
+          socket.on('feed updated', parsedData => {
             let parsedElt = `${parsedData.parent} ${parsedData.element}`;
             let feed = parsedData.feed;
 
-            buildRssContainer(feed, (feed, rssContainer) => {
+            buildRssContainer(feed, parsedElt, (feed, rssContainer) => {
               $(`${parsedElt} .rssContainer`).replaceWith(rssContainer);
 
               let rssContainerHeader = $('<div></div>')
@@ -108,8 +109,6 @@ const addContentOptions = (element) => {
                   src: './client/scss/icons/interface/cross.svg'
                 })
                 .appendTo(contentOptions);
-
-              addContentOptions(parsedElt);
 
               displayArticleSummary();
             });
@@ -175,18 +174,20 @@ const addContentOptions = (element) => {
     }
   }
 
-  $(`${element} .rssContainer`).ready(() => {
-    removeContent(element, `${element} .rssContainer`, `${element} .rssContainer__header`);
-    updateContent(element, `${element} .rssContainer`, `${element} .rssContainer__header`);
-  });
+  $(element).ready(() => {
+    if ($(`${element} .article`).length) {
+      removeContent(`.${$(element).parents('.content').attr('id')}`, element, `${element} .rssContainer__header`);
+      updateContent(`.${$(element).parents('.content').attr('id')}`, element, `${element} .rssContainer__header`);
+    }
 
-  $(`${element} .forecast`).ready(() => {
-    removeContent(element, `${element} .forecast`, `${element} .forecast__header`);
-    updateContent(element, `${element} .forecast`, `${element} .forecast__header`);
-  });
+    if ($(`${element} .forecast`).length) {
+      removeContent(element, `${element} .forecast`, `${element} .forecast__header`);
+      updateContent(element, `${element} .forecast`, `${element} .forecast__header`);
+    }
 
-  $(`${element} .youtubeSearchContainer`).ready(() => {
-    removeContent(element, `${element} .youtubeSearchContainer`, `${element} .youtubeSearchContainer__header`);
-    clearResults(element, `${element} .youtubeSearchContainer`, `${element} .youtubeSearchContainer__header`);
+    if ($(`${element} .youtubeSearchContainer`).length) {
+      removeContent(element, `${element} .youtubeSearchContainer`, `${element} .youtubeSearchContainer__header`);
+      clearResults(element, `${element} .youtubeSearchContainer`, `${element} .youtubeSearchContainer__header`);
+    }
   });
 }

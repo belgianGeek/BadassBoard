@@ -1,3 +1,5 @@
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/belgianGeek/badassBoard) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/belgianGeek/badassBoard) ![Lines of code](https://img.shields.io/tokei/lines/github/belgianGeek/badassBoard)
+
 #  ̿̿ ̿̿ ̿'̿'\̵͇̿̿\з= ( ▀ ͜͞ʖ▀) =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿
 
 ![Screenshot](https://raw.githubusercontent.com/belgianGeek/BadassBoard/dev/screenshots/home.jpg)
