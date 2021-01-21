@@ -39,6 +39,8 @@ const buildRssContainer = (feed, fullElementClassName, callback) => {
 
         rssContainer.addClass(`rssContainer__${iContainer + 1}`);
 
+        console.log(iContainer);
+
         if (!rssContainer.children('.rssContainer__header').length) {
           let rssContainerHeader = $('<div></div>')
             .addClass('rssContainer__header')
@@ -73,7 +75,7 @@ const buildRssContainer = (feed, fullElementClassName, callback) => {
             })
             .appendTo(contentOptions);
 
-          addContentOptions(fullElementClassName);
+          addContentOptions(`${fullElementClassName} .rssContainer__${iContainer + 1}`);
         }
 
         if (i > 10) rssContainer.addClass('rssContainer hidden')

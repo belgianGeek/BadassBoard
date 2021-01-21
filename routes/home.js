@@ -331,24 +331,29 @@ module.exports = function(app, io, settings) {
       });
 
       io.on('update feed', (feed2update) => {
-        for (const i of settings.elements) {
-          for (const j of i.elements) {
-            let eltRegex = new RegExp(j.element, 'gi');
-            let parentRegex = new RegExp(j.parent, 'gi');
-            if (feed2update.element.match(eltRegex) && feed2update.parent.match(parentRegex)) {
-              feedparser.parse(j.url)
-                .then(items => {
-                  // Parse rss
-                  io.emit('feed updated', {
-                    feed: items,
-                    element: feed2update.element,
-                    parent: feed2update.parent,
-                    update: true
-                  });
-                })
-                .catch(console.error);
-            }
-          }
+        let url = 'not found';
+        const findUrl = (parent, element) => {
+          return settings.elements.every(item => {
+            return item.elements.filter(subItem => {
+              if (subItem.element == element & subItem.parent == parent) return url = subItem.url;
+            });
+          });
+        }
+
+        findUrl(feed2update.parent, feed2update.element);
+
+        if (url !== 'not found') {
+          feedparser.parse(url)
+            .then(items => {
+              // Parse rss
+              io.emit('feed updated', {
+                feed: items,
+                element: feed2update.element,
+                parent: feed2update.parent,
+                update: true
+              });
+            })
+            .catch(console.error);
         }
       });
 
