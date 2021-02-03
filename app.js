@@ -13,9 +13,6 @@ const compression = require('compression');
 let username = os.userInfo().username;
 const settingsPath = './settings/settings.json';
 
-const rottenParser = require('./modules/rottenParser');
-const badassUpdate = require('./modules/update');
-
 const functions = require('./modules/functions');
 
 // Create an empty object to store downloaded files properties

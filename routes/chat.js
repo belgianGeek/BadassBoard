@@ -1,6 +1,6 @@
 const axios = require('axios');
 const os = require('os');
-const rottenParser = require('../modules/rottenParser');
+const rottenParser = require('rotten-parser');
 const nlp = require('../modules/nlp');
 const customize = require('../modules/customize');
 const Reply = require('../modules/reply');
