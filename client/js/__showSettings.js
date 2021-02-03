@@ -311,7 +311,7 @@ const showSettings = () => {
 
               if (updatedSettings.RSS !== undefined) {
                 // Reload the page if the RSS status is modified to be true
-                if (updatedSettings.RSS === true) {
+                if (updatedSettings.RSS) {
                   location.reload();
                 } else {
                   $('.contentContainers').hide();

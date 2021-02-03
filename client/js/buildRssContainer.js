@@ -1,4 +1,4 @@
-const buildRssContainer = (feed, fullElementClassName, callback) => {
+const buildRssContainer = (feed, fullElementClassName, rssFeedURL, callback) => {
   let rssContainer = $('<section></section>');
   let linksContainer = $('<div></div>');
   let length = 50;
@@ -39,8 +39,6 @@ const buildRssContainer = (feed, fullElementClassName, callback) => {
 
         rssContainer.addClass(`rssContainer__${iContainer + 1}`);
 
-        console.log(iContainer);
-
         if (!rssContainer.children('.rssContainer__header').length) {
           let rssContainerHeader = $('<div></div>')
             .addClass('rssContainer__header')
@@ -74,6 +72,11 @@ const buildRssContainer = (feed, fullElementClassName, callback) => {
               src: './client/scss/icons/interface/cross.svg'
             })
             .appendTo(contentOptions);
+
+          let feedURL = $('<span></span>')
+            .addClass('feedURL hidden')
+            .append(rssFeedURL)
+            .appendTo(rssContainerHeader);
 
           addContentOptions(`${fullElementClassName} .rssContainer__${iContainer + 1}`);
         }

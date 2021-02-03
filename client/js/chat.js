@@ -42,5 +42,4 @@ $('.chatContainer__msgList__form').submit(event => {
   event.preventDefault();
   let msg = new Message();
   msg.send();
-  console.log(msg);
 });
