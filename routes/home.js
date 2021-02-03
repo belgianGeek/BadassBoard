@@ -23,7 +23,7 @@ module.exports = function(app, io, settings) {
     // Open only one socket connection to avoid memory leaks
     io.once('connection', io => {
       let elements = settings.elements;
-      var eltsArray = [];
+      let eltsArray = [];
 
       io.emit('RSS status retrieved', settings.RSS);
       if (settings.RSS === true) {
@@ -330,31 +330,17 @@ module.exports = function(app, io, settings) {
           });
       });
 
-      io.on('update feed', (feed2update) => {
-        let url = 'not found';
-        const findUrl = (parent, element) => {
-          return settings.elements.every(item => {
-            return item.elements.filter(subItem => {
-              if (subItem.element == element & subItem.parent == parent) return url = subItem.url;
+      io.on('update feed', data => {
+        feedparser.parse(data.url)
+          .then(items => {
+            // Parse rss
+            io.emit('feed updated', {
+              feed: items,
+              parent: data.parent,
+              url: data.url
             });
-          });
-        }
-
-        findUrl(feed2update.parent, feed2update.element);
-
-        if (url !== 'not found') {
-          feedparser.parse(url)
-            .then(items => {
-              // Parse rss
-              io.emit('feed updated', {
-                feed: items,
-                element: feed2update.element,
-                parent: feed2update.parent,
-                update: true
-              });
-            })
-            .catch(console.error);
-        }
+          })
+          .catch(console.error);
       });
 
       io.on('parse playlist', playlistData => {

@@ -23,7 +23,6 @@ const handleOptionSelection = (parent, child) => {
     if (parent === '.content1__container') {
       lastContent.content1++;
       iNewElt = lastContent.content1;
-      console.log(lastContent, iNewElt);
     } else if (parent === '.content2__container') {
       lastContent.content2++;
       iNewElt = lastContent.content2;

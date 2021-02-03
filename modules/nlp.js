@@ -1,6 +1,5 @@
 const nlp = require('natural');
 nlp.classifier = new nlp.LogisticRegressionClassifier();
-nlp.stemmer = nlp.PorterStemmer.attach();
 nlp.tokenizer = new nlp.WordTokenizer();
 
 const botTraining = require('./botTraining');

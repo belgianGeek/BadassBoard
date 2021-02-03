@@ -1,5 +1,5 @@
 const parseContent = () => {
-  socket.on('parse content', (parsedData) => {
+  socket.on('parse content', parsedData => {
     for (const [i, value] of parsedData.entries()) {
 
       const buildElement = (parent, element, iElement, callback) => {
@@ -132,7 +132,7 @@ const parseContent = () => {
 
           // Create the RSS containers if they don't exist
           if (!$(`${fullElementClassName} .rssContainer`).length) {
-            buildRssContainer(feed, fullElementClassName, (feed, rssContainer) => {
+            buildRssContainer(feed, fullElementClassName, value.url, (feed, rssContainer) => {
               rssContainer.appendTo(fullElementClassName);
 
               displayArticleSummary();
@@ -305,18 +305,15 @@ const parseContent = () => {
               }
 
               const ytSearch = domain => {
-                console.log('search', domain);
                 $.ajax({
                     url: `https://invidious.${domain}/api/v1/search?q=${$('.youtubeSearchContainer__content__input').val()}&language=json&type=all`,
                     method: 'GET',
                     dataType: 'json'
                   })
                   .done(res => {
-                    console.log(res);
                     if (res.length !== 0) {
                       handleResults(res, domain);
                     } else {
-                      console.log('else');
                       if (domain === 'fdn.fr') {
                         domain = 'kavin.rocks';
                         ytSearch(domain);
