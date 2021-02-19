@@ -147,15 +147,13 @@ const processInput = (msg) => {
                 handleResults(res, domain);
               } else {
                 if (domain === 'fdn.fr') {
-                  domain = 'kavin.rocks';
-                  ytPlay(domain);
+                  ytPlay('site');
                 }
               }
             })
             .fail(err => {
               if (domain === 'fdn.fr') {
-                domain = 'kavin.rocks';
-                ytPlay(domain);
+                ytPlay('site');
               } else {
                 printError({
                   type: 'generic',
