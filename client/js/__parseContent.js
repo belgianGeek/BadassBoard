@@ -315,12 +315,12 @@ const parseContent = () => {
                       handleResults(res, domain);
                     } else {
                       if (domain === 'fdn.fr') {
-                        ytSearch('snopyta.org');
+                        ytSearch('tube');
                       }
                     }
                   })
                   .fail(err => {
-                    ytSearch('snopyta.org');
+                    ytSearch('tube');
                   });
               }
 
