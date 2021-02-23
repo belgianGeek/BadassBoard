@@ -375,7 +375,7 @@ module.exports = function(app, io, settings) {
               } else {
                 console.log(JSON.stringify(err, null, 2));
                 if (domain === 'fdn.fr') {
-                  domain = 'kavin.rocks';
+                  domain = 'snopyta.org';
                   handlePlaylistRequest(`https://invidious.${domain}/api/v1${id}`, id);
                 } else {
                   io.emit('errorMsg', {
