@@ -10,6 +10,7 @@ module.exports = function(app, io, settings) {
   const customize = require('../modules/customize');
   const os = require('os');
   const ytdl = require('ytdl-core');
+  const getInvidiousInstanceHealth = require('../modules/getInvidiousInstanceHealth');
 
   // Define a counter to prevent multiple addings
   let iAddElt = 0;
@@ -72,6 +73,16 @@ module.exports = function(app, io, settings) {
       if (settings.backgroundImage !== './client/scss/wallpaper.jpg') {
         io.emit('wallpaper', settings.backgroundImage);
       }
+
+      // Get some Invidious instances health each hour to handle Youtube requests
+      let invidiousInstancesHealth = [];
+      let iInstances = 0;
+
+      getInvidiousInstanceHealth(instances => {
+        invidiousInstancesHealth = instances;
+        console.log(instances);
+        io.emit('invidious instances', instances);
+      });
 
       io.on('add content', feedData => {
         var elements = settings.elements;
@@ -343,51 +354,19 @@ module.exports = function(app, io, settings) {
           .catch(console.error);
       });
 
-      io.on('parse playlist', playlistData => {
-        let domain = 'fdn.fr';
-        const handlePlaylistRequest = (url, id) => {
-          axios({
-              url: url,
-              method: 'GET'
-            })
-            .then(res => {
-              let result = res.data;
-
-              if (result.error === undefined) {
-                fs.writeFile(path.join(__dirname, '../tmp', 'playlist.json'), JSON.stringify(result, null, 2), 'utf-8', (err) => {
-                  if (err) throw err;
-                  io.emit('playlist parsed', domain);
-
-                  success = true;
-                });
-              } else if (result.error !== undefined && result.error === 'Playlist is empty') {
-                io.emit('errorMsg', {
-                  msg: 'Invalid playlist reference :((',
-                  type: 'generic'
-                });
-              } else {
-                console.log(result.error);
-              }
-            })
-            .catch(err => {
-              if (err === 'socket hang up') {
-                console.log('The websocket died... :(');
-              } else {
-                console.log(JSON.stringify(err, null, 2));
-                if (domain === 'fdn.fr') {
-                  domain = 'tube';
-                  handlePlaylistRequest(`https://invidious.${domain}/api/v1${id}`, id);
-                } else {
-                  io.emit('errorMsg', {
-                    type: 'generic',
-                    msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
-                  });
-                }
-              }
+      io.on('parse playlist', playlist => {
+        fs.writeFile(path.join(__dirname, '../tmp', 'playlist.json'), JSON.stringify(playlist.playlist, null, 2), 'utf-8', (err) => {
+          if (!err) {
+            // Match the Invidous instance url without any argument
+            io.emit('playlist parsed', playlist.url.match(/http(s|):\/\/(www\.|)[-a-zA-Z0-9\.]{1,256}\.[a-zA-Z0-9]{1,6}/g));
+          } else {
+            console.log(err);
+            io.emit('errorMsg', {
+              type: 'generic',
+              msg: `Sorry, the playlist content couldn't be saved. Check the logs for details.`
             });
-        }
-
-        handlePlaylistRequest(playlistData.url, playlistData.id);
+          }
+        });
       });
 
       io.on('remove content', content2remove => {
