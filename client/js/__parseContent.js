@@ -191,11 +191,14 @@ const parseContent = () => {
           }
 
           $('.youtubeSearchContainer').keypress(event => {
+            // Define an iterator for the invidiousInstances
+            let i = 0;
+
             if (event.keyCode === 13) {
               // Hide the results container
               $('.youtubeSearchContainer__content__results').addClass('hidden');
 
-              const handleResults = (res, domain) => {
+              const handleResults = (res, instance) => {
                 for (let i = 0; i < res.length; i++) {
                   let title = '';
                   let id = '';
@@ -255,7 +258,7 @@ const parseContent = () => {
 
                   if (res[i].type === 'video') {
                     title = $(`<a></a>`)
-                      .attr('href', `https://invidious.${domain}/watch?v=${res[i].videoId}`)
+                      .attr('href', `${instance}/watch?v=${res[i].videoId}`)
                       .text(res[i].title);
 
                     id = $('<p></p>').text(res[i].videoId).prepend('<u>Video ID</u> : ');
@@ -263,14 +266,14 @@ const parseContent = () => {
                     duration = $('<p></p>').text(getDuration()).prepend('<u>Duration</u> : ');
                   } else if (res[i].type === 'channel') {
                     title = $(`<a></a>`)
-                      .attr('href', `https://invidious.${domain}${res[i].authorUrl}`)
+                      .attr('href', `${instance}${res[i].authorUrl}`)
                       .text(res[i].author);
 
                     duration = $('<p></p>').text(res[i].videoCount).prepend('<u>Number of videos</u> : ');
                     id = $('<p></p>').text(res[i].authorId).prepend('<u>Channel ID</u> : ');
                   } else if (res[i].type === 'playlist') {
                     title = $(`<a></a>`)
-                      .attr('href', `https://invidious.${domain}/playlist?list=${res[i].playlistId}`)
+                      .attr('href', `${instance}/playlist?list=${res[i].playlistId}`)
                       .text(res[i].title);
 
                     id = $('<p></p>').text(`${res[i].playlistId}`).prepend('<u>Playlist ID</u> : ');
@@ -304,27 +307,28 @@ const parseContent = () => {
                 }
               }
 
-              const ytSearch = domain => {
-                $.ajax({
-                    url: `https://invidious.${domain}/api/v1/search?q=${$('.youtubeSearchContainer__content__input').val()}&language=json&type=all`,
-                    method: 'GET',
-                    dataType: 'json'
-                  })
-                  .done(res => {
-                    if (res.length !== 0) {
-                      handleResults(res, domain);
-                    } else {
-                      if (domain === 'fdn.fr') {
-                        ytSearch('tube');
+              const ytSearch = invidiousInstances => {
+                if (i < invidiousInstances.length) {
+                  $.ajax({
+                      url: `${invidiousInstances[i]}/api/v1/search?q=${$('.youtubeSearchContainer__content__input').val()}&language=json&type=all`,
+                      method: 'GET',
+                      dataType: 'json'
+                    })
+                    .done(res => {
+                      if (res.length !== 0) {
+                        handleResults(res, invidiousInstances[i]);
+                        return;
+                      } else {
+                        ytSearch(invidiousInstances[i + 1]);
                       }
-                    }
-                  })
-                  .fail(err => {
-                    ytSearch('tube');
-                  });
+                    })
+                    .fail(err => {
+                      ytSearch(invidiousInstances[i + 1]);
+                    });
+                }
               }
 
-              ytSearch('fdn.fr');
+              ytSearch(invidiousInstances);
             }
           });
 

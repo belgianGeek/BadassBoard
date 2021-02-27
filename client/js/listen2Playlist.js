@@ -1,4 +1,4 @@
-const listen2Playlist = (domain, data) => {
+const listen2Playlist = (instance, data) => {
   if (data.videos[iPlaylist] === undefined) {
     printError({
       type: 'generic',
@@ -39,12 +39,12 @@ const listen2Playlist = (domain, data) => {
         let audioSrc = $('<source>')
           .attr({
             id: 'audioSrc',
-            src: `https://invidious.${domain}/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`,
+            src: `${instance}/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`,
             type: ' audio/mpeg',
           })
           .appendTo('.audio__player');
       } else {
-        $('#audioSrc').attr('src', `https://invidious.${domain}/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`);
+        $('#audioSrc').attr('src', `${instance}/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`);
 
         // Add playlist controls if they do not exist
         if (!$('.audio__leftSvg').length) {
@@ -108,7 +108,7 @@ const listen2Playlist = (domain, data) => {
       document.getElementById('audio__player').onended = () => {
         iPlaylist++;
         if (data.videos[iPlaylist] !== undefined) {
-          listen2Playlist(domain, data);
+          listen2Playlist(instance, data);
         } else {
           $('.audio__leftSvg, .audio__remove').hide();
 
@@ -150,7 +150,7 @@ const listen2Playlist = (domain, data) => {
       });
     } else if (data.videos[iPlaylist].title.match(/(deleted video) || (private video)/gi)) {
       iPlaylist++;
-      listen2Playlist(domain, data);
+      listen2Playlist(instance, data);
     }
   }
 }
