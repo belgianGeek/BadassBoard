@@ -315,14 +315,12 @@ const parseContent = () => {
                       handleResults(res, domain);
                     } else {
                       if (domain === 'fdn.fr') {
-                        domain = 'kavin.rocks';
-                        ytSearch(domain);
+                        ytSearch('tube');
                       }
                     }
                   })
                   .fail(err => {
-                    domain = 'kavin.rocks';
-                    ytSearch(domain);
+                    ytSearch('tube');
                   });
               }
 
