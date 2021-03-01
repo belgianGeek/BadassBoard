@@ -31,8 +31,7 @@ const buildRssContainer = (feed, fullElementClassName, rssFeedURL, callback) => 
 
       // Create containers each ten articles and if there is more of 10 elements to append
       // Else, create only one container and append elements to it
-
-      if ((length < 10 && (i + 1) % 10 !== 0 && i > 0) || (length >= 10 && (i + 1) % 10 === 0 && i > 0)) {
+      if ((length < 10 && i === length -1) || (length >= 10 && (i + 1) % 10 === 0 && i > 0)) {
         linksContainer
           .addClass('linksContainer')
           .appendTo(rssContainer);

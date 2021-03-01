@@ -80,7 +80,6 @@ module.exports = function(app, io, settings) {
 
       getInvidiousInstanceHealth(instances => {
         invidiousInstancesHealth = instances;
-        console.log(instances);
         io.emit('invidious instances', instances);
       });
 
