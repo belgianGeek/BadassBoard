@@ -1,3 +1,64 @@
+const addRemovalBtn = parent => {
+  const emptyConfirmationContent = () => $('.confirmation__child__content section').remove();
+
+  let removeContentBtn = $('<img>')
+    .addClass('removeContentBtn')
+    .attr({
+      alt: 'Remove content',
+      src: './client/scss/icons/interface/cross.svg'
+    })
+    .appendTo(parent)
+    .click(function() {
+      let element2remove = `.${$(this).parents('.content__container').attr('id')} .${$(this).parents('.content').attr('id')}`;
+
+      $(`.confirmation`)
+        .fadeIn()
+        .css('display', 'flex');
+
+      // Make the div background blurry
+      $('.mainContainer').addClass('blur');
+
+      $(element2remove).clone().appendTo('.confirmation__child__content');
+
+      // Disable page scroll
+      disableScroll();
+
+      $('.confirmation__child__btnContainer__saveBtn').click(function() {
+        // Restore page scroll
+        restoreScroll();
+
+        // Remove the blur
+        $('.mainContainer').removeClass('blur');
+
+        $(`${element2remove} .blank`).css('display', '');
+
+        addContent(element2remove);
+
+        emptyConfirmationContent();
+
+        $('.confirmation').fadeOut();
+
+        socket.emit('remove content', {
+          parent: element2remove.split(' ')[0],
+          element: element2remove.split(' ')[1]
+        });
+
+        // Remove the content div
+        $(element2remove).remove();
+        $(`${element2remove} .blank`).removeClass('hidden');
+      });
+
+      $('.confirmation__child__btnContainer__cancelBtn, .click').click(() => {
+        restoreScroll();
+        emptyConfirmationContent();
+
+        // Remove the blur
+        $('.mainContainer').removeClass('blur');
+        $('.confirmation').fadeOut();
+      });
+    });
+}
+
 const parseContent = () => {
   socket.on('parse content', parsedData => {
     for (const [i, value] of parsedData.entries()) {
@@ -179,13 +240,7 @@ const parseContent = () => {
               })
               .appendTo(contentOptions);
 
-            let removeContentBtn = $('<img>')
-              .addClass('removeContentBtn')
-              .attr({
-                alt: 'Remove content',
-                src: './client/scss/icons/interface/cross.svg'
-              })
-              .appendTo(contentOptions);
+            addRemovalBtn(contentOptions);
 
             addContentOptions(fullElementClassName);
           }

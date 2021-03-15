@@ -64,13 +64,7 @@ const buildRssContainer = (feed, fullElementClassName, rssFeedURL, callback) => 
             })
             .appendTo(contentOptions);
 
-          let removeContentBtn = $('<img>')
-            .addClass('removeContentBtn')
-            .attr({
-              alt: 'Remove content',
-              src: './client/scss/icons/interface/cross.svg'
-            })
-            .appendTo(contentOptions);
+          addRemovalBtn(contentOptions);
 
           let feedURL = $('<span></span>')
             .addClass('feedURL hidden')
