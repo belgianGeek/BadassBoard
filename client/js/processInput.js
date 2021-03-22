@@ -177,24 +177,30 @@ const processInput = (msg) => {
         // Define an iterator for the Invidious instances
         let i = 0;
 
-        const ytPlay = invidiousInstances => {
+        const ytPlay = (i, invidiousInstance) => {
           $.ajax({
-              url: `${invidiousInstances[i]}/api/v1/videos/${id}`,
+              url: `${invidiousInstance}/api/v1/videos/${id}`,
               method: 'GET',
               dataType: 'json'
             })
             .done(res => {
-              if (res.length !== 0 && i < invidiousInstances.length) {
+              if (res.length !== 0) {
                 handleResults(res, invidiousInstances[i]);
                 i = 0;
                 return;
+              } else if (res.length === 0 && i < invidiousInstances.length) {
+                ytPlay(i, invidiousInstances[i + 1]);
               } else {
-                ytPlay(invidiousInstances[i + 1]);
+                printError({
+                  type: 'generic',
+                  msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
+                });
+                i = 0;
               }
             })
             .fail(err => {
               if (i < invidiousInstances.length) {
-                ytPlay(invidiousInstances[i + 1]);
+                ytPlay(i, invidiousInstances[i + 1]);
               } else {
                 printError({
                   type: 'generic',
@@ -205,7 +211,7 @@ const processInput = (msg) => {
             });
         }
 
-        ytPlay(invidiousInstances);
+        ytPlay(i, invidiousInstances);
       } else if (msg.match(/[a-zA-Z0-9-_]{15,34}/)) {
         // Check if the keyword match a playlist pattern
 
@@ -225,7 +231,7 @@ const processInput = (msg) => {
         iPlaylist = 0;
         let mixID = msg.match(/[0-9A-Za-z_-]{13}/);
 
-        handlePlaylist(i, '/api/v1/mixes/', 'mixes', invidiousInstances, mixID);
+        handlePlaylist(iPlaylist, '/api/v1/mixes/', 'mixes', invidiousInstances, mixID);
       } else {
         printError({
           type: 'generic',
