@@ -362,28 +362,41 @@ const parseContent = () => {
                 }
               }
 
-              const ytSearch = invidiousInstances => {
-                if (i < invidiousInstances.length) {
-                  $.ajax({
-                      url: `${invidiousInstances[i]}/api/v1/search?q=${$('.youtubeSearchContainer__content__input').val()}&language=json&type=all`,
-                      method: 'GET',
-                      dataType: 'json'
-                    })
-                    .done(res => {
-                      if (res.length !== 0) {
-                        handleResults(res, invidiousInstances[i]);
-                        return;
-                      } else {
-                        ytSearch(invidiousInstances[i + 1]);
-                      }
-                    })
-                    .fail(err => {
-                      ytSearch(invidiousInstances[i + 1]);
-                    });
-                }
+              const ytSearch = (i, invidiousInstance) => {
+                console.log(invidiousInstance);
+                $.ajax({
+                    url: `${invidiousInstance}/api/v1/search?q=${$('.youtubeSearchContainer__content__input').val()}&language=json&type=all`,
+                    method: 'GET',
+                    dataType: 'json'
+                  })
+                  .done(res => {
+                    if (res.length !== 0) {
+                      handleResults(res, invidiousInstance);
+                      return;
+                    } else if (res.length === 0 && i < invidiousInstances.length) {
+                      ytSearch(i, invidiousInstances[i + 1]);
+                    } else {
+                      printError({
+                        type: 'generic',
+                        msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
+                      });
+                      i = 0;
+                    }
+                  })
+                  .fail(err => {
+                    if (i < invidiousInstances.length) {
+                      ytSearch(i, invidiousInstances[i + 1]);
+                    } else {
+                      printError({
+                        type: 'generic',
+                        msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
+                      });
+                      i = 0;
+                    }
+                  });
               }
 
-              ytSearch(invidiousInstances);
+              ytSearch(i, invidiousInstances);
             }
           });
 
