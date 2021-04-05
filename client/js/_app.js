@@ -19,6 +19,9 @@ let headStyle = '';
 // Store the last created element number for each content container
 let lastContent = {};
 
+// Store the Invidious instances
+let invidiousInstances = [];
+
 // Add the user data to the page
 $.ajax({
   url: './settings/settings.json',
@@ -166,4 +169,18 @@ $('.footer').mouseenter(() => {
   $('.credits').fadeIn();
 }).mouseleave(() => {
   $('.credits').fadeOut();
+});
+
+socket.on('invidious instances', instances => {
+  invidiousInstances = instances;
+});
+
+socket.on('playlist parsed', instance => {
+  $.ajax({
+    url: './tmp/playlist.json',
+    dataType: 'json',
+    method: 'GET'
+  }).done(data => {
+    listen2Playlist(instance, data);
+  });
 });

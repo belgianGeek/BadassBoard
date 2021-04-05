@@ -72,18 +72,6 @@ const updateSettings = () => {
   });
 }
 
-setTimeout(() => {
-  updateSettings();
-
-  // App routes
-  require('./routes/chat')(app, io, settings);
-  require('./routes/download')(app, io);
-  require('./routes/home')(app, io, settings);
-
-  // 404 error handling
-  require('./routes/404')(app, settings);
-}, 500);
-
 // ... and repeat the process every 5 minutes
 setInterval(() => {
   functions.createSettingsFile(settingsPath, settingsTemplate);
@@ -92,7 +80,7 @@ setInterval(() => {
   functions.updateSettingsFile(settingsPath, settings, () => {
     updateSettings();
   });
-}, 300000);
+}, 1000 * 60 * 5);
 
 app.use("/client", express.static(__dirname + "/client"))
   .use("/upload", express.static(__dirname + "/upload"))
@@ -117,6 +105,16 @@ if (!ip.address().match(/169.254/) || !ip.address().match(/127.0/)) {
 } else {
   console.log(`Sorry Dude, I won't work properly if I don't have access to the Internet. Please fix your connection and try again.`);
 }
+
+updateSettings();
+
+// App routes
+require('./routes/chat')(app, io, settings);
+require('./routes/download')(app, io);
+require('./routes/home')(app, io, settings);
+
+// 404 error handling
+require('./routes/404')(app, settings);
 
 // Clear the temp folder every 15 minutes
 functions.clearTemp();
