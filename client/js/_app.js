@@ -38,13 +38,13 @@ $.ajax({
     if (settings.elements[1].elements.length > 0) {
       lastContent.content2 = Number(settings.elements[1].elements[settings.elements[1].elements.length - 1].element.substring(8, 9));
     } else {
-      lastContent.content2 = 1;
+      lastContent.content2 = 2;
     }
 
     if (settings.elements[2].elements.length > 0) {
       lastContent.content3 = Number(settings.elements[2].elements[settings.elements[2].elements.length - 1].element.substring(8, 9));
     } else {
-      lastContent.content3 = 1;
+      lastContent.content3 = 3;
     }
   }
 
