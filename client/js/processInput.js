@@ -46,11 +46,11 @@ const processInput = (msg) => {
         // Match a single video
         let id = msg.match(/[0-9A-Za-z_-]{11}/)[0];
 
-        const handleResults = (res, domain) => {
+        const handleResults = (res, instance) => {
           const findUrl = () => {
             for (const [i, resValue] of res.adaptiveFormats.entries()) {
               if (resValue.type.match(/audio/)) {
-                return `https://invidious.${domain}/latest_version?id=${id}&itag=251&local=true`;
+                return `${instance}/latest_version?id=${id}&itag=251&local=true`;
               } else {
                 if (i === res.adaptiveFormats.length - 1) {
                   printError({
@@ -86,6 +86,10 @@ const processInput = (msg) => {
               .appendTo('.audio__player');
           } else {
             $('#audioSrc').attr('src', url);
+
+            document.getElementById('audioSrc').onerror = () => {
+              ytPlay(invidiousInstances[iInstance++]);
+            };
           }
 
           // If the info about the track are not displayed, add them
@@ -136,25 +140,25 @@ const processInput = (msg) => {
           hideContent('.audio__remove');
         }
 
-        const ytPlay = domain => {
+        const ytPlay = instance => {
           $.ajax({
-              url: `https://invidious.${domain}/api/v1/videos/${id}`,
+              url: `${instance}/api/v1/videos/${id}`,
               method: 'GET',
               dataType: 'json'
             })
             .done(res => {
               if (res.length !== 0) {
-                handleResults(res, domain);
+                handleResults(res, instance);
+                iInstance = 0;
               } else {
-                if (domain === 'fdn.fr') {
-                  ytPlay('site');
-                }
+                ytPlay(invidiousInstances[iInstance++]);
               }
             })
             .fail(err => {
-              if (domain === 'fdn.fr') {
-                ytPlay('site');
+              if (iInstance < invidiousInstances.length) {
+                ytPlay(invidiousInstances[iInstance++]);
               } else {
+                iInstance = 0;
                 printError({
                   type: 'generic',
                   msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
@@ -163,51 +167,53 @@ const processInput = (msg) => {
             });
         }
 
-        ytPlay('fdn.fr');
+        if (Array.isArray(invidiousInstances)) {
+          ytPlay(invidiousInstances[iInstance]);
+        } else {
+          iInstance = 0;
+          printError({
+            type: 'generic',
+            msg: invidiousInstances
+          });
+        }
       } else if (msg.match(/[a-zA-Z0-9-_]{15,34}/)) {
         // Check if the keyword match a playlist pattern
 
-        // Reset the playlist counter
-        iPlaylist = 0;
-        let id = msg.match(/[a-zA-Z0-9-_]{15,34}/)[0];
-        let apiUrl = `https://invidious.fdn.fr/api/v1/playlists/${id}`;
+        if (Array.isArray(invidiousInstances)) {
+          // Reset the playlist counter
+          iPlaylist = 0;
+          let id = msg.match(/[a-zA-Z0-9-_]{15,34}/)[0];
+          let apiUrl = `${invidiousInstances[iInstance]}/api/v1/playlists/${id}`;
 
-        socket.emit('parse playlist', {
-          url: apiUrl,
-          id: `/playlists/${id}`
-        });
-
-        socket.on('playlist parsed', domain => {
-          $.ajax({
-            url: './tmp/playlist.json',
-            dataType: 'json',
-            method: 'GET'
-          }).done(data => {
-            listen2Playlist(domain, data);
+          socket.emit('parse playlist', {
+            url: apiUrl,
+            id: `/playlists/${id}`
           });
-        });
+        } else {
+          printError({
+            type: 'generic',
+            msg: invidiousInstances
+          });
+        }
       } else if (msg.match(/[0-9A-Za-z_-]{13}/) && !msg.match(/[0-9A-Za-z_-]{14,34}/)) {
         // Match a mix pattern
 
-        // Reset the playlist counter
-        iPlaylist = 0;
-        let mixID = msg.match(/[0-9A-Za-z_-]{13}/);
-        let apiUrl = `https://invidious.fdn.fr/api/v1/mixes/${mixID}`;
+        if (Array.isArray(invidiousInstances)) {
+          // Reset the playlist counter
+          iPlaylist = 0;
+          let mixID = msg.match(/[0-9A-Za-z_-]{13}/);
+          let apiUrl = `${instance}/api/v1/mixes/${mixID}`;
 
-        socket.emit('parse playlist', {
-          url: apiUrl,
-          id: `/mixes/${mixID}`
-        });
-
-        socket.on('playlist parsed', domain => {
-          $.ajax({
-            url: './tmp/playlist.json',
-            dataType: 'json',
-            method: 'GET'
-          }).done(data => {
-            listen2Playlist(domain, data);
+          socket.emit('parse playlist', {
+            url: apiUrl,
+            id: `/mixes/${mixID}`
           });
-        });
+        } else {
+          printError({
+            type: 'generic',
+            msg: invidiousInstances
+          });
+        }
       } else {
         printError({
           type: 'generic',
@@ -225,4 +231,14 @@ const processInput = (msg) => {
       $(".questionBox").val('');
     }
   }
+
+  socket.on('playlist parsed', instance => {
+    $.ajax({
+      url: './tmp/playlist.json',
+      dataType: 'json',
+      method: 'GET'
+    }).done(data => {
+      listen2Playlist(instance, data);
+    });
+  });
 }

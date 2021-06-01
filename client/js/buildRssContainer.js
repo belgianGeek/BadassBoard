@@ -64,7 +64,7 @@ const buildRssContainer = (feed, fullElementClassName, rssFeedURL, callback) => 
             })
             .appendTo(contentOptions);
 
-          // addRemovalBtn(contentOptions);
+          addRemovalBtn(contentOptions);
 
           let feedURL = $('<span></span>')
             .addClass('feedURL hidden')

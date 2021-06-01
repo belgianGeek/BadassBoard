@@ -10,20 +10,26 @@ module.exports = function(app, io, settings) {
   const customize = require('../modules/customize');
   const os = require('os');
   const ytdl = require('ytdl-core');
+  const getInvidiousInstanceHealth = require('../modules/getInvidiousInstanceHealth');
 
   // Define a counter to prevent multiple addings
   let iAddElt = 0;
 
-  app.get('/', (req, res) => {
+  app.get('/', async (req, res) => {
     res.render('home.ejs', {
       currentVersion: app.tag,
       isHomepage: true
     });
 
+    let iInstance = 0;
+    let invidiousInstances = await getInvidiousInstanceHealth();
+
     // Open only one socket connection to avoid memory leaks
     io.once('connection', io => {
       let elements = settings.elements;
       let eltsArray = [];
+
+      io.emit('invidious instances', invidiousInstances);
 
       io.emit('RSS status retrieved', settings.RSS);
       if (settings.RSS === true) {
@@ -344,7 +350,6 @@ module.exports = function(app, io, settings) {
       });
 
       io.on('parse playlist', playlistData => {
-        let domain = 'fdn.fr';
         const handlePlaylistRequest = (url, id) => {
           axios({
               url: url,
@@ -356,7 +361,14 @@ module.exports = function(app, io, settings) {
               if (result.error === undefined) {
                 fs.writeFile(path.join(__dirname, '../tmp', 'playlist.json'), JSON.stringify(result, null, 2), 'utf-8', (err) => {
                   if (err) throw err;
-                  io.emit('playlist parsed', domain);
+                  if (Array.isArray(invidiousInstances)) {
+                    io.emit('playlist parsed', invidiousInstances[iInstance]);
+                  } else {
+                    io.emit('errorMsg', {
+                      msg: invidiousInstances,
+                      type: 'generic'
+                    });
+                  }
 
                   success = true;
                 });
@@ -373,14 +385,19 @@ module.exports = function(app, io, settings) {
               if (err === 'socket hang up') {
                 console.log('The websocket died... :(');
               } else {
-                console.log(JSON.stringify(err, null, 2));
-                if (domain === 'fdn.fr') {
-                  domain = 'site';
-                  handlePlaylistRequest(`https://invidious.${domain}/api/v1${id}`, id);
+                if (Array.isArray(invidiousInstances)) {
+                  if (iInstance <= invidiousInstances - 1) {
+                    handlePlaylistRequest(`${invidiousInstances[iInstance++]}/api/v1${id}`, id);
+                  } else {
+                    io.emit('errorMsg', {
+                      type: 'generic',
+                      msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
+                    });
+                  }
                 } else {
                   io.emit('errorMsg', {
-                    type: 'generic',
-                    msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
+                    msg: invidiousInstances,
+                    type: 'generic'
                   });
                 }
               }

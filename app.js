@@ -80,7 +80,7 @@ setInterval(() => {
   functions.updateSettingsFile(settingsPath, settings, () => {
     updateSettings();
   });
-}, 1000 * 60 * 5);
+}, 1000 * 20);
 
 app.use("/client", express.static(__dirname + "/client"))
   .use("/upload", express.static(__dirname + "/upload"))

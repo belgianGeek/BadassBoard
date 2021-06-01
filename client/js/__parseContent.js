@@ -179,13 +179,7 @@ const parseContent = () => {
               })
               .appendTo(contentOptions);
 
-            let removeContentBtn = $('<img>')
-              .addClass('removeContentBtn')
-              .attr({
-                alt: 'Remove content',
-                src: './client/scss/icons/interface/cross.svg'
-              })
-              .appendTo(contentOptions);
+            addRemovalBtn(contentOptions);
 
             addContentOptions(fullElementClassName);
           }

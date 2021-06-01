@@ -20,7 +20,8 @@ let headStyle = '';
 let lastContent = {};
 
 // Store the Invidious instances
-let invidiousInstances = [];
+let invidiousInstances;
+let iInstance = 0;
 
 // Add the user data to the page
 $.ajax({
