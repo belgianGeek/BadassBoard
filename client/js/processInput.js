@@ -232,13 +232,13 @@ const processInput = (msg) => {
     }
   }
 
-  socket.on('playlist parsed', instance => {
+  socket.on('playlist parsed', () => {
     $.ajax({
       url: './tmp/playlist.json',
       dataType: 'json',
       method: 'GET'
     }).done(data => {
-      listen2Playlist(instance, data);
+      listen2Playlist(invidiousInstances, data);
     });
   });
 }

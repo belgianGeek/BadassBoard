@@ -22,7 +22,7 @@ module.exports = function(app, io, settings) {
     });
 
     let iInstance = 0;
-    let invidiousInstances = await getInvidiousInstanceHealth();
+    const invidiousInstances = await getInvidiousInstanceHealth();
 
     // Open only one socket connection to avoid memory leaks
     io.once('connection', io => {
@@ -361,14 +361,8 @@ module.exports = function(app, io, settings) {
               if (result.error === undefined) {
                 fs.writeFile(path.join(__dirname, '../tmp', 'playlist.json'), JSON.stringify(result, null, 2), 'utf-8', (err) => {
                   if (err) throw err;
-                  if (Array.isArray(invidiousInstances)) {
-                    io.emit('playlist parsed', invidiousInstances[iInstance]);
-                  } else {
-                    io.emit('errorMsg', {
-                      msg: invidiousInstances,
-                      type: 'generic'
-                    });
-                  }
+
+                  io.emit('playlist parsed', invidiousInstances[iInstance]);
 
                   success = true;
                 });
@@ -386,7 +380,7 @@ module.exports = function(app, io, settings) {
                 console.log('The websocket died... :(');
               } else {
                 if (Array.isArray(invidiousInstances)) {
-                  if (iInstance <= invidiousInstances - 1) {
+                  if (iInstance <= invidiousInstances.length - 1) {
                     handlePlaylistRequest(`${invidiousInstances[iInstance++]}/api/v1${id}`, id);
                   } else {
                     io.emit('errorMsg', {

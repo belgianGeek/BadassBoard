@@ -1,4 +1,4 @@
-const listen2Playlist = (instance, data) => {
+const listen2Playlist = (invidiousInstances, data) => {
   if (data.videos[iPlaylist] === undefined) {
     printError({
       type: 'generic',
@@ -39,12 +39,12 @@ const listen2Playlist = (instance, data) => {
         let audioSrc = $('<source>')
           .attr({
             id: 'audioSrc',
-            src: `${instance}/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`,
+            src: `${invidiousInstances[iInstance]}/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`,
             type: ' audio/mpeg',
           })
           .appendTo('.audio__player');
       } else {
-        $('#audioSrc').attr('src', `${instance}/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`);
+        $('#audioSrc').attr('src', `${invidiousInstances[iInstance]}/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`);
 
         // Add playlist controls if they do not exist
         if (!$('.audio__leftSvg').length) {
@@ -65,7 +65,7 @@ const listen2Playlist = (instance, data) => {
       if (!$('.streamInfoContainer').length) {
         let playlistInfo = $('<span></span>')
           .addClass('playlistInfo')
-          .text(`${iPlaylist + 1}/${data.videos.length}`)
+          .text(`${iPlaylist++}/${data.videos.length}`)
           .show()
           .prependTo('.audio__container__msg');
 
@@ -92,23 +92,36 @@ const listen2Playlist = (instance, data) => {
         if (!$('.playlistInfo').length) {
           let playlistInfo = $('<span></span>')
             .addClass('playlistInfo')
-            .text(`${iPlaylist + 1}/${data.videos.length}`)
+            .text(`${iPlaylist++}/${data.videos.length}`)
             .show()
             .prependTo('.audio__container__msg');
         } else {
           $('.playlistInfo')
             .show()
-            .text(`${iPlaylist + 1}/${data.videos.length}`);
+            .text(`${iPlaylist++}/${data.videos.length}`);
         }
       }
 
       // Avoid the Jquery 'load' function and show the audio player
       document.getElementById('audio__player').load();
 
+      document.getElementById('audioSrc').onerror = () => {
+        iInstance++;
+        
+        if (invidiousInstances[iInstance] !== undefined) {
+          $('#audioSrc').attr('src', `${invidiousInstances[iInstance]}/latest_version?id=${data.videos[iPlaylist].videoId}&itag=251&local=true`);
+          document.getElementById('audio__player').load();
+        }
+      }
+
+      document.getElementById('audio__player').canplay = () => {
+        iInstance = 0;
+      }
+
       document.getElementById('audio__player').onended = () => {
         iPlaylist++;
         if (data.videos[iPlaylist] !== undefined) {
-          listen2Playlist(instance, data);
+          listen2Playlist(invidiousInstances[iInstance], data);
         } else {
           $('.audio__leftSvg, .audio__remove').hide();
 
@@ -150,7 +163,7 @@ const listen2Playlist = (instance, data) => {
       });
     } else if (data.videos[iPlaylist].title.match(/(deleted video) || (private video)/gi)) {
       iPlaylist++;
-      listen2Playlist(instance, data);
+      listen2Playlist(invidiousInstances[iInstance], data);
     }
   }
 }
