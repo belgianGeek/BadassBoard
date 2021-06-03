@@ -371,8 +371,12 @@ module.exports = function(app, io, settings) {
                   msg: 'Invalid playlist reference :((',
                   type: 'generic'
                 });
+
+                iInstance = 0;
               } else {
                 console.log(result.error);
+
+                iInstance = 0;
               }
             })
             .catch(err => {
@@ -395,6 +399,8 @@ module.exports = function(app, io, settings) {
                   });
                 }
               }
+
+              iInstance = 0;
             });
         }
 
