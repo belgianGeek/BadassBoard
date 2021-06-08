@@ -1,6 +1,9 @@
 // Define a variable to store the ID of the currently played track
 let iPlaylist = 0;
 
+// Define a variable to store the ID of the currently used Invidious instance
+let iInstance = 0;
+
 // Define a vriable to store the mouse coordinates
 let mousePosition = {};
 
@@ -18,10 +21,6 @@ let headStyle = '';
 
 // Store the last created element number for each content container
 let lastContent = {};
-
-// Store the Invidious instances
-let invidiousInstances;
-let iInstance = 0;
 
 // Add the user data to the page
 $.ajax({
@@ -170,18 +169,4 @@ $('.footer').mouseenter(() => {
   $('.credits').fadeIn();
 }).mouseleave(() => {
   $('.credits').fadeOut();
-});
-
-socket.on('invidious instances', instances => {
-  invidiousInstances = instances;
-});
-
-socket.on('playlist parsed', instance => {
-  $.ajax({
-    url: './tmp/playlist.json',
-    dataType: 'json',
-    method: 'GET'
-  }).done(data => {
-    listen2Playlist(instance, data);
-  });
 });

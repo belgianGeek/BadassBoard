@@ -29,7 +29,9 @@ module.exports = function(app, io, settings) {
       let elements = settings.elements;
       let eltsArray = [];
 
-      io.emit('invidious instances', invidiousInstances);
+      io.on('invidious instances', () => {
+        io.emit('invidious instances', invidiousInstances)
+      });
 
       io.emit('RSS status retrieved', settings.RSS);
       if (settings.RSS === true) {
@@ -381,26 +383,28 @@ module.exports = function(app, io, settings) {
             })
             .catch(err => {
               if (err === 'socket hang up') {
+                iInstance = 0;
                 console.log('The websocket died... :(');
               } else {
                 if (Array.isArray(invidiousInstances)) {
                   if (iInstance <= invidiousInstances.length - 1) {
-                    handlePlaylistRequest(`${invidiousInstances[iInstance++]}/api/v1${id}`, id);
+                    iInstance++;
+                    handlePlaylistRequest(`${invidiousInstances[iInstance]}/api/v1${id}`, id);
                   } else {
+                    iInstance = 0;
+
                     io.emit('errorMsg', {
                       type: 'generic',
-                      msg: `Sorry, the audio stream failed to load due to a server error... Try maybe later.`
+                      msg: `Sorry, the audio stream failed to load due to an external server error... Try maybe later.`
                     });
                   }
                 } else {
                   io.emit('errorMsg', {
-                    msg: invidiousInstances,
+                    msg: 'The Invidious instances list couldn\'t be fetched... Please try again later.',
                     type: 'generic'
                   });
                 }
               }
-
-              iInstance = 0;
             });
         }
 

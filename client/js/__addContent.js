@@ -18,6 +18,7 @@ const addContent = (parent, element) => {
 
     $(`${parent} ${element} .addContent`)
       .css('display', '')
+      .removeClass('hidden')
       .addClass('flex');
 
     $(`${parent} ${element} .addContent`).ready(() => {

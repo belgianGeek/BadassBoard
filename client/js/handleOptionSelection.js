@@ -220,7 +220,14 @@ const handleOptionSelection = (parent, child) => {
 
   // Cancel new content adding
   $(`${parent} ${child} .addContent__cancelBtn`).click(function() {
-    $(this).parents('.addContent').fadeOut();
-    $(`${parent} ${child} .blank`).css('display', '');
+    $(this).parents('.addContent')
+      .fadeOut()
+      .removeClass('flex')
+      .addClass('hidden');
+    $(`${parent} ${child} .blank, ${parent} ${child} .addContent`).css('display', '');
+
+    $(`${parent} ${child} .blank`).removeClass('hidden');
+
+    $(`${parent} ${child} .addContent__select option:selected`).val('');
   });
 }
