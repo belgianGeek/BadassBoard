@@ -872,9 +872,9 @@ ejs@^3.0.2:
     jake "^10.6.1"
 
 electron-to-chromium@^1.4.84:
-  version "1.4.94"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.94.tgz#f19206c977361264a51d53a7ea7ef861a94baa10"
-  integrity sha512-CoOKsuACoa0PAG3hQXxbh/XDiFcjGuSyGKUi09cjMHOt6RCi7/EXgXhaFF3I+aC89Omudqmkzd0YOQKxwtf/Bg==
+  version "1.4.96"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.96.tgz#a97438a01d5db1460343fea4a344960b09330990"
+  integrity sha512-DPNjvNGPabv6FcyjzLAN4C0psN/GgD9rSGvMTuv81SeXG/EX3mCz0wiw9N1tUEnfQXYCJi3H8M0oFPRziZh7rw==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -1824,9 +1824,9 @@ ms@2.1.3:
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
 nanoid@^3.3.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.1.tgz#6347a18cac88af88f58af0b3594b723d5e99bb35"
-  integrity sha512-n6Vs/3KGyxPQd6uO0eH4Bv0ojGSUvuLlIHtC3Y0kEO23YRge8H9x1GCzLn28YX0H66pMkxuaeESFq4tKISKwdw==
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.2.tgz#c89622fafb4381cd221421c69ec58547a1eec557"
+  integrity sha512-CuHBogktKwpm5g2sRgv83jEy2ijFzBwMoYA60orPDR7ynsLijJDqgsi4RDGj3OJpy3Ieb+LYwiRmIOGyytgITA==
 
 natural@^3.0.0:
   version "3.0.3"
