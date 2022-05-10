@@ -26,50 +26,34 @@ module.exports = function(app, io, settings) {
 
     // Open only one socket connection to avoid memory leaks
     io.once('connection', io => {
-      let elements = settings.elements;
-      let eltsArray = [];
-
-      io.emit('invidious instances', invidiousInstances);
-
       io.emit('RSS status retrieved', settings.RSS);
       if (settings.RSS === true) {
-        var bigI, i;
+        let elements = settings.elements;
 
-        let totalLength = 0;
-        for (const [bigI, value] of elements.entries()) {
-          var subElts = value.elements;
-          totalLength += value.elements.length;
+        for (const [i, value] of elements.entries()) {
+          let eltsArray = [];
 
-          for (const [i, subEltsValue] of subElts.entries()) {
-            const sendData = () => {
-              if (eltsArray.length === totalLength) {
-                // Send data to the client
+          if (value.type === 'rss') {
+            feedparser.parse(value.url)
+              .then(items => {
+                value.feed = items;
+                eltsArray.push(value);
                 io.emit('parse content', eltsArray);
-              }
-            }
-
-            if (subEltsValue.type === 'rss') {
-              feedparser.parse(subEltsValue.url)
-                .then(items => {
-                  subEltsValue.feed = items;
-                  eltsArray.push(subEltsValue);
-
-                  sendData();
-                })
-                .catch((err) => {
-                  if (err == 'Error: Not a feed') {
-                    io.emit('errorMsg', {
-                      type: 'rss verification',
-                      element: `${subEltsValue.parent} ${subEltsValue.element}`,
-                      msg: `${subEltsValue.url} is not a valid RSS feed`
-                    });
-                  }
-                });
-            } else if (subEltsValue.type === 'weather' || subEltsValue.type === 'youtube search') {
-              eltsArray.push(subEltsValue);
-
-              sendData();
-            }
+              })
+              .catch((err) => {
+                if (err == 'Error: Not a feed') {
+                  io.emit('errorMsg', {
+                    type: 'rss verification',
+                    element: `${value.parent} ${value.element}`,
+                    msg: `${value.url} is not a valid RSS feed`
+                  });
+                } else {
+                  console.log(JSON.stringify(err, null, 2));
+                }
+              });
+          } else if (value.type === 'weather' || value.type === 'youtube search') {
+            eltsArray.push(value);
+            io.emit('parse content', eltsArray);
           }
         }
       }
@@ -80,7 +64,7 @@ module.exports = function(app, io, settings) {
       }
 
       io.on('add content', feedData => {
-        var elements = settings.elements;
+        let elements = settings.elements;
 
         settings.RSS = true;
 
@@ -172,24 +156,24 @@ module.exports = function(app, io, settings) {
         processData(() => {
           for (const [j, value] of elements.entries()) {
             if (newElt !== {}) {
-              if (value.elements[0] !== undefined && value.elements[0].element !== undefined) {
-                for (const [k, kValue] of value.elements.entries()) {
-                  // Remove the "feed" property for each element before updating the settings
-                  delete kValue.feed;
-                  if (iAddElt === 0) {
-                    if (kValue.element === feedData.element && kValue.parent === feedData.parent) {
-                      value.elements.splice(k, 1, newElt);
-                      iAddElt++;
-                    } else if (kValue.element !== feedData.element && kValue.parent === feedData.parent) {
-                      value.elements.push(newElt);
-                      iAddElt++;
-                    }
+              if (value[0].element !== undefined) {
+                // for (const [k, kValue] of value.elements.entries()) {
+                // Remove the "feed" property for each element before updating the settings
+                delete value.feed;
+                if (iAddElt === 0) {
+                  if (value.element === feedData.element && value.parent === feedData.parent) {
+                    value.splice(k, 1, newElt);
+                    iAddElt++;
+                  } else if (value.element !== feedData.element && value.parent === feedData.parent) {
+                    value.push(newElt);
+                    iAddElt++;
                   }
                 }
-              } else if (value.elements[0] === undefined && iParent === j) {
+                // }
+              } else if (value[0] === undefined && iParent === j) {
                 // Append the new element to the "elements" settings array
                 // if this is the first element added to named content container
-                value.elements.push(newElt);
+                value.push(newElt);
                 iAddElt++;
               }
             }
