@@ -6,7 +6,7 @@ const ip = require('ip');
 const os = require('os');
 const process = require('process');
 
-const server = require('http').Server(app).listen(8080);
+const server = require('http').Server(app).listen(3000);
 const io = require('socket.io')(server);
 const compression = require('compression');
 
@@ -35,16 +35,7 @@ let settings = settingsTemplate = {
     "name": "BadassBot",
     "icon": "./client/scss/icons/interface/bot.png"
   },
-  "elements": [{
-      "elements": []
-    },
-    {
-      "elements": []
-    },
-    {
-      "elements": []
-    }
-  ],
+  "elements": [],
   "owmToken": "9b013a34970de2ddd85f46ea9185dbc5",
   "RSS": true,
   "searchEngine": {
@@ -61,15 +52,15 @@ const updateSettings = () => {
   settings = JSON.parse(settings);
 
   // Sort settings elements by element to avoid frontend bugs while adding new content
-  settings.elements.forEach((item, i) => {
-    item.elements.sort((a, b) => {
-      if (a.element < b.element) {
-        return -1;
-      } else if (a.element > b.element) {
-        return 1;
-      }
-    });
-  });
+  // settings.elements.forEach((item, i) => {
+  //   item.sort((a, b) => {
+  //     if (a.element < b.element) {
+  //       return -1;
+  //     } else if (a.element > b.element) {
+  //       return 1;
+  //     }
+  //   });
+  // });
 }
 
 // ... and repeat the process every 5 minutes

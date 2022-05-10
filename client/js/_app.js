@@ -28,27 +28,27 @@ $.ajax({
   method: 'GET',
   dataType: 'json'
 }).done(settings => {
-  const retrieveLastElementNumber = () => {
-    if (settings.elements[0].elements.length > 0) {
-      lastContent.content1 = Number(settings.elements[0].elements[settings.elements[0].elements.length - 1].element.substring(8, 9));
-    } else {
-      lastContent.content1 = 1;
-    }
+  // const retrieveLastElementNumber = () => {
+  //   if (settings.elements[0].elements.length > 0) {
+  //     lastContent.content1 = Number(settings.elements[0].elements[settings.elements[0].elements.length - 1].element.substring(8, 9));
+  //   } else {
+  //     lastContent.content1 = 1;
+  //   }
+  //
+  //   if (settings.elements[1].elements.length > 0) {
+  //     lastContent.content2 = Number(settings.elements[1].elements[settings.elements[1].elements.length - 1].element.substring(8, 9));
+  //   } else {
+  //     lastContent.content2 = 1;
+  //   }
+  //
+  //   if (settings.elements[2].elements.length > 0) {
+  //     lastContent.content3 = Number(settings.elements[2].elements[settings.elements[2].elements.length - 1].element.substring(8, 9));
+  //   } else {
+  //     lastContent.content3 = 1;
+  //   }
+  // }
 
-    if (settings.elements[1].elements.length > 0) {
-      lastContent.content2 = Number(settings.elements[1].elements[settings.elements[1].elements.length - 1].element.substring(8, 9));
-    } else {
-      lastContent.content2 = 1;
-    }
-
-    if (settings.elements[2].elements.length > 0) {
-      lastContent.content3 = Number(settings.elements[2].elements[settings.elements[2].elements.length - 1].element.substring(8, 9));
-    } else {
-      lastContent.content3 = 1;
-    }
-  }
-
-  retrieveLastElementNumber();
+  // retrieveLastElementNumber();
 
   if (settings.owmToken !== undefined) {
     owmToken = settings.owmToken;
