@@ -5,12 +5,78 @@ const app = express();
 const ip = require('ip');
 const os = require('os');
 const process = require('process');
+const cp = require('child_process').exec;
 
-const server = require('http').Server(app).listen(8080);
+const port = 8080;
+let username = os.userInfo().username;
+
+let server;
+const sendInstructions = protocol => {
+  if (!ip.address().match(/169.254/) || !ip.address().match(/127.0/)) {
+    console.log(`Hey ${username} ! You can connect to the web interface with your local IP (${protocol}://${ip.address()}:${port}) or hostname (${protocol}://${os.hostname()}:${port}).`);
+  } else {
+    console.log(`Sorry Dude, I won't work properly if I don't have access to the Internet. Please fix your connection and try again.`);
+  }
+}
+
+const launchServer = () => {
+  const options = {
+    key: '',
+    cert: ''
+  };
+
+  if (fs.existsSync('./certs/certificate.crt') && fs.existsSync('./certs/private_key.pem')) {
+    options.key = fs.readFileSync('./certs/private_key.pem');
+    options.cert = fs.readFileSync('./certs/certificate.crt');
+
+    server = require('https').Server(options, app).listen(port);
+    sendInstructions('https');
+  } else {
+    console.log('SSL private key and certificate not found, please wait while they are being generated...');
+    cp('openssl genrsa -out ./certs/private_key.pem 2048', (err, stdout, stderr) => {
+      if (err) {
+        console.trace(err);
+      } else {
+        console.log(stdout);
+
+        if (stderr) console.log(stderr);
+        cp('openssl req -new -newkey rsa:2048 -nodes -keyout ./certs/private_key.pem ' +
+          '-out ./certs/certificate_signing_request.csr ' +
+          '-subj "/C=BE/ST=Liege/L=Liege/O=BelgianGeek"', (err, stdout, stderr) => {
+            if (err) {
+              console.trace(err);
+            } else {
+              console.log(stdout);
+
+              if (stderr) console.log(stderr);
+
+              cp('openssl x509 -req -days 365 -in ./certs/certificate_signing_request.csr -signkey ./certs/private_key.pem -out ./certs/certificate.crt', (err, stdout, stderr) => {
+                if (err) {
+                  console.trace(err);
+                } else {
+                  console.log(stdout);
+
+                  if (stderr) console.log(stderr);
+
+                  options.key = fs.readFileSync('./certs/private_key.pem');
+                  options.cert = fs.readFileSync('./certs/certificate.crt');
+
+                  server = require('https').Server(options, app).listen(port);
+                  sendInstructions('https');
+                }
+              });
+            }
+          });
+      }
+    });
+  }
+}
+
+launchServer();
+
 const io = require('socket.io')(server);
 const compression = require('compression');
 
-let username = os.userInfo().username;
 const settingsPath = './settings/settings.json';
 
 const functions = require('./modules/functions');
@@ -21,12 +87,13 @@ app.downloadedFile = {
   name: ''
 }
 
-app.tag = '0.4.4';
+app.tag = '0.5.4';
 
 // Check if folders exist
 functions.existPath('./upload/');
 functions.existPath('./tmp/');
 functions.existPath('./settings/');
+functions.existPath('./certs/');
 
 // Settings object to be written in the settings file if it doesn't exist
 let settings = settingsTemplate = {
@@ -99,12 +166,6 @@ app.use("/client", express.static(__dirname + "/client"))
 
 // Cache views
 app.set('view cache', true);
-
-if (!ip.address().match(/169.254/) || !ip.address().match(/127.0/)) {
-  console.log(`Hey ${username} ! You can connect to the web interface with your local IP (http://${ip.address()}:8080) or hostname (http://${os.hostname()}:8080).`);
-} else {
-  console.log(`Sorry Dude, I won't work properly if I don't have access to the Internet. Please fix your connection and try again.`);
-}
 
 updateSettings();
 
