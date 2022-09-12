@@ -5,9 +5,19 @@ const app = express();
 const ip = require('ip');
 const os = require('os');
 const process = require('process');
+const cors = require('cors');
+
+const corsOptions = {
+  maxAge: 3600,
+  origin: [
+    /localhost$/,
+    '192.168.1.*'
+  ],
+  optionsSuccessStatus: 200
+}
 
 const server = require('http').Server(app).listen(3000);
-const io = require('socket.io')(server);
+// const io = require('socket.io')(server);
 const compression = require('compression');
 
 let username = os.userInfo().username;
@@ -82,11 +92,13 @@ app.use("/client", express.static(__dirname + "/client"))
     res.setHeader('X-XSS-Protection', '1;mode=block')
     res.setHeader('X-Frame-Options', 'DENY')
     res.setHeader('Referrer-Policy', 'no-referrer')
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader('Feature-Policy', "accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; camera 'none'; encrypted-media 'none'; fullscreen 'self'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; payment 'none';  picture-in-picture 'none'; speaker 'none'; sync-xhr 'none'; usb 'none'; vr 'none';")
     return next();
   })
   // Send compressed assets
-  .use(compression());
+  .use(compression())
+  .use(cors(corsOptions));
 
 // Cache views
 app.set('view cache', true);
@@ -100,9 +112,10 @@ if (!ip.address().match(/169.254/) || !ip.address().match(/127.0/)) {
 updateSettings();
 
 // App routes
-require('./routes/chat')(app, io, settings);
-require('./routes/download')(app, io);
-require('./routes/home')(app, io, settings);
+// require('./routes/chat')(app, io, settings);
+// require('./routes/download')(app, io);
+require('./routes/content')(app);
+// require('./routes/home')(app, io, settings);
 
 // 404 error handling
 require('./routes/404')(app, settings);

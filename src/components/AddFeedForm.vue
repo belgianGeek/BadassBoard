@@ -1,0 +1,38 @@
+<script>
+  export default {
+    name: 'AddFeedForm'
+  }
+</script>
+
+<template>
+  <div class="blank flex">
+    <svg class="blank__addContent__svg" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12">
+      </line>
+    </svg>
+  </div>
+  <div class="addContent justifyCentered hidden">
+    <label for="addContent__select">What do you want to add ?</label>
+    <select class="addContent__select" name="addContent__select">
+      <option value="">Choose a field</option>
+      <option value="Add a feed">Add a feed</option>
+      <option value="Weather forecast">Weather forecast</option>
+      <option value="Youtube search box">Youtube search box</option>
+    </select>
+    <div class="addContent__feed">
+      <input type="text" name="addContent__feed__input" class="addContent__feed__input input" placeholder="Enter a RSS feed URL">
+    </div>
+    <div class="addContent__weather">
+      <input type="text" name="addContent__weather__input" class="addContent__weather__input input" placeholder="Enter a location">
+    </div>
+    <div class="addContent__youtube">
+      <p class="addContent__youtube__msg flex">Nothing to do here !</p>
+      <p class="addContent__youtube__msg flex">Just click on the green button below <br>and you're all set, dude ! 😉</p>
+    </div>
+    <div class="addContent__btnContainer">
+      <button class="addContent__cancelBtn btn btn--red">Bring me back !</button>
+      <button class="addContent__submitBtn btn btn--green">Ok, that's it</button>
+    </div>
+  </div>
+</template>
