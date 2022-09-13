@@ -4,6 +4,7 @@ stable
 upload
 settings
 tmp
+certs
 
 # Files
 youtube-dl.exe
