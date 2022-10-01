@@ -9,17 +9,26 @@ export default {
   },
   data() {
     return {
-      content: {}
+      contentLength: Number(),
+      contents: []
     }
   },
   methods: {
-    async getContent() {
-      this.content = await axios.get('http://localhost:3000/api/content');
-      console.log(this.content);
+    async getContent(index) {
+      let response = await axios.get(`http://localhost:3000/api/content/${index}`);
+      this.contents.push(response.data);
+    },
+    async getContentLength() {
+      let response = await axios.get('http://localhost:3000/api/contentlength');
+      this.contentLength = response.data;
+
+      for (let i = 0; i < this.contentLength; i++) {
+        this.getContent(i);
+      }
     }
   },
   mounted() {
-    this.getContent()
+    this.getContentLength();
   }
 }
 </script>
@@ -74,21 +83,31 @@ export default {
     </span>
   </div>
   <div class="contentContainers flex">
-    <div class="content__container content1__container flex" id="content1__container">
-      <div class="content content1 flex" id="content1">
-        <!-- <AddFeedForm /> -->
+    <section class="content flex" v-for="content in this.contents">
+      <span :class="content.type + 'Container'">
+        <h1 class="title">
+          <a class="link" :href="content.feed[0].meta.link" v-if="content.type === 'rss'">
+            {{ content.feed[0].meta.title }}
+          </a>
+          <a class="link" :href="'https://openweathermap.org/city/' + content.forecast.list[0].id" v-else-if="content.type === 'weather'">
+            Weather in {{ content.forecast.list[0].name }}
+          </a>
+          <a class="link" href="#" v-else>
+            TODO
+          </a>
+        </h1>
+      </span>
+      <div class="linksContainer" v-if="content.type === 'rss'" v-for="article in content.feed">
+        <a :href="article.link">{{ article.title }}</a>
       </div>
-    </div>
-    <div class="content__container content2__container flex" id="content2__container">
-      <div class="content content2 flex" id="content2">
-        <!-- <AddFeedForm /> -->
+      <div class="forecast" v-else-if="content.type === 'weather'">
+        <p>Forecast description : {{ content.forecast.list[0].weather[0].description }}</p>
+        <p>Temperature : {{ content.forecast.list[0].main.temp }} °C</p>
+        <p>Wind speed : {{ content.forecast.list[0].wind.speed }} km/h</p>
+        <p>Humidity : {{ content.forecast.list[0].main.humidity }} %</p>
+        <img :src="`http://openweathermap.org/img/wn/${content.forecast.list[0].weather[0].icon}@2x.png`" :alt="content.forecast.list[0].weather[0].description + ' icon'" :title="content.forecast.list[0].weather[0].description + ' icon'">
       </div>
-    </div>
-    <div class="content__container content3__container flex" id="content3__container">
-      <div class="content content3 flex" id="content3">
-        <!-- <AddFeedForm /> -->
-      </div>
-    </div>
+    </section>
   </div>
 </main>
 </template>

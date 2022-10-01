@@ -74,14 +74,14 @@ const updateSettings = () => {
 }
 
 // ... and repeat the process every 5 minutes
-setInterval(() => {
-  functions.createSettingsFile(settingsPath, settingsTemplate);
-
-  // Write changes to the settings file after each update
-  functions.updateSettingsFile(settingsPath, settings, () => {
-    updateSettings();
-  });
-}, 1000 * 20);
+// setInterval(() => {
+//   functions.createSettingsFile(settingsPath, settingsTemplate);
+//
+//   // Write changes to the settings file after each update
+//   functions.updateSettingsFile(settingsPath, settings, () => {
+//     updateSettings();
+//   });
+// }, 1000 * 20);
 
 app.use("/client", express.static(__dirname + "/client"))
   .use("/upload", express.static(__dirname + "/upload"))
@@ -115,6 +115,7 @@ updateSettings();
 // require('./routes/chat')(app, io, settings);
 // require('./routes/download')(app, io);
 require('./routes/content')(app);
+require('./routes/contentLength')(app);
 // require('./routes/home')(app, io, settings);
 
 // 404 error handling
@@ -134,10 +135,10 @@ process.on('SIGINT, SIGKILL, SIGTERM', () => {
   ];
 
   // Write changes to the settings file before exiting the process
-  functions.updateSettingsFile(settingsPath, settings, () => {
+  // functions.updateSettingsFile(settingsPath, settings, () => {
     console.log(`\n${exitMsg.random()}`);
     process.exit(0);
-  });
+  // });
 });
 
 module.exports = app;
