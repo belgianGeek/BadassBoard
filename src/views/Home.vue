@@ -97,8 +97,8 @@ export default {
           </a>
         </h1>
       </span>
-      <div class="linksContainer" v-if="content.type === 'rss'" v-for="article in content.feed">
-        <a :href="article.link">{{ article.title }}</a>
+      <div class="linksContainer" v-if="content.type === 'rss'">
+        <a class="linksContainer__link" :href="article.link" v-for="article in content.feed">{{ article.title }}</a>
       </div>
       <div class="forecast" v-else-if="content.type === 'weather'">
         <p>Forecast description : {{ content.forecast.list[0].weather[0].description }}</p>
@@ -111,6 +111,12 @@ export default {
   </div>
 </main>
 </template>
+
+<style media="screen" lang="scss">
+  .linksContainer__link {
+    display: block;
+  }
+</style>
 
     <!-- <%- include('settings'); %>
     <div class="rssTooltip flex"></div>
