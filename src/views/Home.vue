@@ -16,7 +16,16 @@ export default {
   methods: {
     async getContent(index) {
       let response = await axios.get(`http://localhost:3000/api/content/${index}`);
+      response.data.isModified = false;
+
+      if (response.data.type === 'rss') {
+        response.data.inputValue = response.data.url;
+      } else if (response.data.type === 'weather') {
+        response.data.inputValue = response.data.location;
+      }
+
       this.contents.push(response.data);
+      console.log(response.data);
     },
     async getContentLength() {
       let response = await axios.get('http://localhost:3000/api/contentlength');
@@ -24,6 +33,13 @@ export default {
 
       for (let i = 0; i < this.contentLength; i++) {
         this.getContent(i);
+      }
+    },
+    async modifyContent(content) {
+      if (content.isModified) {
+        content.isModified = false;
+      } else {
+        content.isModified = true;
       }
     }
   },
@@ -34,9 +50,9 @@ export default {
 </script>
 
 <template>
-<main class="mainContainer flex">
+<main class="mainContainer flexColumn">
   <div id="formContainer__container" class="formContainer__container">
-    <div class="formContainer flex">
+    <div class="formContainer flexRow">
       <form class="form" method="get">
         <input class="questionBox" type="text" name="question" placeholder="What are you searching for ?">
         <button type="submit" name="questionBox__submitBtn">
@@ -50,9 +66,9 @@ export default {
     </div>
   </div>
   <span class="converter">
-    <section class="converter__body flex">
-      <img class="converter__body__remove flex" alt="Hide the converter" src="./client/scss/icons/interface/cross.svg">
-      <select class="converter__body__value1 flex">
+    <section class="converter__body flexRow">
+      <img class="converter__body__remove flexRow" alt="Hide the converter" src="./client/scss/icons/interface/cross.svg">
+      <select class="converter__body__value1 flexRow">
         <option value="Choose a value">Choose a value</option>
         <option value="Byte">Byte</option>
         <option value="Kilobyte">Kilobyte</option>
@@ -61,7 +77,7 @@ export default {
         <option value="Terabyte">Terabyte</option>
       </select>
       <input class="converter__body__input input" placeholder="Enter a value here">
-      <select class="converter__body__value2 flex">
+      <select class="converter__body__value2 flexRow">
         <option value="Choose a value">Choose a value</option>
         <option value="Byte">Byte</option>
         <option value="Kilobyte">Kilobyte</option>
@@ -76,15 +92,29 @@ export default {
     <!-- <%= typeof msg != 'undefined' ? msg : '' %> -->
   </div>
   <div class="audio">
-    <img class="audio__remove removeContentBtn flex" alt="Remove the audio player" src="./client/scss/icons/interface/cross.svg">
-    <span class="audio__container flex">
-      <div class="audio__container__msg flex"></div>
-      <div class="audio__container__player flex"></div>
+    <img class="audio__remove removeContentBtn flexRow" alt="Remove the audio player" src="./client/scss/icons/interface/cross.svg">
+    <span class="audio__container flexRow">
+      <div class="audio__container__msg flexRow"></div>
+      <div class="audio__container__player flexRow"></div>
     </span>
   </div>
-  <div class="contentContainers flex">
-    <section class="content flex" v-for="content in this.contents">
-      <span :class="content.type + 'Container'">
+  <div class="contentContainers flexColumn">
+    <section :class="content.type + 'Container'" class="content flexColumn" v-for="content in this.contents">
+        <nav class="contentNav flexRow">
+          <button @click="modifyContent(content)">Modify</button>
+          <button>Delete</button>
+          <label
+            class="contentNav__label"
+            v-bind:class="(content.isModified) ? 'flexRow' : 'hidden'"
+          >
+            <!-- To translate and generalize  (RSS feed, location...)-->
+            Item's reference :
+            <input
+              v-bind:type="(content.type === 'rss') ? 'url' : 'text'"
+              v-bind:value="(content.inputValue) ? content.inputValue : 'Unknown data'"
+            />
+          </label>
+        </nav>
         <h1 class="title">
           <a class="link" :href="content.feed[0].meta.link" v-if="content.type === 'rss'">
             {{ content.feed[0].meta.title }}
@@ -96,7 +126,6 @@ export default {
             TODO
           </a>
         </h1>
-      </span>
       <div class="linksContainer" v-if="content.type === 'rss'">
         <a class="linksContainer__link" :href="article.link" v-for="article in content.feed">{{ article.title }}</a>
       </div>
@@ -113,6 +142,40 @@ export default {
 </template>
 
 <style media="screen" lang="scss">
+  .content {
+    background-color: rgba(0,0,0,0.5);
+    border-radius: .5rem;
+    padding: .2rem;
+    margin: .2rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+
+    &Nav {
+      &__label {
+        width: 50%;
+
+        input {
+          flex: 1;
+        }
+      }
+    }
+  }
+
+  .flexColumn {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .flexRow {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .hidden {
+    display: none;
+  }
+
   .linksContainer__link {
     display: block;
   }
