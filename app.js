@@ -11,7 +11,8 @@ const corsOptions = {
   maxAge: 3600,
   origin: [
     /localhost$/,
-    '192.168.1.*'
+    '192.168.1.*',
+    '*'
   ],
   optionsSuccessStatus: 200
 }
@@ -79,7 +80,7 @@ const updateSettings = () => {
 //
 //   // Write changes to the settings file after each update
 //   functions.updateSettingsFile(settingsPath, settings, () => {
-//     updateSettings();
+    updateSettings();
 //   });
 // }, 1000 * 20);
 
