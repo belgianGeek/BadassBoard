@@ -22,6 +22,7 @@ export default {
 
       if (response.data.type === "rss") {
         response.data.inputValue = response.data.url;
+        response.data.containerPageNumber = 1;
       } else if (response.data.type === "weather") {
         response.data.inputValue = response.data.location;
       }
@@ -39,13 +40,19 @@ export default {
         this.getContent(i);
       }
     },
+    async goToNextPage(containerId) {
+      this.contents[containerId].containerPageNumber++;
+    },
+    async goToPreviousPage(containerId) {
+      this.contents[containerId].containerPageNumber--;
+    },
     async modifyContent(content) {
       if (content.isModified) {
         content.isModified = false;
       } else {
         content.isModified = true;
       }
-    },
+    }
   },
   mounted() {
     this.getContentLength();
@@ -58,25 +65,10 @@ export default {
     <div id="formContainer__container" class="formContainer__container">
       <div class="formContainer flexRow">
         <form class="form" method="get">
-          <input
-            class="questionBox"
-            type="text"
-            name="question"
-            placeholder="What are you searching for ?"
-          />
+          <input class="questionBox" type="text" name="question" placeholder="What are you searching for ?" />
           <button type="submit" name="questionBox__submitBtn">
-            <svg
-              class="formSubmit"
-              xmlns="http://www.w3.org/2000/svg"
-              width="48"
-              height="48"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="lightgrey"
-              stroke-width="3"
-              stroke-linecap="round"
-              stroke-linejoin="arcs"
-            >
+            <svg class="formSubmit" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+              fill="none" stroke="lightgrey" stroke-width="3" stroke-linecap="round" stroke-linejoin="arcs">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
@@ -87,11 +79,8 @@ export default {
     </div>
     <span class="converter">
       <section class="converter__body flexRow">
-        <img
-          class="converter__body__remove flexRow"
-          alt="Hide the converter"
-          src="./client/scss/icons/interface/cross.svg"
-        />
+        <img class="converter__body__remove flexRow" alt="Hide the converter"
+          src="./client/scss/icons/interface/cross.svg" />
         <select class="converter__body__value1 flexRow">
           <option value="Choose a value">Choose a value</option>
           <option value="Byte">Byte</option>
@@ -100,10 +89,7 @@ export default {
           <option value="Gigabyte">Gigabyte</option>
           <option value="Terabyte">Terabyte</option>
         </select>
-        <input
-          class="converter__body__input input"
-          placeholder="Enter a value here"
-        />
+        <input class="converter__body__input input" placeholder="Enter a value here" />
         <select class="converter__body__value2 flexRow">
           <option value="Choose a value">Choose a value</option>
           <option value="Byte">Byte</option>
@@ -119,98 +105,69 @@ export default {
       <!-- <%= typeof msg != 'undefined' ? msg : '' %> -->
     </div>
     <div class="audio">
-      <img
-        class="audio__remove removeContentBtn flexRow"
-        alt="Remove the audio player"
-        src="./client/scss/icons/interface/cross.svg"
-      />
+      <img class="audio__remove removeContentBtn flexRow" alt="Remove the audio player"
+        src="./client/scss/icons/interface/cross.svg" />
       <span class="audio__container flexRow">
         <div class="audio__container__msg flexRow"></div>
         <div class="audio__container__player flexRow"></div>
       </span>
     </div>
     <div class="contentContainers flexRow">
-      <section
-        :class="content.type + 'Container'"
-        class="content flexColumn"
-        v-for="content in this.contents"
-      >
-        <button
-          @click="modifyContent(content)"
-          :class="{
-            hidden: content.isModified,
-          }"
-        >
+      <section :class="content.type + 'Container'" class="content flexColumn"
+        v-for="[iContent, content] of this.contents.entries()">
+        <button @click="modifyContent(content)" :class="{
+          hidden: content.isModified,
+        }">
           Modify
         </button>
-        <nav
-          class="contentNav"
-          :class="{
-            hidden: !content.isModified,
-            flexColumn: content.isModified,
-          }"
-        >
+        <nav class="contentNav" :class="{
+          hidden: !content.isModified,
+          flexColumn: content.isModified,
+        }">
           <button>Delete</button>
           <label class="contentNav__label">
             <!-- To translate and generalize  (RSS feed, location...)-->
             Item's reference :
-            <input
-              v-bind:type="content.type === 'rss' ? 'url' : 'text'"
-              v-bind:value="
-                content.inputValue ? content.inputValue : 'Unknown data'
-              "
-            />
+            <input v-bind:type="content.type === 'rss' ? 'url' : 'text'" v-bind:value="
+              content.inputValue ? content.inputValue : 'Unknown data'
+            " />
           </label>
           <button @click="modifyContent(content)">Ok</button>
         </nav>
-        <h1
-          class="title"
-          :class="{
-            hidden: content.isModified,
-            flexColumn: !content.isModified,
-          }"
-        >
-          <a
-            class="link"
-            :href="content.feed[0].meta.link"
-            v-if="content.type === 'rss'"
-          >
+        <h1 class="title" :class="{
+          hidden: content.isModified,
+          flexColumn: !content.isModified,
+        }">
+          <a class="link" :href="content.feed[0].meta.link" v-if="content.type === 'rss'">
             {{ content.feed[0].meta.title }}
           </a>
-          <a
-            class="link"
-            :href="
-              'https://openweathermap.org/city/' + content.forecast.list[0].id
-            "
-            v-else-if="content.type === 'weather'"
-          >
+          <a class="link" :href="
+            'https://openweathermap.org/city/' + content.forecast.list[0].id
+          " v-else-if="content.type === 'weather'">
             Weather in {{ content.forecast.list[0].name }}
           </a>
           <a class="link" href="#" v-else> TODO </a>
         </h1>
-        <div
-          class="linksContainer"
-          :class="{
-            hidden: content.isModified,
-            flexColumn: !content.isModified,
-          }"
-          v-if="content.type === 'rss'"
-        >
-          <a
-            class="linksContainer__link"
-            :href="article.link"
-            v-for="article in content.feed"
-            >{{ article.title }}</a
-          >
+        <div class="linksContainer" :class="{
+          hidden: content.isModified,
+          flexColumn: !content.isModified,
+        }" v-if="content.type === 'rss'">
+          <a class="linksContainer__link"
+            :class="{
+              shown: ((this.contents[iContent].containerPageNumber === 1) && i <= 10) || (this.contents[iContent].containerPageNumber > 1 && i >= (this.contents[iContent].containerPageNumber * 10)),
+              hidden: ((this.contents[iContent].containerPageNumber === 1 && (i < (this.contents[iContent].containerPageNumber * 10))) || (this.contents[iContent].containerPageNumber > 1 && (i < (this.contents[iContent].containerPageNumber * 10)))) }"
+            :href="article.link" v-for="[i, article] of content.feed.entries()">{{
+              article.title }}</a>
         </div>
-        <div
-          class="forecast flexRow"
-          :class="{
-            hidden: content.isModified,
-            flexColumn: !content.isModified,
-          }"
-          v-else-if="content.type === 'weather'"
-        >
+        <div class="pager" v-if="content.type === 'rss' && content.feed.length > 10">
+          <p @click="goToPreviousPage(iContent)"> P </p>
+          {{ this.contents[iContent].containerPageNumber }} / {{ Math.floor(content.feed.length / 10) }}
+          <p @click="goToNextPage(iContent)"> N </p>
+        </div>
+        <div class="forecast flexRow" :class="{
+          hidden: content.isModified,
+          flexColumn: !content.isModified,
+        }" v-else-if="content.type === 'weather'">
           <div class="forecast__content">
             <p>
               Forecast description :
@@ -220,12 +177,10 @@ export default {
             <p>Wind speed : {{ content.forecast.list[0].wind.speed }} km/h</p>
             <p>Humidity : {{ content.forecast.list[0].main.humidity }} %</p>
           </div>
-          <img
-            class="forecast__img"
+          <img class="forecast__img"
             :src="`http://openweathermap.org/img/wn/${content.forecast.list[0].weather[0].icon}@2x.png`"
             :alt="content.forecast.list[0].weather[0].description + ' icon'"
-            :title="content.forecast.list[0].weather[0].description + ' icon'"
-          />
+            :title="content.forecast.list[0].weather[0].description + ' icon'" />
         </div>
       </section>
     </div>
@@ -298,7 +253,13 @@ export default {
 }
 
 .linksContainer__link {
-  display: block;
+  &.shown {
+    display: block;
+  }
+
+  &.hidden {
+    display: none;
+  }
 }
 </style>
 
