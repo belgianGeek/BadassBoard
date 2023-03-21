@@ -152,13 +152,11 @@ export default {
           hidden: content.isModified,
           flexColumn: !content.isModified,
         }" v-if="content.type === 'rss'">
-          <a class="linksContainer__link"
-            :class="{
-              shown: ((this.contents[iContent].containerPageNumber === 1) && i <= 10) || (this.contents[iContent].containerPageNumber > 1 && (i >= (this.contents[iContent].containerPageNumber - 1) * 10) && (i <= (this.contents[iContent].containerPageNumber * 10) + 1)),
-              hidden: ((this.contents[iContent].containerPageNumber === 1) && i >= 10) || (this.contents[iContent].containerPageNumber > 1 && (i <= (this.contents[iContent].containerPageNumber * 10) + 1) && (i >= (this.contents[iContent].containerPageNumber - 1) * 10))
-              }"
-            :href="article.link" v-for="[i, article] of content.feed.entries()">{{
-              article.title }}</a>
+          <a class="linksContainer__link" :class="{
+            shown: ((this.contents[iContent].containerPageNumber === 1) && i <= 10) || ((this.contents[iContent].containerPageNumber > 1) && (i > (this.contents[iContent].containerPageNumber - 1) * 10) || (i < (this.contents[iContent].containerPageNumber * 10) + 1)),
+            hidden: ((this.contents[iContent].containerPageNumber === 1) && i > 10) || ((this.contents[iContent].containerPageNumber > 1) && (i <= (this.contents[iContent].containerPageNumber - 1) * 10) || (i >= (this.contents[iContent].containerPageNumber * 10) + 1))
+          }" :href="article.link" v-for="[i, article] of content.feed.entries()">
+            {{ article.title }}</a>
         </div>
         <div class="pager" v-if="content.type === 'rss' && content.feed.length > 10">
           <p @click="goToPreviousPage(iContent)"> P </p>
