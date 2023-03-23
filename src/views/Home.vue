@@ -153,15 +153,19 @@ export default {
           flexColumn: !content.isModified,
         }" v-if="content.type === 'rss'">
           <a class="linksContainer__link" :class="{
-            shown: ((this.contents[iContent].containerPageNumber === 1) && i <= 10) || ((this.contents[iContent].containerPageNumber > 1) && (i > (this.contents[iContent].containerPageNumber - 1) * 10) || (i < (this.contents[iContent].containerPageNumber * 10) + 1)),
-            hidden: ((this.contents[iContent].containerPageNumber === 1) && i > 10) || ((this.contents[iContent].containerPageNumber > 1) && (i <= (this.contents[iContent].containerPageNumber - 1) * 10) || (i >= (this.contents[iContent].containerPageNumber * 10) + 1))
+            shown: ((this.contents[iContent].containerPageNumber === 1) && i <= 9) || ((this.contents[iContent].containerPageNumber > 1) && (i >= (this.contents[iContent].containerPageNumber - 1) * 10) || (i < (this.contents[iContent].containerPageNumber * 10))),
+            hidden: ((this.contents[iContent].containerPageNumber === 1) && i > 9) || ((this.contents[iContent].containerPageNumber > 1) && (i < (this.contents[iContent].containerPageNumber - 1) * 10) || (i >= (this.contents[iContent].containerPageNumber * 10)))
           }" :href="article.link" v-for="[i, article] of content.feed.entries()">
             {{ article.title }}</a>
         </div>
-        <div class="pager" v-if="content.type === 'rss' && content.feed.length > 10">
-          <p @click="goToPreviousPage(iContent)"> P </p>
+        <div class="pager flexRow" v-if="content.type === 'rss' && content.feed.length > 10">
+          <p @click="goToPreviousPage(iContent)" :class="{'invisible' : this.contents[iContent].containerPageNumber === 1}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </p>
           {{ this.contents[iContent].containerPageNumber }} / {{ Math.floor(content.feed.length / 10) }}
-          <p @click="goToNextPage(iContent)"> N </p>
+          <p @click="goToNextPage(iContent)" :class="{'invisible' : this.contents[iContent].containerPageNumber === Math.floor(content.feed.length / 10)}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </p>
         </div>
         <div class="forecast flexRow" :class="{
           hidden: content.isModified,
@@ -251,6 +255,10 @@ export default {
   display: none;
 }
 
+.invisible {
+  visibility: hidden;
+}
+
 .linksContainer__link {
   &.shown {
     display: block;
@@ -259,6 +267,11 @@ export default {
   &.hidden {
     display: none;
   }
+}
+
+.pager {
+  align-items: center;
+  justify-content: space-evenly;
 }
 </style>
 
