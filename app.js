@@ -17,7 +17,7 @@ const corsOptions = {
   optionsSuccessStatus: 200
 }
 
-const server = require('http').Server(app).listen(3000);
+require('http').Server(app).listen(3000);
 // const io = require('socket.io')(server);
 const compression = require('compression');
 
@@ -99,6 +99,7 @@ app.use("/client", express.static(__dirname + "/client"))
   })
   // Send compressed assets
   .use(compression())
+  .use(express.json())
   .use(cors(corsOptions));
 
 // Cache views
@@ -117,6 +118,7 @@ updateSettings();
 // require('./routes/download')(app, io);
 require('./routes/content')(app);
 require('./routes/contentLength')(app);
+require('./routes/updateContent')(app, settings);
 // require('./routes/home')(app, io, settings);
 
 // 404 error handling

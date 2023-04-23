@@ -10,7 +10,7 @@ module.exports = function(app) {
     const item = data.elements[Number(req.params.index)];
 
     if (item.type === 'rss') {
-      feedparser.parse(item.url)
+      feedparser.parse(item.reference)
         .then(items => {
           item.feed = items;
           res.send(item);
@@ -20,7 +20,7 @@ module.exports = function(app) {
             res.send({
               type: 'rss verification',
               element: `${item.parent} ${item.element}`,
-              msg: `${item.url} is not a valid RSS feed`
+              msg: `${item.reference} is not a valid RSS feed`
             });
           } else {
             res.send(`An error occurred : ${err}`);
@@ -29,7 +29,7 @@ module.exports = function(app) {
         });
     } else if (item.type === 'weather') {
       if (data.owmToken.match(/[a-z0-9]{32}/)) {
-        axios.post(`https://api.openweathermap.org/data/2.5/find?q=${item.location}&units=metric&lang=en&appid=${data.owmToken}`)
+        axios.post(`https://api.openweathermap.org/data/2.5/find?q=${item.reference}&units=metric&lang=en&appid=${data.owmToken}`)
           .then(axiosResponse => {
             switch (axiosResponse.status) {
               case 401:

@@ -21,10 +21,10 @@ export default {
       response.data.isModified = false;
 
       if (response.data.type === "rss") {
-        response.data.inputValue = response.data.url;
+        response.data.inputValue = response.data.reference;
         response.data.containerPageNumber = 1;
       } else if (response.data.type === "weather") {
-        response.data.inputValue = response.data.location;
+        response.data.inputValue = response.data.reference;
       }
 
       this.contents.push(response.data);
@@ -46,12 +46,22 @@ export default {
     async goToPreviousPage(containerId) {
       this.contents[containerId].containerPageNumber--;
     },
-    async modifyContent(content) {
+    async modifyContent(content, index) {
+      console.log(this.contents[1]);
       if (content.isModified) {
         content.isModified = false;
       } else {
         content.isModified = true;
       }
+    },
+    async updateContent(content, index) {
+      const settingsUpdate = await axios.post(`http://${window.location.hostname}:3000/api/updatecontent`, {
+        containerId: index,
+        itemReference: content.inputValue
+      });
+
+      this.contents[index].reference = settingsUpdate.data.reference;
+      this.contents[index].feed = settingsUpdate.data.feed;
     }
   },
   mounted() {
@@ -128,11 +138,9 @@ export default {
           <label class="contentNav__label">
             <!-- To translate and generalize  (RSS feed, location...)-->
             Item's reference :
-            <input v-bind:type="content.type === 'rss' ? 'url' : 'text'" v-bind:value="
-              content.inputValue ? content.inputValue : 'Unknown data'
-            " />
+            <input v-bind:type="content.type === 'rss' ? 'url' : 'text'" v-model="content.inputValue" />
           </label>
-          <button @click="modifyContent(content)">Ok</button>
+          <button @click="[modifyContent(content), updateContent(content, content.index)]">Ok</button>
         </nav>
         <h1 class="title" :class="{
           hidden: content.isModified,
