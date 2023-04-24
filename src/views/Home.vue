@@ -28,7 +28,6 @@ export default {
       }
 
       this.contents.push(response.data);
-      console.log(response.data);
     },
     async getContentLength() {
       let response = await axios.get(
@@ -47,7 +46,6 @@ export default {
       this.contents[containerId].containerPageNumber--;
     },
     async modifyContent(content, index) {
-      console.log(this.contents[1]);
       if (content.isModified) {
         content.isModified = false;
       } else {
@@ -60,8 +58,15 @@ export default {
         itemReference: content.inputValue
       });
 
+      this.contents[index].type = settingsUpdate.data.type;
       this.contents[index].reference = settingsUpdate.data.reference;
-      this.contents[index].feed = settingsUpdate.data.feed;
+
+      if (content.type === 'rss') {
+        this.contents[index].feed = settingsUpdate.data.feed;
+      } else if (content.type === 'weather') {
+        console.log(this.contents[index]);
+        this.contents[index].forecast = settingsUpdate.data.forecast;
+      }
     }
   },
   mounted() {
@@ -126,14 +131,14 @@ export default {
       <section :class="content.type + 'Container'" class="content flexColumn"
         v-for="[iContent, content] of this.contents.entries()">
         <button @click="modifyContent(content)" :class="{
-          hidden: content.isModified,
-        }">
+            hidden: content.isModified,
+          }">
           Modify
         </button>
         <nav class="contentNav" :class="{
-          hidden: !content.isModified,
-          flexColumn: content.isModified,
-        }">
+            hidden: !content.isModified,
+            flexColumn: content.isModified,
+          }">
           <button>Delete</button>
           <label class="contentNav__label">
             <!-- To translate and generalize  (RSS feed, location...)-->
@@ -143,42 +148,49 @@ export default {
           <button @click="[modifyContent(content), updateContent(content, content.index)]">Ok</button>
         </nav>
         <h1 class="title" :class="{
-          hidden: content.isModified,
-          flexColumn: !content.isModified,
-        }">
+            hidden: content.isModified,
+            flexColumn: !content.isModified,
+          }">
           <a class="link" :href="content.feed[0].meta.link" v-if="content.type === 'rss'">
             {{ content.feed[0].meta.title }}
           </a>
-          <a class="link" :href="
-            'https://openweathermap.org/city/' + content.forecast.list[0].id
-          " v-else-if="content.type === 'weather'">
+          <a class="link" :href="'https://openweathermap.org/city/' + content.forecast.list[0].id
+            " v-else-if="content.type === 'weather'">
             Weather in {{ content.forecast.list[0].name }}
           </a>
           <a class="link" href="#" v-else> TODO </a>
         </h1>
         <div class="linksContainer" :class="{
-          hidden: content.isModified,
-          flexColumn: !content.isModified,
-        }" v-if="content.type === 'rss'">
+            hidden: content.isModified,
+            flexColumn: !content.isModified,
+          }" v-if="content.type === 'rss'">
           <a class="linksContainer__link" :class="{
-            shown: ((this.contents[iContent].containerPageNumber === 1) && i <= 9) || ((this.contents[iContent].containerPageNumber > 1) && (i >= (this.contents[iContent].containerPageNumber - 1) * 10) || (i < (this.contents[iContent].containerPageNumber * 10))),
-            hidden: ((this.contents[iContent].containerPageNumber === 1) && i > 9) || ((this.contents[iContent].containerPageNumber > 1) && (i < (this.contents[iContent].containerPageNumber - 1) * 10) || (i >= (this.contents[iContent].containerPageNumber * 10)))
-          }" :href="article.link" v-for="[i, article] of content.feed.entries()">
+              shown: ((this.contents[iContent].containerPageNumber === 1) && i <= 9) || ((this.contents[iContent].containerPageNumber > 1) && (i >= (this.contents[iContent].containerPageNumber - 1) * 10) || (i < (this.contents[iContent].containerPageNumber * 10))),
+              hidden: ((this.contents[iContent].containerPageNumber === 1) && i > 9) || ((this.contents[iContent].containerPageNumber > 1) && (i < (this.contents[iContent].containerPageNumber - 1) * 10) || (i >= (this.contents[iContent].containerPageNumber * 10)))
+            }" :href="article.link" v-for="[i, article] of content.feed.entries()">
             {{ article.title }}</a>
         </div>
         <div class="pager flexRow" v-if="content.type === 'rss' && content.feed.length > 10">
-          <p @click="goToPreviousPage(iContent)" :class="{'invisible' : this.contents[iContent].containerPageNumber === 1}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          <p @click="goToPreviousPage(iContent)"
+            :class="{ 'invisible': this.contents[iContent].containerPageNumber === 1 }">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="white"
+              stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
           </p>
           {{ this.contents[iContent].containerPageNumber }} / {{ Math.floor(content.feed.length / 10) }}
-          <p @click="goToNextPage(iContent)" :class="{'invisible' : this.contents[iContent].containerPageNumber === Math.floor(content.feed.length / 10)}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          <p @click="goToNextPage(iContent)"
+            :class="{ 'invisible': this.contents[iContent].containerPageNumber === Math.floor(content.feed.length / 10) }">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
+              stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
           </p>
         </div>
         <div class="forecast flexRow" :class="{
-          hidden: content.isModified,
-          flexColumn: !content.isModified,
-        }" v-else-if="content.type === 'weather'">
+            hidden: content.isModified,
+            flexColumn: !content.isModified,
+          }" v-else-if="content.type === 'weather'">
           <div class="forecast__content">
             <p>
               Forecast description :
