@@ -16,15 +16,15 @@ module.exports = function(app) {
           res.send(item);
         })
         .catch((err) => {
-          if (err == 'Error: Not a feed') {
+          if (err === 'Error: Not a feed') {
             res.send({
               type: 'rss verification',
               element: `${item.parent} ${item.element}`,
               msg: `${item.reference} is not a valid RSS feed`
             });
           } else {
-            res.send(`An error occurred : ${err}`);
-            console.log(JSON.stringify(err, null, 2));
+            res.send(`Your feed couldn't be loaded because the parser encountered an error : ${err}`);
+            console.trace(`An error occurred : ${err}`);
           }
         });
     } else if (item.type === 'weather') {

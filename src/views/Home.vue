@@ -1,86 +1,118 @@
-<script>
+<script setup>
+import { useGlobalStore } from '@/stores/globalStore';
+const globalStore = useGlobalStore();
+
 // import AddFeedForm from '../components/AddFeedForm.vue';
 import axios from "axios";
+import { onMounted } from 'vue';
 
-export default {
-  name: "Home",
-  components: {
-    // AddFeedForm
-  },
-  data() {
-    return {
-      contentLength: Number(),
-      contents: [],
-    };
-  },
-  methods: {
-    async getContent(index) {
-      let response = await axios.get(
-        `http://${window.location.hostname}:3000/api/content/${index}`
-      );
-      response.data.isModified = false;
+let contentLength = Number();
+let contents = [];
+let searchQuery = '';
 
-      if (response.data.type === "rss") {
-        response.data.inputValue = response.data.reference;
-        response.data.containerPageNumber = 1;
-      } else if (response.data.type === "weather") {
-        response.data.inputValue = response.data.reference;
-      }
+const getContent = (index) => {
+  axios.get(
+    `http://${window.location.hostname}:3000/api/content/${index}`
+  ).then(response => {
+    console.log(response);
+    // response.data.isModified = false;
 
-      this.contents.push(response.data);
-    },
-    async getContentLength() {
-      let response = await axios.get(
-        `http://${window.location.hostname}:3000/api/contentlength`
-      );
-      this.contentLength = response.data;
-
-      for (let i = 0; i < this.contentLength; i++) {
-        this.getContent(i);
-      }
-    },
-    async goToNextPage(containerId) {
-      this.contents[containerId].containerPageNumber++;
-    },
-    async goToPreviousPage(containerId) {
-      this.contents[containerId].containerPageNumber--;
-    },
-    async modifyContent(content, index) {
-      if (content.isModified) {
-        content.isModified = false;
-      } else {
-        content.isModified = true;
-      }
-    },
-    async updateContent(content, index) {
-      const settingsUpdate = await axios.post(`http://${window.location.hostname}:3000/api/updatecontent`, {
-        containerId: index,
-        itemReference: content.inputValue
-      });
-
-      this.contents[index].type = settingsUpdate.data.type;
-      this.contents[index].reference = settingsUpdate.data.reference;
-
-      if (content.type === 'rss') {
-        this.contents[index].feed = settingsUpdate.data.feed;
-      } else if (content.type === 'weather') {
-        console.log(this.contents[index]);
-        this.contents[index].forecast = settingsUpdate.data.forecast;
-      }
+    if (response.data.type === "rss") {
+      response.data.inputValue = response.data.reference;
+      response.data.containerPageNumber = 1;
+    } else if (response.data.type === "weather") {
+      response.data.inputValue = response.data.reference;
     }
-  },
-  mounted() {
-    this.getContentLength();
-  },
+
+    contents.push(response.data);
+  });
 };
+
+const getContentLength = async () => {
+  let response = await axios.get(
+    `http://${window.location.hostname}:3000/api/contentlength`
+  );
+
+  contentLength = response.data;
+
+  for (let i = 0; i < contentLength; i++) {
+    getContent(i);
+  }
+};
+
+const getInvidiousInstanceHealth = async () => {
+  const res = await axios.get('https://api.invidious.io/instances.json?pretty=1&sort_by=health');
+  for (let i = 0; i < res.data.length; i++) {
+    if (res.data[i][1].monitor !== null) {
+      if (res.data[i][1].monitor['90dRatio'].ratio > 98 && !res.data[i][1].cors) {
+        // Remove the final / if any
+        globalStore.addInvidiousInstance(res.data[i][1].uri.replace(/\/$/, ''));
+      } else if (i === res.data.length - 1) {
+        if (globalStore.invidiousInstances[0] === undefined) {
+          return 'Unable to retrieve Invidious instances health : instances health is unknown.';
+        }
+      }
+    } else {
+      return `Monitoring data unavailable for instance ${res.data[i][0]}`;
+    }
+  }
+  console.log(globalStore.invidiousInstances);
+};
+
+const goToNextPage = async (containerId) => {
+  contents[containerId].containerPageNumber++;
+};
+
+const goToPreviousPage = async (containerId) => {
+  contents[containerId].containerPageNumber--;
+};
+
+const handleQuery = async () => {
+  if (searchQuery.startsWith('!p ')) {
+
+  } else {
+    window.open(`https://www.google.com/search?q=${searchQuery}`);
+  }
+};
+
+const modifyContent = async (content, index) => {
+  if (content.isModified) {
+    content.isModified = false;
+  } else {
+    content.isModified = true;
+  }
+};
+
+const updateContent = async (content, index) => {
+  const settingsUpdate = await axios.post(`http://${window.location.hostname}:3000/api/updatecontent`, {
+    containerId: index,
+    itemReference: content.inputValue
+  });
+
+  contents[index].type = settingsUpdate.data.type;
+  contents[index].reference = settingsUpdate.data.reference;
+
+  if (content.type === 'rss') {
+    contents[index].feed = settingsUpdate.data.feed;
+  } else if (content.type === 'weather') {
+    console.log(contents[index]);
+    contents[index].forecast = settingsUpdate.data.forecast;
+  }
+};
+
+onMounted(() => {
+  getContentLength();
+  getInvidiousInstanceHealth();
+});
 </script>
 
 <template>
   <main class="mainContainer flexColumn">
     <div id="formContainer__container" class="formContainer__container">
       <div class="formContainer flexRow">
-        <form class="form" method="get">
-          <input class="questionBox" type="text" name="question" placeholder="What are you searching for ?" />
+        <form class="form" method="post" @submit.prevent="handleQuery()">
+          <input class="questionBox" type="text" name="searchQuery" v-model="searchQuery"
+            placeholder="What are you searching for ?" />
           <button type="submit" name="questionBox__submitBtn">
             <svg class="formSubmit" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
               fill="none" stroke="lightgrey" stroke-width="3" stroke-linecap="round" stroke-linejoin="arcs">
@@ -129,16 +161,16 @@ export default {
     </div>
     <div class="contentContainers flexRow">
       <section :class="content.type + 'Container'" class="content flexColumn"
-        v-for="[iContent, content] of this.contents.entries()">
+        v-for="[iContent, content] of contents.entries()">
         <button @click="modifyContent(content)" :class="{
-            hidden: content.isModified,
-          }">
+          hidden: content.isModified,
+        }">
           Modify
         </button>
         <nav class="contentNav" :class="{
-            hidden: !content.isModified,
-            flexColumn: content.isModified,
-          }">
+          hidden: !content.isModified,
+          flexColumn: content.isModified,
+        }">
           <button>Delete</button>
           <label class="contentNav__label">
             <!-- To translate and generalize  (RSS feed, location...)-->
@@ -148,9 +180,9 @@ export default {
           <button @click="[modifyContent(content), updateContent(content, content.index)]">Ok</button>
         </nav>
         <h1 class="title" :class="{
-            hidden: content.isModified,
-            flexColumn: !content.isModified,
-          }">
+          hidden: content.isModified,
+          flexColumn: !content.isModified,
+        }">
           <a class="link" :href="content.feed[0].meta.link" v-if="content.type === 'rss'">
             {{ content.feed[0].meta.title }}
           </a>
@@ -158,29 +190,28 @@ export default {
             " v-else-if="content.type === 'weather'">
             Weather in {{ content.forecast.list[0].name }}
           </a>
-          <a class="link" href="#" v-else> TODO </a>
+          <article v-else>{{ content }}</article>
         </h1>
         <div class="linksContainer" :class="{
-            hidden: content.isModified,
-            flexColumn: !content.isModified,
-          }" v-if="content.type === 'rss'">
+          hidden: content.isModified,
+          flexColumn: !content.isModified,
+        }" v-if="content.type === 'rss'">
           <a class="linksContainer__link" :class="{
-              shown: ((this.contents[iContent].containerPageNumber === 1) && i <= 9) || ((this.contents[iContent].containerPageNumber > 1) && (i >= (this.contents[iContent].containerPageNumber - 1) * 10) || (i < (this.contents[iContent].containerPageNumber * 10))),
-              hidden: ((this.contents[iContent].containerPageNumber === 1) && i > 9) || ((this.contents[iContent].containerPageNumber > 1) && (i < (this.contents[iContent].containerPageNumber - 1) * 10) || (i >= (this.contents[iContent].containerPageNumber * 10)))
-            }" :href="article.link" v-for="[i, article] of content.feed.entries()">
+            shown: ((contents[iContent].containerPageNumber === 1) && i <= 9) || ((contents[iContent].containerPageNumber > 1) && (i >= (contents[iContent].containerPageNumber - 1) * 10) || (i < (contents[iContent].containerPageNumber * 10))),
+            hidden: ((contents[iContent].containerPageNumber === 1) && i > 9) || ((contents[iContent].containerPageNumber > 1) && (i < (contents[iContent].containerPageNumber - 1) * 10) || (i >= (contents[iContent].containerPageNumber * 10)))
+          }" :href="article.link" v-for="[i, article] of content.feed.entries()">
             {{ article.title }}</a>
         </div>
         <div class="pager flexRow" v-if="content.type === 'rss' && content.feed.length > 10">
-          <p @click="goToPreviousPage(iContent)"
-            :class="{ 'invisible': this.contents[iContent].containerPageNumber === 1 }">
+          <p @click="goToPreviousPage(iContent)" :class="{ 'invisible': contents[iContent].containerPageNumber === 1 }">
             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="white"
               stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </p>
-          {{ this.contents[iContent].containerPageNumber }} / {{ Math.floor(content.feed.length / 10) }}
+          {{ contents[iContent].containerPageNumber }} / {{ Math.floor(content.feed.length / 10) }}
           <p @click="goToNextPage(iContent)"
-            :class="{ 'invisible': this.contents[iContent].containerPageNumber === Math.floor(content.feed.length / 10) }">
+            :class="{ 'invisible': contents[iContent].containerPageNumber === Math.floor(content.feed.length / 10) }">
             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
               stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 18l6-6-6-6" />
@@ -188,9 +219,9 @@ export default {
           </p>
         </div>
         <div class="forecast flexRow" :class="{
-            hidden: content.isModified,
-            flexColumn: !content.isModified,
-          }" v-else-if="content.type === 'weather'">
+          hidden: content.isModified,
+          flexColumn: !content.isModified,
+        }" v-else-if="content.type === 'weather'">
           <div class="forecast__content">
             <p>
               Forecast description :
@@ -206,7 +237,9 @@ export default {
             :title="content.forecast.list[0].weather[0].description + ' icon'" />
         </div>
       </section>
+      <button @click="getInvidiousInstanceHealth()">Get Invidious instances health</button>
     </div>
+    <section>{{ globalStore.invidiousInstances[0] }}</section>
   </main>
 </template>
 

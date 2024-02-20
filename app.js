@@ -17,7 +17,7 @@ const corsOptions = {
   optionsSuccessStatus: 200
 }
 
-require('http').Server(app).listen(3000);
+app.listen(3000);
 // const io = require('socket.io')(server);
 const compression = require('compression');
 
