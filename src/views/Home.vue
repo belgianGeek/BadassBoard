@@ -4,17 +4,16 @@ const globalStore = useGlobalStore();
 
 // import AddFeedForm from '../components/AddFeedForm.vue';
 import axios from "axios";
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 
-let contentLength = Number();
-let contents = [];
-let searchQuery = '';
+let contentLength = ref(Number());
+let contents = ref([]);
+let searchQuery = ref('');
 
 const getContent = (index) => {
   axios.get(
     `http://${window.location.hostname}:3000/api/content/${index}`
   ).then(response => {
-    console.log(response);
     // response.data.isModified = false;
 
     if (response.data.type === "rss") {
@@ -24,7 +23,7 @@ const getContent = (index) => {
       response.data.inputValue = response.data.reference;
     }
 
-    contents.push(response.data);
+    contents.value.push(response.data);
   });
 };
 
@@ -56,7 +55,6 @@ const getInvidiousInstanceHealth = async () => {
       return `Monitoring data unavailable for instance ${res.data[i][0]}`;
     }
   }
-  console.log(globalStore.invidiousInstances);
 };
 
 const goToNextPage = async (containerId) => {
@@ -237,9 +235,7 @@ onMounted(() => {
             :title="content.forecast.list[0].weather[0].description + ' icon'" />
         </div>
       </section>
-      <button @click="getInvidiousInstanceHealth()">Get Invidious instances health</button>
     </div>
-    <section>{{ globalStore.invidiousInstances[0] }}</section>
   </main>
 </template>
 
