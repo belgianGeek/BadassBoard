@@ -58,11 +58,11 @@ const getInvidiousInstanceHealth = async () => {
 };
 
 const goToNextPage = async (containerId) => {
-  contents[containerId].containerPageNumber++;
+  contents.value[containerId].containerPageNumber++;
 };
 
 const goToPreviousPage = async (containerId) => {
-  contents[containerId].containerPageNumber--;
+  contents.value[containerId].containerPageNumber--;
 };
 
 const handleQuery = async () => {
