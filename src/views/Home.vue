@@ -6,6 +6,8 @@ const globalStore = useGlobalStore();
 import axios from "axios";
 import { onMounted, ref } from 'vue';
 
+import YouTubeSearch from '../components/YouTubeSearch.vue';
+
 let contentLength = ref(Number());
 let contents = ref([]);
 let searchQuery = ref('');
@@ -43,7 +45,7 @@ const getInvidiousInstanceHealth = async () => {
   const res = await axios.get('https://api.invidious.io/instances.json?pretty=1&sort_by=health');
   for (let i = 0; i < res.data.length; i++) {
     if (res.data[i][1].monitor !== null) {
-      if (res.data[i][1].monitor['90dRatio'].ratio > 98 && !res.data[i][1].cors) {
+      if (res.data[i][1].monitor['90dRatio'].ratio > 98 && res.data[i][1].api) {
         // Remove the final / if any
         globalStore.addInvidiousInstance(res.data[i][1].uri.replace(/\/$/, ''));
       } else if (i === res.data.length - 1) {
@@ -188,6 +190,7 @@ onMounted(() => {
             " v-else-if="content.type === 'weather'">
             Weather in {{ content.forecast.list[0].name }}
           </a>
+          <p v-else-if="content.type === 'youtubeSearch'">Instant YouTube search</p>
           <article v-else>{{ content }}</article>
         </h1>
         <div class="linksContainer" :class="{
@@ -234,12 +237,15 @@ onMounted(() => {
             :alt="content.forecast.list[0].weather[0].description + ' icon'"
             :title="content.forecast.list[0].weather[0].description + ' icon'" />
         </div>
+        <YouTubeSearch :componentType="content.type" />
       </section>
     </div>
   </main>
 </template>
 
-<style media="screen" lang="scss">
+<style media="screen" lang="scss" scoped>
+// @import "@/scss/index.scss";
+
 .contentContainers {
   justify-content: space-evenly;
   flex-wrap: wrap;

@@ -24,7 +24,6 @@ module.exports = function(app) {
             });
           } else {
             res.send(`Your feed couldn't be loaded because the parser encountered an error : ${err}`);
-            console.trace(`An error occurred : ${err}`);
           }
         });
     } else if (item.type === 'weather') {
@@ -61,7 +60,7 @@ module.exports = function(app) {
             console.log(JSON.stringify(err, null, 2));
           });
       }
-    } else if (item.type === 'youtube search') {
+    } else if (item.type === 'youtubeSearch') {
       res.send(item);
     }
   });

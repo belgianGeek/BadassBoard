@@ -119,6 +119,7 @@ updateSettings();
 require('./routes/content')(app);
 require('./routes/contentLength')(app);
 require('./routes/updateContent')(app, settings);
+require('./routes/ytSearch')(app);
 // require('./routes/home')(app, io, settings);
 
 // 404 error handling

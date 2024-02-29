@@ -5,11 +5,12 @@ export const useGlobalStore = defineStore("global", {
     /* connectedUser: {},
     date: new Date().toISOString().substring(0, 10),*/
     invidiousInstances: [],
-    name: "Max"
+    YTsearchResults: []
   }),
   actions: {
     addInvidiousInstance(instance) {
       this.invidiousInstances.push(instance);
+      console.log(instance);
     }
   }
 });
