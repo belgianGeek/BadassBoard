@@ -11,6 +11,27 @@ let youtubeSearch = ref({
     results: ''
 });
 
+const getDuration = (inputInSeconds) => {
+    let minutes = Math.floor(inputInSeconds / 60);
+    let seconds = inputInSeconds % 60;
+    let hours = Math.floor(inputInSeconds / 3600);
+    let totalTime = '';
+
+    if (hours !== 0) {
+        totalTime += `${hours}h`;
+    }
+
+    if (minutes !== 0 && minutes < 60) {
+        totalTime += `${minutes}m`;
+    }
+
+    if (seconds !== 0 && seconds < 60) {
+        totalTime += `${seconds}s`;
+    }
+
+    return totalTime;
+}
+
 const searchYouTube = async query => {
     const youtubeRequest = await axios.post(`http://${window.location.hostname}:3000/api/ytsearch`, {
         invidiousInstance: globalStore.invidiousInstances[0],
@@ -22,7 +43,8 @@ const searchYouTube = async query => {
 </script>
 
 <template>
-    <div v-if="props.componentType === 'youtubeSearch'" :class="`${props.componentType}Container__content flex`">
+    <div v-if="props.componentType === 'youtubeSearch'"
+        :class="`${props.componentType}Container__content flex flexColumn`">
         <input type="text" :class="`${props.componentType}Container__content__input input`"
             placeholder="Type here to search Youtube..." v-model="youtubeSearch.query">
         <button @click="searchYouTube(youtubeSearch.query.trim())">Search</button>
@@ -30,28 +52,40 @@ const searchYouTube = async query => {
             <span v-for="[iResult, result] of globalStore.YTsearchResults.entries()"
                 :class="`youtubeSearchContainer__content__results__result youtube__result${iResult} flex`">
                 <img :src="result.videoThumbnails[1].url" :alt="`${result.title} thumbnail`" width="25%">
+                <span class="youtubeSearchContainer__content__results__result__content flex">
+                    <p>
+                        <u>Video ID</u> : {{ result.videoId }}
+                    </p>
+                    <p>
+                        <u>Title</u> :
+                        <a :href="`${globalStore.invidiousInstances[0]}/watch?v=${result.videoId}`">{{ result.title
+                            }}</a>
+                    </p>
+                    <p>
+                        <u>Duration</u> :
+                        {{ getDuration(result.lengthSeconds) }}
+                    </p>
+                </span>
             </span>
         </div>
     </div>
 </template>
 
-<style media="screen" lang="scss" scoped>
+<style media="screen" lang="scss">
 @import '@/scss/utils/mixins';
 @import '@/scss/utils/variables';
 
 .youtubeSearchContainer {
-    padding: 0 1% 2% 2%;
-    flex-direction: column;
-    font-size: 1.5em;
-    width: 50%;
     align-items: center;
     align-self: center;
-    padding: 0.5em;
     border: 1px solid white;
-    border-radius: 1em;
+    height: 100%;
+    max-height: 100%;
+    font-size: 1.05em;
 
     @media (max-width: 720px) {
         height: 50vh;
+        width: 95%;
     }
 
     &__content {
@@ -67,6 +101,7 @@ const searchYouTube = async query => {
             width: 100%;
             margin-top: 1em;
             font-size: 1em;
+            overflow: auto;
 
             &__result {
                 margin-bottom: 1.5em;
@@ -112,17 +147,6 @@ const searchYouTube = async query => {
 
     &__header {
         width: 100%;
-    }
-
-    @include flex-direction;
-    border-radius: 15px;
-    height: 100%;
-    max-height: 100%;
-    width: 100%;
-    font-size: 1.05em;
-
-    @media (max-width: 720px) {
-        width: 95%;
     }
 
     &__header {

@@ -243,24 +243,29 @@ onMounted(() => {
   </main>
 </template>
 
-<style media="screen" lang="scss" scoped>
+<style media="screen" lang="scss">
 // @import "@/scss/index.scss";
+
+.mainContainer {
+  width: 100%;
+  height: 100%;
+}
 
 .contentContainers {
   justify-content: space-evenly;
   flex-wrap: wrap;
+  height: 80vh;
 }
 
 .content {
   background-color: rgba(0, 0, 0, 0.5);
   border-radius: 0.5rem;
-  padding: 0.2rem;
-  margin: 0.2rem;
   box-sizing: border-box;
   flex: 1;
   width: 30%;
   margin: 1em;
   padding: 1em;
+  max-height: 50vh;
 
   &Nav {
     &__label {
@@ -285,6 +290,10 @@ onMounted(() => {
   a:visited {
     color: lightgrey;
   }
+}
+
+.flex {
+  display: flex;
 }
 
 .flexColumn {

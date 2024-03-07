@@ -35,7 +35,7 @@
 
 .mainContainer {
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   @include align(center, center);
   @include flex-direction;
 }
@@ -347,6 +347,7 @@
   @include align(space-evenly, flex-start);
   @include flex-direction(row);
   width: 100%;
+  height: 80vh;
   flex-wrap: wrap;
   position: relative;
   padding-bottom: 2em;
@@ -409,8 +410,7 @@
     .blank,
     .forecast,
     .rssContainer,
-    .warning,
-    .youtubeSearchContainer {
+    .warning {
       @include flex-direction;
       border-radius: 15px;
       height: 100%;
@@ -422,83 +422,15 @@
       }
     }
 
-    .youtubeSearchContainer {
-      @media (max-width: 720px) {
-        height: 50vh;
-      }
-
-      &__content {
-        height: 85%;
-        width: 100%;
-        @include align(flex-start, center);
-        @include flex-direction();
-        overflow: hidden;
-
-        &__results {
-          @include flex-direction();
-          height: 100%;
-          width: 100%;
-          margin-top: 1em;
-          font-size: 1em;
-
-          &__result {
-            margin-bottom: 1.5em;
-            padding: 0.5em;
-
-            &:hover {
-              background-color: opacify($contentBackground, 0.2);
-              border-radius: 1em;
-            }
-
-            img {
-              width: 25%;
-              align-items: center;
-              max-height: 100%;
-              max-width: 100%;
-            }
-
-            &__content {
-              @include flex-direction();
-              width: 75%;
-              padding: 0 0.5em;
-              font-size: 1.1em;
-              word-break: break-word;
-
-              a {
-                text-overflow: ellipsis;
-                min-width: 0;
-                overflow: hidden;
-                white-space: nowrap;
-              }
-
-              p {
-                margin: 0.6em 0 0;
-
-                u {
-                  text-decoration-style: dashed;
-                }
-              }
-            }
-          }
-        }
-      }
-
-      &__header {
-        width: 100%;
-      }
-    }
-
     .blank,
     .forecast,
     .rssContainer,
-    .warning,
-    .youtubeSearchContainer {
+    .warning {
       padding: 0 1% 2% 2%;
     }
 
     .forecast,
-    .rssContainer,
-    .youtubeSearchContainer {
+    .rssContainer {
       // Show content options
       &__header {
         transition: display 400ms;
@@ -603,8 +535,7 @@
       }
     }
 
-    .feedTitle,
-    .youtubeSearchContainer__header p {
+    .feedTitle {
       display: block;
       width: 90%;
       text-align: center;
@@ -792,8 +723,7 @@
       }
 
       .forecast,
-      .rssContainer,
-      .youtubeSearchContainer {
+      .rssContainer {
         flex-direction: column;
         font-size: 1.5em;
         width: 50%;
@@ -814,8 +744,7 @@
       }
 
       .forecast__header,
-      .rssContainer__header,
-      .youtubeSearchContainer__header {
+      .rssContainer__header {
         margin-bottom: 1em;
       }
 
@@ -863,21 +792,6 @@
             font-size: 3.5em;
             margin-right: 5%;
           }
-        }
-      }
-
-      .youtubeSearchContainer {
-        height: 100%;
-
-        &__header p {
-          width: 100%;
-          text-align: center;
-          margin: 0;
-        }
-
-        &__content {
-          flex-direction: column;
-          height: 100%;
         }
       }
 
