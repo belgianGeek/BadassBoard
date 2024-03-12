@@ -6,6 +6,8 @@ const globalStore = useGlobalStore();
 import axios from "axios";
 import { onMounted, ref } from 'vue';
 
+import AudioPlayer from '../components/AudioPlayer.vue';
+import SearchForm from '../components/SearchForm.vue';
 import YouTubeSearch from '../components/YouTubeSearch.vue';
 
 let contentLength = ref(Number());
@@ -67,14 +69,6 @@ const goToPreviousPage = async (containerId) => {
   contents.value[containerId].containerPageNumber--;
 };
 
-const handleQuery = async () => {
-  if (searchQuery.startsWith('!p ')) {
-
-  } else {
-    window.open(`https://www.google.com/search?q=${searchQuery}`);
-  }
-};
-
 const modifyContent = async (content, index) => {
   if (content.isModified) {
     content.isModified = false;
@@ -108,33 +102,11 @@ onMounted(() => {
 
 <template>
   <main class="mainContainer flexColumn">
-    <div id="formContainer__container" class="formContainer__container">
-      <div class="formContainer flexRow">
-        <form class="form" method="post" @submit.prevent="handleQuery()">
-          <input class="questionBox" type="text" name="searchQuery" v-model="searchQuery"
-            placeholder="What are you searching for ?" />
-          <button type="submit" name="questionBox__submitBtn">
-            <svg class="formSubmit" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
-              fill="none" stroke="lightgrey" stroke-width="3" stroke-linecap="round" stroke-linejoin="arcs">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </button>
-        </form>
-        <div class="suggestions"></div>
-      </div>
-    </div>
+    <SearchForm />
     <div class="msgContainer">
       <!-- <%= typeof msg != 'undefined' ? msg : '' %> -->
     </div>
-    <div class="audio">
-      <img class="audio__remove removeContentBtn flexRow" alt="Remove the audio player"
-        src="./client/scss/icons/interface/cross.svg" />
-      <span class="audio__container flexRow">
-        <div class="audio__container__msg flexRow"></div>
-        <div class="audio__container__player flexRow"></div>
-      </span>
-    </div>
+    <AudioPlayer v-if="globalStore.audio.isPlaying" :author="globalStore.audio.author" :url="globalStore.audio.url" :thumbnail="globalStore.audio.thumbnail" :title="globalStore.audio.title" />
     <div class="contentContainers flexRow">
       <section :class="content.type + 'Container'" class="content flexColumn"
         v-for="[iContent, content] of contents.entries()">
@@ -163,7 +135,7 @@ onMounted(() => {
             {{ content.feed[0].meta.title }}
           </a>
           <a class="link" :href="'https://openweathermap.org/city/' + content.forecast.list[0].id
-            " v-else-if="content.type === 'weather'">
+          " v-else-if="content.type === 'weather'">
             Weather in {{ content.forecast.list[0].name }}
           </a>
           <p v-else-if="content.type === 'youtubeSearch'">Instant YouTube search</p>
@@ -174,15 +146,15 @@ onMounted(() => {
           flexColumn: !content.isModified,
         }" v-if="content.type === 'rss'">
           <a class="linksContainer__link" :class="{
-            shown: ((contents[iContent].containerPageNumber === 1) && i <= 9) || ((contents[iContent].containerPageNumber > 1) && (i >= (contents[iContent].containerPageNumber - 1) * 10) || (i < (contents[iContent].containerPageNumber * 10))),
-            hidden: ((contents[iContent].containerPageNumber === 1) && i > 9) || ((contents[iContent].containerPageNumber > 1) && (i < (contents[iContent].containerPageNumber - 1) * 10) || (i >= (contents[iContent].containerPageNumber * 10)))
-          }" :href="article.link" v-for="[i, article] of content.feed.entries()">
+          shown: ((contents[iContent].containerPageNumber === 1) && i <= 9) || ((contents[iContent].containerPageNumber > 1) && (i >= (contents[iContent].containerPageNumber - 1) * 10) || (i < (contents[iContent].containerPageNumber * 10))),
+          hidden: ((contents[iContent].containerPageNumber === 1) && i > 9) || ((contents[iContent].containerPageNumber > 1) && (i < (contents[iContent].containerPageNumber - 1) * 10) || (i >= (contents[iContent].containerPageNumber * 10)))
+        }" :href="article.link" v-for="[i, article] of content.feed.entries()">
             {{ article.title }}</a>
         </div>
         <div class="pager flexRow" v-if="content.type === 'rss' && content.feed.length > 10">
           <p @click="goToPreviousPage(iContent)" :class="{ 'invisible': contents[iContent].containerPageNumber === 1 }">
-            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="white"
-              stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
+              stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </p>
@@ -220,7 +192,10 @@ onMounted(() => {
 </template>
 
 <style media="screen" lang="scss">
-// @import "@/scss/index.scss";
+@import '@/scss/utils/mixins';
+@import '@/scss/utils/variables';
+@import "@/scss/base/body";
+@import "@/scss/base/fonts";
 
 .mainContainer {
   width: 100%;

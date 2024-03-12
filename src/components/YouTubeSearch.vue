@@ -6,6 +6,7 @@ const props = defineProps(['componentType']);
 
 import axios from "axios";
 import { ref } from 'vue';
+
 let youtubeSearch = ref({
     query: '',
     results: ''
@@ -51,7 +52,8 @@ const searchYouTube = async query => {
         <div :class="`${props.componentType}Container__content__results flex`">
             <span v-for="[iResult, result] of globalStore.YTsearchResults.entries()"
                 :class="`youtubeSearchContainer__content__results__result youtube__result${iResult} flex`">
-                <img :src="result.videoThumbnails[1].url" :alt="`${result.title} thumbnail`" width="25%">
+                <img v-if="result.type === 'video'":src="result.videoThumbnails[0].url" :alt="`${result.title} thumbnail`">
+                <img v-if="result.type === 'channel'":src="result.authorThumbnails[0].url" :alt="`${result.title} thumbnail`">
                 <span class="youtubeSearchContainer__content__results__result__content flex">
                     <p>
                         <u>Video ID</u> : {{ result.videoId }}
