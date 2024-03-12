@@ -124,30 +124,6 @@ onMounted(() => {
         <div class="suggestions"></div>
       </div>
     </div>
-    <span class="converter">
-      <section class="converter__body flexRow">
-        <img class="converter__body__remove flexRow" alt="Hide the converter"
-          src="./client/scss/icons/interface/cross.svg" />
-        <select class="converter__body__value1 flexRow">
-          <option value="Choose a value">Choose a value</option>
-          <option value="Byte">Byte</option>
-          <option value="Kilobyte">Kilobyte</option>
-          <option value="Megabyte">Megabyte</option>
-          <option value="Gigabyte">Gigabyte</option>
-          <option value="Terabyte">Terabyte</option>
-        </select>
-        <input class="converter__body__input input" placeholder="Enter a value here" />
-        <select class="converter__body__value2 flexRow">
-          <option value="Choose a value">Choose a value</option>
-          <option value="Byte">Byte</option>
-          <option value="Kilobyte">Kilobyte</option>
-          <option value="Megabyte">Megabyte</option>
-          <option value="Gigabyte">Gigabyte</option>
-          <option value="Terabyte">Terabyte</option>
-        </select>
-        <input class="converter__body__result input" />
-      </section>
-    </span>
     <div class="msgContainer">
       <!-- <%= typeof msg != 'undefined' ? msg : '' %> -->
     </div>
