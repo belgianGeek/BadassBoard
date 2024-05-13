@@ -17,7 +17,7 @@
     "cheerio": "^1.0.0-rc.3",
     "compression": "^1.7.4",
     "ejs": "^3.1.10",
-    "express": "^4.17.1",
+    "express": "^4.19.2",
     "feedparser-promised": "^2.0.1",
     "http": "^0.0.1-security",
     "ip": "^1.1.9",
