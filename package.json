@@ -20,7 +20,7 @@
     "express": "^4.17.1",
     "feedparser-promised": "^2.0.1",
     "http": "^0.0.1-security",
-    "ip": "^1.1.5",
+    "ip": "^1.1.9",
     "lodash": "^4.17.19",
     "natural": "^3.0.0",
     "opusscript": "^0.0.7",
