@@ -1,6 +1,6 @@
 # Folders
 node_modules
-stable
+dist
 upload
 settings
 tmp

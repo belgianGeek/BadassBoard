@@ -9,6 +9,7 @@ import { onMounted, ref } from 'vue';
 import AudioPlayer from '../components/AudioPlayer.vue';
 import SearchForm from '../components/SearchForm.vue';
 import YouTubeSearch from '../components/YouTubeSearch.vue';
+import Wallpaper from '../components/Wallpaper.vue';
 
 let contentLength = ref(Number());
 let contents = ref([]);
@@ -101,24 +102,26 @@ onMounted(() => {
 </script>
 
 <template>
+  <Wallpaper />
   <main class="mainContainer flexColumn">
-    <SearchForm />
+    <SearchForm :wallpaper-source="globalStore.wallpaper" />
     <div class="msgContainer">
       <!-- <%= typeof msg != 'undefined' ? msg : '' %> -->
     </div>
-    <AudioPlayer v-if="globalStore.audio.isPlaying" :author="globalStore.audio.author" :url="globalStore.audio.url" :thumbnail="globalStore.audio.thumbnail" :title="globalStore.audio.title" />
+    <AudioPlayer v-if="globalStore.audio.isPlaying" :author="globalStore.audio.author" :url="globalStore.audio.url"
+      :thumbnail="globalStore.audio.thumbnail" :title="globalStore.audio.title" />
     <div class="contentContainers flexRow">
       <section :class="content.type + 'Container'" class="content flexColumn"
         v-for="[iContent, content] of contents.entries()">
         <button @click="modifyContent(content)" :class="{
-          hidden: content.isModified,
-        }">
+    hidden: content.isModified,
+  }">
           Modify
         </button>
         <nav class="contentNav" :class="{
-          hidden: !content.isModified,
-          flexColumn: content.isModified,
-        }">
+    hidden: !content.isModified,
+    flexColumn: content.isModified,
+  }">
           <button>Delete</button>
           <label class="contentNav__label">
             <!-- To translate and generalize  (RSS feed, location...)-->
@@ -128,27 +131,27 @@ onMounted(() => {
           <button @click="[modifyContent(content), updateContent(content, content.index)]">Ok</button>
         </nav>
         <h1 class="title" :class="{
-          hidden: content.isModified,
-          flexColumn: !content.isModified,
-        }">
+    hidden: content.isModified,
+    flexColumn: !content.isModified,
+  }">
           <a class="link" :href="content.feed[0].meta.link" v-if="content.type === 'rss'">
             {{ content.feed[0].meta.title }}
           </a>
           <a class="link" :href="'https://openweathermap.org/city/' + content.forecast.list[0].id
-          " v-else-if="content.type === 'weather'">
+    " v-else-if="content.type === 'weather'">
             Weather in {{ content.forecast.list[0].name }}
           </a>
           <p v-else-if="content.type === 'youtubeSearch'">Instant YouTube search</p>
           <article v-else>{{ content }}</article>
         </h1>
         <div class="linksContainer" :class="{
-          hidden: content.isModified,
-          flexColumn: !content.isModified,
-        }" v-if="content.type === 'rss'">
+    hidden: content.isModified,
+    flexColumn: !content.isModified,
+  }" v-if="content.type === 'rss'">
           <a class="linksContainer__link" :class="{
-          shown: ((contents[iContent].containerPageNumber === 1) && i <= 9) || ((contents[iContent].containerPageNumber > 1) && (i >= (contents[iContent].containerPageNumber - 1) * 10) || (i < (contents[iContent].containerPageNumber * 10))),
-          hidden: ((contents[iContent].containerPageNumber === 1) && i > 9) || ((contents[iContent].containerPageNumber > 1) && (i < (contents[iContent].containerPageNumber - 1) * 10) || (i >= (contents[iContent].containerPageNumber * 10)))
-        }" :href="article.link" v-for="[i, article] of content.feed.entries()">
+    shown: ((contents[iContent].containerPageNumber === 1) && i <= 9) || ((contents[iContent].containerPageNumber > 1) && (i >= (contents[iContent].containerPageNumber - 1) * 10) || (i < (contents[iContent].containerPageNumber * 10))),
+    hidden: ((contents[iContent].containerPageNumber === 1) && i > 9) || ((contents[iContent].containerPageNumber > 1) && (i < (contents[iContent].containerPageNumber - 1) * 10) || (i >= (contents[iContent].containerPageNumber * 10)))
+  }" :href="article.link" v-for="[i, article] of content.feed.entries()">
             {{ article.title }}</a>
         </div>
         <div class="pager flexRow" v-if="content.type === 'rss' && content.feed.length > 10">
@@ -168,9 +171,9 @@ onMounted(() => {
           </p>
         </div>
         <div class="forecast flexRow" :class="{
-          hidden: content.isModified,
-          flexColumn: !content.isModified,
-        }" v-else-if="content.type === 'weather'">
+    hidden: content.isModified,
+    flexColumn: !content.isModified,
+  }" v-else-if="content.type === 'weather'">
           <div class="forecast__content">
             <p>
               Forecast description :
@@ -213,19 +216,25 @@ onMounted(() => {
   border-radius: 0.5rem;
   box-sizing: border-box;
   flex: 1;
+  flex-basis: 30%;
   width: 30%;
   margin: 1em;
   padding: 1em;
-  max-height: 50vh;
+  max-height: 45vh;
 
   &Nav {
     &__label {
       width: 50%;
-
-      input {
-        flex: 1;
-      }
     }
+
+    button {
+      @include btn-style;
+    }
+
+    input {
+        flex: 1;
+        @include input-style;
+      }
   }
 
   a,

@@ -35,7 +35,7 @@ const getDuration = (inputInSeconds) => {
 
 const searchYouTube = async query => {
     const youtubeRequest = await axios.post(`http://${window.location.hostname}:3000/api/ytsearch`, {
-        invidiousInstance: globalStore.invidiousInstances[0],
+        invidiousInstance: "https://invidious.fdn.fr",
         query: query
     });
 
@@ -96,6 +96,10 @@ const searchYouTube = async query => {
         @include align(flex-start, center);
         @include flex-direction();
         overflow: hidden;
+
+        &__input {
+            @include input-style();
+        }
 
         &__results {
             @include flex-direction();

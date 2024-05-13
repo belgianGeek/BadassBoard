@@ -12,7 +12,7 @@ const handleQuery = async () => {
       let id = searchQuery.match(/[0-9A-Za-z_-]{11}/)[0];
       try {
         const audioRequest = await axios.post(`http://${window.location.hostname}:3000/api/video`, {
-          invidiousInstance: globalStore.invidiousInstances[0],
+          invidiousInstance: "https://invidious.fdn.fr",
           videoId: id
         });
 
@@ -33,7 +33,7 @@ const handleQuery = async () => {
 </script>
 
 <template>
-    <div id="formContainer__container" class="formContainer__container flexColumn">
+    <div id="formContainer__container" class="formContainer__container flexColumn" :style="{ '--wallpaperSource': `url(${globalStore.wallpaper})`}">
         <div class="formContainer flexRow">
             <form class="form" method="post" @submit.prevent="handleQuery()">
                 <input class="questionBox" type="text" name="searchQuery" v-model="searchQuery"
@@ -75,6 +75,7 @@ const handleQuery = async () => {
         width: 100%;
         content: "";
         @include background-image;
+        background-image: var(--wallpaperSource);
         filter: blur(5px);
     }
 
