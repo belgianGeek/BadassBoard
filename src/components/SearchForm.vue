@@ -4,36 +4,55 @@ import axios from 'axios';
 
 const globalStore = useGlobalStore();
 let searchQuery = globalStore.search.query;
+let currentInstance = 0;
 
-const handleQuery = async () => {
-  if (searchQuery.startsWith('!p ')) {
-    if (searchQuery.match(/[0-9A-Za-z_-]{11}/) && !searchQuery.match(/[0-9A-Za-z_-]{13,34}/)) {
-      // Match a single video
-      let id = searchQuery.match(/[0-9A-Za-z_-]{11}/)[0];
-      try {
-        const audioRequest = await axios.post(`http://${window.location.hostname}:3000/api/video`, {
-          invidiousInstance: "https://invidious.fdn.fr",
-          videoId: id
-        });
+const playAudio = async (invidiousInstance, videoId) => {
+    console.log(globalStore.invidiousInstances, invidiousInstance);
+    const audioRequest = await axios.post(`http://${window.location.hostname}:3000/api/audio`, {
+        invidiousInstance: invidiousInstance,
+        videoId: videoId
+    });
 
+    if (audioRequest.data.success) {
         globalStore.audio.author = audioRequest.data.audio.author;
-        globalStore.audio.url = audioRequest.data.audio.url;
+        globalStore.audio.url = `${invidiousInstance}/latest_version?id=${videoId}&local=true`;
         globalStore.audio.thumbnail = audioRequest.data.audio.thumbnail;
         globalStore.audio.title = audioRequest.data.audio.title;
 
         globalStore.audio.isPlaying = true;
-      } catch (error) {
-        console.log(error);
-      }
+    } else {
+        console.error(`The Invidious instance ${invidiousInstance} did not fullfill the request.`, currentInstance, globalStore.invidiousInstances.length);
+        if (currentInstance < globalStore.invidiousInstances.length) {
+            playAudio(globalStore.invidiousInstances[currentInstance++], videoId);
+        } else {
+            console.error("No Invidious instance can fullfill this request.");
+        }
     }
-  } else {
-    window.open(`https://www.google.com/search?q=${searchQuery}`);
-  }
+
+    return audioRequest;
+}
+
+const handleQuery = async () => {
+    if (searchQuery.startsWith('!p ')) {
+        if (searchQuery.match(/[0-9A-Za-z_-]{11}/) && !searchQuery.match(/[0-9A-Za-z_-]{13,34}/)) {
+            // Match a single video
+            let id = searchQuery.match(/[0-9A-Za-z_-]{11}/)[0];
+
+            try {
+                playAudio(globalStore.invidiousInstances[currentInstance], id);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    } else {
+        window.open(`https://www.google.com/search?q=${searchQuery}`);
+    }
 };
 </script>
 
 <template>
-    <div id="formContainer__container" class="formContainer__container flexColumn" :style="{ '--wallpaperSource': `url(${globalStore.wallpaper})`}">
+    <div id="formContainer__container" class="formContainer__container flexColumn"
+        :style="{ '--wallpaperSource': `url(${globalStore.wallpaper})` }">
         <div class="formContainer flexRow">
             <form class="form" method="post" @submit.prevent="handleQuery()">
                 <input class="questionBox" type="text" name="searchQuery" v-model="searchQuery"

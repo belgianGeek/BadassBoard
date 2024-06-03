@@ -48,7 +48,7 @@ const getInvidiousInstanceHealth = async () => {
   const res = await axios.get('https://api.invidious.io/instances.json?pretty=1&sort_by=health');
   for (let i = 0; i < res.data.length; i++) {
     if (res.data[i][1].monitor !== null) {
-      if (res.data[i][1].monitor['90dRatio'].ratio > 98 && res.data[i][1].api) {
+      if (res.data[i][1].monitor['last_status'] === 200 && res.data[i][1].api) {
         // Remove the final / if any
         globalStore.addInvidiousInstance(res.data[i][1].uri.replace(/\/$/, ''));
       } else if (i === res.data.length - 1) {

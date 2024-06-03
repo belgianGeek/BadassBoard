@@ -15,7 +15,7 @@ export const useGlobalStore = defineStore("global", {
       query: ''
     },
     YTsearchResults: [],
-    wallpaper: '/public/assets/wallpaper.jpg'
+    wallpaper: '/assets/wallpaper.jpg'
   }),
   actions: {
     addInvidiousInstance(instance) {

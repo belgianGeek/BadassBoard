@@ -108,7 +108,7 @@ app.set("view cache", true);
 
 if (!ip.address().match(/169.254/) || !ip.address().match(/127.0/)) {
   console.log(
-    `Hey ${username} ! You can connect to the web interface with your local IP (http://${ip.address()}:8080) or hostname (http://${os.hostname()}:8080).`
+    `Hey ${username} ! You can connect to the web interface with your local IP (http://${ip.address()}:3000) or hostname (http://${os.hostname()}:3000).`
   );
 } else {
   console.log(
@@ -121,10 +121,10 @@ updateSettings();
 // App routes
 // require('./routes/chat')(app, io, settings);
 // require('./routes/download')(app, io);
+require("./routes/audio")(app);
 require("./routes/content")(app);
 require("./routes/contentLength")(app);
 require("./routes/updateContent")(app, settings);
-require("./routes/video")(app);
 require("./routes/ytSearch")(app);
 require("./routes/index")(app);
 

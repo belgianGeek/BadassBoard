@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 module.exports = function (app) {
-  app.post('/api/video', async (req, res) => {
+  app.post('/api/audio', async (req, res) => {
     try {
       const result = await axios.get(
         `${req.body.invidiousInstance}/api/v1/videos/${req.body.videoId}`
