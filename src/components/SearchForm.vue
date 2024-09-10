@@ -7,7 +7,6 @@ let searchQuery = globalStore.search.query;
 let currentInstance = 0;
 
 const playAudio = async (invidiousInstance, videoId) => {
-    console.log(globalStore.invidiousInstances, invidiousInstance);
     const audioRequest = await axios.post(`http://${window.location.hostname}:3000/api/audio`, {
         invidiousInstance: invidiousInstance,
         videoId: videoId
@@ -18,8 +17,18 @@ const playAudio = async (invidiousInstance, videoId) => {
         globalStore.audio.url = `${invidiousInstance}/latest_version?id=${videoId}&local=true`;
         globalStore.audio.thumbnail = audioRequest.data.audio.thumbnail;
         globalStore.audio.title = audioRequest.data.audio.title;
-
         globalStore.audio.isPlaying = true;
+
+        await axios
+            .get(globalStore.audio.url)
+            .catch(error => {
+                console.error(`An error occurred while loading the audio feed of "${globalStore.audio.author}, "${globalStore.audio.title}" :\n${error}`);
+                if (currentInstance < globalStore.invidiousInstances.length) {
+                    playAudio(globalStore.invidiousInstances[currentInstance++], videoId);
+                } else {
+                    console.error("No Invidious instance can fullfill this request.");
+                }
+            });
     } else {
         console.error(`The Invidious instance ${invidiousInstance} did not fullfill the request.`, currentInstance, globalStore.invidiousInstances.length);
         if (currentInstance < globalStore.invidiousInstances.length) {
