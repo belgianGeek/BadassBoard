@@ -15,11 +15,12 @@ export const useGlobalStore = defineStore("global", {
       query: ''
     },
     YTsearchResults: [],
-    wallpaper: '/assets/wallpaper.jpg'
+    wallpaper: '/wallpaper.jpg'
   }),
   actions: {
     addInvidiousInstance(instance) {
       this.invidiousInstances.push(instance);
+      return ;
     }
   }
 });

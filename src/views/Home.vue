@@ -51,7 +51,7 @@ const getInvidiousInstanceHealth = async () => {
       if (res.data[i][1].monitor['last_status'] === 200 && res.data[i][1].api) {
         // Remove the final / if any
         globalStore.addInvidiousInstance(res.data[i][1].uri.replace(/\/$/, ''));
-      } 
+      }
       
       if (i === res.data.length - 1) {
         if (globalStore.invidiousInstances[0] === undefined) {

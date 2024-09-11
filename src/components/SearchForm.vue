@@ -14,7 +14,7 @@ const playAudio = async (invidiousInstance, videoId) => {
 
     if (audioRequest.data.success) {
         globalStore.audio.author = audioRequest.data.audio.author;
-        globalStore.audio.url = `${invidiousInstance}/latest_version?id=${videoId}&local=true`;
+        globalStore.audio.url = audioRequest.data.audio.url;
         globalStore.audio.thumbnail = audioRequest.data.audio.thumbnail;
         globalStore.audio.title = audioRequest.data.audio.title;
         globalStore.audio.isPlaying = true;
