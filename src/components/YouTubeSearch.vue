@@ -35,7 +35,7 @@ const getDuration = (inputInSeconds) => {
 
 const searchYouTube = async query => {
     const youtubeRequest = await axios.post(`http://${window.location.hostname}:3000/api/ytsearch`, {
-        invidiousInstance: globalStore.invidiousInstance[0],
+        invidiousInstance: globalStore.invidiousInstances[0],
         query: query
     });
 
