@@ -6,6 +6,7 @@ export const useGlobalStore = defineStore("global", {
     date: new Date().toISOString().substring(0, 10),*/
     audio: {
       author: '',
+      isDisplayed: false,
       isPlaying: false,
       thumbnail: '',
       url: ''

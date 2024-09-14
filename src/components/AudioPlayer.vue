@@ -1,7 +1,4 @@
 <script setup>
-import { useGlobalStore } from '@/stores/globalStore';
-const globalStore = useGlobalStore();
-
 const props = defineProps(['author', 'url', 'thumbnail', 'title']);
 </script>
 

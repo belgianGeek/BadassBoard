@@ -112,7 +112,7 @@ onMounted(() => {
     <div class="msgContainer">
       <!-- <%= typeof msg != 'undefined' ? msg : '' %> -->
     </div>
-    <AudioPlayer v-if="globalStore.audio.isPlaying" :author="globalStore.audio.author" :url="globalStore.audio.url"
+    <AudioPlayer v-if="globalStore.audio.isDisplayed" :author="globalStore.audio.author" :url="globalStore.audio.url"
       :thumbnail="globalStore.audio.thumbnail" :title="globalStore.audio.title" />
     <div class="contentContainers flexRow">
       <section :class="content.type + 'Container'" class="content flexColumn"

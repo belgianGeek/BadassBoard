@@ -7,12 +7,19 @@ let searchQuery = globalStore.search.query;
 let currentInstance = 0;
 
 const playAudio = async (invidiousInstance, videoId) => {
+    // Display a loading animation
+    globalStore.audio.url = `http://${window.location.hostname}:3000/#`;
+    globalStore.audio.title = 'Loading...';
+    globalStore.audio.thumbnail = `http://${window.location.hostname}:3000/loadingBar.gif`;
+    globalStore.audio.isDisplayed = true;
+
     const audioRequest = await axios.post(`http://${window.location.hostname}:3000/api/audio`, {
         invidiousInstance: invidiousInstance,
         videoId: videoId
     });
 
-    if (audioRequest.data.success) {
+    // Prevent nackground requests when an API call is successfull by using the isPlaying property condition
+    if (audioRequest.data.success && !globalStore.audio.isPlaying) {
         globalStore.audio.author = audioRequest.data.audio.author;
         globalStore.audio.url = audioRequest.data.audio.url;
         globalStore.audio.thumbnail = audioRequest.data.audio.thumbnail;
@@ -23,15 +30,17 @@ const playAudio = async (invidiousInstance, videoId) => {
             .get(globalStore.audio.url)
             .catch(error => {
                 console.error(`An error occurred while loading the audio feed of "${globalStore.audio.author}, "${globalStore.audio.title}" :\n${error}`);
-                if (currentInstance < globalStore.invidiousInstances.length) {
-                    playAudio(globalStore.invidiousInstances[currentInstance++], videoId);
-                } else {
-                    console.error("No Invidious instance can fullfill this request.");
-                }
             });
+
+            // Hide the player when the audio stream is ended
+            document.querySelector('#audio__player').onended = () => {
+                globalStore.audio.isDisplayed = false;
+                globalStore.audio.isPlaying = false;
+            };
     } else {
         console.error(`The Invidious instance ${invidiousInstance} did not fullfill the request.`, currentInstance, globalStore.invidiousInstances.length);
         if (currentInstance < globalStore.invidiousInstances.length) {
+            globalStore.audio.isPlaying = false;
             playAudio(globalStore.invidiousInstances[currentInstance++], videoId);
         } else {
             console.error("No Invidious instance can fullfill this request.");
