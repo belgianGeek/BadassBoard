@@ -17,7 +17,6 @@ const SendContent = async () => {
 
   // TODO
 };
-}
 </script>
 
 <template>
