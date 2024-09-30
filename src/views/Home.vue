@@ -2,7 +2,7 @@
 import { useGlobalStore } from '@/stores/globalStore';
 const globalStore = useGlobalStore();
 
-// import AddFeedForm from '../components/AddFeedForm.vue';
+import AddFeedForm from '../components/AddFeedForm.vue';
 import axios from "axios";
 import { onMounted, ref } from 'vue';
 
@@ -147,7 +147,6 @@ onMounted(() => {
     }">
           <button>Delete</button>
           <label class="contentNav__label">
-            <!-- To translate and generalize  (RSS feed, location...)-->
             Item's reference :
             <input v-bind:type="content.type === 'rss' ? 'url' : 'text'" v-model="content.inputValue" />
           </label>
@@ -213,6 +212,7 @@ onMounted(() => {
         </div>
         <YouTubeSearch :componentType="content.type" />
       </section>
+      <AddFeedForm />
     </div>
   </main>
 </template>
@@ -229,9 +229,9 @@ onMounted(() => {
 }
 
 .contentContainers {
-  justify-content: space-evenly;
   flex-wrap: wrap;
-  height: 80vh;
+  height: 80%;
+  width: 100%;
 }
 
 .content {
@@ -243,7 +243,7 @@ onMounted(() => {
   width: 30%;
   margin: 1em;
   padding: 1em;
-  max-height: 45vh;
+  height: 45vh;
 
   &_BtnContainer {
     align-self: flex-end;
