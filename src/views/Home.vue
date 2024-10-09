@@ -17,7 +17,7 @@ let searchQuery = ref('');
 
 const getContent = (index) => {
   axios.get(
-    `http://${window.location.hostname}:3000/api/content/${index}`
+    `http://${window.location.hostname}:3000/api/content/get/${index}`
   ).then(response => {
     // response.data.isModified = false;
 
@@ -34,7 +34,7 @@ const getContent = (index) => {
 
 const getContentLength = async () => {
   let response = await axios.get(
-    `http://${window.location.hostname}:3000/api/contentlength`
+    `http://${window.location.hostname}:3000/api/content/length`
   );
 
   contentLength = response.data;
@@ -83,7 +83,7 @@ const modifyContent = async (content) => {
 };
 
 const updateContent = async (content, index) => {
-  const settingsUpdate = await axios.post(`http://${window.location.hostname}:3000/api/updatecontent`, {
+  const settingsUpdate = await axios.post(`http://${window.location.hostname}:3000/api/content/update`, {
     containerId: index,
     itemReference: content.inputValue
   });

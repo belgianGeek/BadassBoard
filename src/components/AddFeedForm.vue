@@ -4,18 +4,21 @@ import { ref } from 'vue';
 
 let isFormDisplayed = ref(false);
 let userChoice = ref('');
+let content2add = ref('');
 
 const getUserChoice = (event) => {
   userChoice.value = event.target.value;
 }
 
 const SendContent = async () => {
-  const res = axios.post(
+  const res = await axios.post(
     `http://${window.location.hostname}:3000/api/content/add`, {
-    userChoice
+    type: userChoice.value,
+    reference: content2add.value
   });
 
-  // TODO
+  console.log(res.data);
+  
 };
 </script>
 
@@ -37,11 +40,11 @@ const SendContent = async () => {
         <option value="YouTube">YouTube search box</option>
       </select>
       <div v-show="userChoice == 'rss'" class="addContent__feed flex">
-        <input type="text" name="addContent__feed__input" class="addContent__feed__input input"
+        <input v-model="content2add" type="text" name="addContent__feed__input" class="addContent__feed__input input"
           placeholder="Enter a RSS feed URL">
       </div>
       <div v-show="userChoice == 'weather'" class="addContent__weather flex">
-        <input type="text" name="addContent__weather__input" class="addContent__weather__input input"
+        <input v-model="content2add" type="text" name="addContent__weather__input" class="addContent__weather__input input"
           placeholder="Enter a location">
       </div>
       <div v-show="userChoice == 'youtubeSearch'" class="addContent__youtube flex">

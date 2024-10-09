@@ -3,7 +3,7 @@ const feedparser = require("feedparser-promised");
 const fs = require('fs');
 
 module.exports = function(app) {
-  app.get('/api/content/:index', async (req, res) => {
+  app.get('/api/content/get/:index', async (req, res) => {
     let data = await fs.readFileSync('./settings/settings.json');
     data = JSON.parse(data);
 

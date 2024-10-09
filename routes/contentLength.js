@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 module.exports = function(app) {
-  app.get('/api/contentlength', async (req, res) => {
+  app.get('/api/content/length', async (req, res) => {
     let data = await fs.readFileSync('./settings/settings.json');
     data = JSON.parse(data);
 
