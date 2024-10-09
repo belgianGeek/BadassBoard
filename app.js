@@ -1,4 +1,4 @@
-const ytdl = require("ytdl-core");
+// const ytdl = require("ytdl-core");
 const fs = require("fs-extra");
 const express = require("express");
 const app = express();
@@ -122,6 +122,7 @@ updateSettings();
 // require('./routes/chat')(app, io, settings);
 // require('./routes/download')(app, io);
 require("./routes/audio")(app);
+require("./routes/addContent")(app);
 require("./routes/content")(app);
 require("./routes/contentLength")(app);
 require("./routes/updateContent")(app, settings);
