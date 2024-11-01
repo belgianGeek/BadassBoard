@@ -4,9 +4,10 @@ const globalStore = useGlobalStore();
 
 import AddFeedForm from '../components/AddFeedForm.vue';
 import axios from "axios";
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref, toRaw } from 'vue';
 
 import AudioPlayer from '../components/AudioPlayer.vue';
+import ErrorContainer from '../components/ErrorContainer.vue';
 import SearchForm from '../components/SearchForm.vue';
 import YouTubeSearch from '../components/YouTubeSearch.vue';
 import Wallpaper from '../components/Wallpaper.vue';
@@ -14,21 +15,33 @@ import Wallpaper from '../components/Wallpaper.vue';
 let contentLength = ref(Number());
 let contents = ref([]);
 let searchQuery = ref('');
+let sortedContents = computed(() => {
+  return contents.value.sort((a, b) => a.index - b.index);
+});
 
-const getContent = (index) => {
+const getContent = index => {
   axios.get(
     `http://${window.location.hostname}:3000/api/content/get/${index}`
   ).then(response => {
-    // response.data.isModified = false;
+    console.log(response.data);
 
-    if (response.data.type === "rss") {
-      response.data.inputValue = response.data.reference;
-      response.data.containerPageNumber = 1;
-    } else if (response.data.type === "weather") {
-      response.data.inputValue = response.data.reference;
+    if (response.data.success) {
+      response.data.isModified = false;
+
+      if (response.data.type === "rss") {
+        response.data.inputValue = response.data.reference;
+        response.data.containerPageNumber = 1;
+      } else if (response.data.type === "weather") {
+        response.data.inputValue = response.data.reference;
+      }
+
+      sortedContents.value.push(response.data);
+    } else {
+      sortedContents.value.push({
+        type: 'error',
+        msg: response.data.msg
+      })
     }
-
-    contents.value.push(response.data);
   });
 };
 
@@ -67,11 +80,11 @@ const getInvidiousInstanceHealth = async () => {
 };
 
 const goToNextPage = async (containerId) => {
-  contents.value[containerId].containerPageNumber++;
+  sortedContents.value[containerId].containerPageNumber++;
 };
 
 const goToPreviousPage = async (containerId) => {
-  contents.value[containerId].containerPageNumber--;
+  sortedContents.value[containerId].containerPageNumber--;
 };
 
 const modifyContent = async (content) => {
@@ -82,20 +95,43 @@ const modifyContent = async (content) => {
   }
 };
 
+const refreshFeed = async index => {
+  axios.get(
+    `http://${window.location.hostname}:3000/api/content/get/${index}`
+  ).then(response => {
+    if (response.data.success) {
+      // Sort the contents array
+      sortedContents.value.sort((a, b) => a.index - b.index);
+
+      response.data.isModified = false;
+      response.data.inputValue = response.data.reference;
+      response.data.containerPageNumber = 1;
+
+      console.log(sortedContents.value.length);
+      console.log(response.data);
+
+      sortedContents.value[index].feed = response.data.feed;
+      sortedContents.value[index].inputValue = response.data.inputValue;
+
+      console.log(toRaw(sortedContents.value));
+    }
+  });
+}
+
 const updateContent = async (content, index) => {
   const settingsUpdate = await axios.post(`http://${window.location.hostname}:3000/api/content/update`, {
     containerId: index,
     itemReference: content.inputValue
   });
 
-  contents[index].type = settingsUpdate.data.type;
-  contents[index].reference = settingsUpdate.data.reference;
+  sortedContents[index].type = settingsUpdate.data.type;
+  sortedContents[index].reference = settingsUpdate.data.reference;
 
   if (content.type === 'rss') {
-    contents[index].feed = settingsUpdate.data.feed;
+    sortedContents[index].feed = settingsUpdate.data.feed;
   } else if (content.type === 'weather') {
-    console.log(contents[index]);
-    contents[index].forecast = settingsUpdate.data.forecast;
+    console.log(sortedContents[index]);
+    sortedContents[index].forecast = settingsUpdate.data.forecast;
   }
 };
 
@@ -116,11 +152,11 @@ onMounted(() => {
       :thumbnail="globalStore.audio.thumbnail" :title="globalStore.audio.title" />
     <div class="contentContainers flexRow">
       <section :class="content.type + 'Container'" class="content flexColumn"
-        v-for="[iContent, content] of contents.entries()">
+        v-for="[iContent, content] of sortedContents.entries()">
         <span class="content_BtnContainer flexRow">
           <button @click="modifyContent(content)" :class="{
-      hidden: content.isModified,
-    }">
+            hidden: content.isModified,
+          }">
             <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
               <g stroke="#fff" stroke-width="1.5">
                 <path
@@ -131,7 +167,7 @@ onMounted(() => {
               </g>
             </svg>
           </button>
-          <button @click="getContent(content.index)" v-if="content.type === 'rss' || content.type === 'weather'">
+          <button @click="refreshFeed(content.index)" v-if="content.type === 'rss' || content.type === 'weather'">
             <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
               <g stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
                 <path
@@ -142,50 +178,50 @@ onMounted(() => {
           </button>
         </span>
         <nav class="contentNav" :class="{
-      hidden: !content.isModified,
-      flexColumn: content.isModified,
-    }">
+          hidden: !content.isModified,
+          flexColumn: content.isModified,
+        }">
           <button>Delete</button>
           <label class="contentNav__label">
             Item's reference :
             <input v-bind:type="content.type === 'rss' ? 'url' : 'text'" v-model="content.inputValue" />
           </label>
-          <button @click="[modifyContent(content), updateContent(content, content.index)]">Ok</button>
+          <button @click="getContent(content.index)">Ok</button>
         </nav>
         <h1 class="title" :class="{
-      hidden: content.isModified,
-      flexColumn: !content.isModified,
-    }">
+          hidden: content.isModified,
+          flexColumn: !content.isModified,
+        }">
           <a class="link" :href="content.feed[0].meta.link" v-if="content.type === 'rss'">
             {{ content.feed[0].meta.title }}
           </a>
           <a class="link" :href="'https://openweathermap.org/city/' + content.forecast.list[0].id
-      " v-else-if="content.type === 'weather'">
+            " v-else-if="content.type === 'weather'">
             Weather in {{ content.forecast.list[0].name }}
           </a>
           <p v-else-if="content.type === 'youtubeSearch'">Instant YouTube search</p>
           <article v-else>{{ content }}</article>
         </h1>
         <div class="linksContainer" :class="{
-      hidden: content.isModified,
-      flexColumn: !content.isModified,
-    }" v-if="content.type === 'rss'">
+          hidden: content.isModified,
+          flexColumn: !content.isModified,
+        }" v-if="content.type === 'rss'">
           <a class="linksContainer__link" :class="{
-      shown: ((contents[iContent].containerPageNumber === 1) && i <= 9) || ((contents[iContent].containerPageNumber > 1) && (i >= (contents[iContent].containerPageNumber - 1) * 10) || (i < (contents[iContent].containerPageNumber * 10))),
-      hidden: ((contents[iContent].containerPageNumber === 1) && i > 9) || ((contents[iContent].containerPageNumber > 1) && (i < (contents[iContent].containerPageNumber - 1) * 10) || (i >= (contents[iContent].containerPageNumber * 10)))
-    }" :href="article.link" v-for="[i, article] of content.feed.entries()">
+            shown: ((sortedContents[iContent].containerPageNumber === 1) && i <= 9) || ((sortedContents[iContent].containerPageNumber > 1) && (i >= (sortedContents[iContent].containerPageNumber - 1) * 10) || (i < (sortedContents[iContent].containerPageNumber * 10))),
+            hidden: ((sortedContents[iContent].containerPageNumber === 1) && i > 9) || ((sortedContents[iContent].containerPageNumber > 1) && (i < (sortedContents[iContent].containerPageNumber - 1) * 10) || (i >= (sortedContents[iContent].containerPageNumber * 10)))
+          }" :href="article.link" v-for="[i, article] of content.feed.entries()">
             {{ article.title }}</a>
         </div>
         <div class="pager flexRow" v-if="content.type === 'rss' && content.feed.length > 10">
-          <p @click="goToPreviousPage(iContent)" :class="{ 'invisible': contents[iContent].containerPageNumber === 1 }">
+          <p @click="goToPreviousPage(iContent)" :class="{ 'invisible': sortedContents[iContent].containerPageNumber === 1 }">
             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
               stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </p>
-          {{ contents[iContent].containerPageNumber }} / {{ Math.floor(content.feed.length / 10) }}
+          {{ sortedContents[iContent].containerPageNumber }} / {{ Math.floor(content.feed.length / 10) }}
           <p @click="goToNextPage(iContent)"
-            :class="{ 'invisible': contents[iContent].containerPageNumber === Math.floor(content.feed.length / 10) }">
+            :class="{ 'invisible': sortedContents[iContent].containerPageNumber === Math.floor(content.feed.length / 10) }">
             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
               stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 18l6-6-6-6" />
@@ -193,9 +229,9 @@ onMounted(() => {
           </p>
         </div>
         <div class="forecast flexRow" :class="{
-      hidden: content.isModified,
-      flexColumn: !content.isModified,
-    }" v-else-if="content.type === 'weather'">
+          hidden: content.isModified,
+          flexColumn: !content.isModified,
+        }" v-else-if="content.type === 'weather'">
           <div class="forecast__content">
             <p>
               Forecast description :
@@ -211,6 +247,7 @@ onMounted(() => {
             :title="content.forecast.list[0].weather[0].description + ' icon'" />
         </div>
         <YouTubeSearch :componentType="content.type" />
+        <ErrorContainer :componentType="content.type" :errorMsg="content.msg" />
       </section>
       <AddFeedForm />
     </div>

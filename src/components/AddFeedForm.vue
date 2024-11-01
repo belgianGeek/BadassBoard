@@ -18,7 +18,6 @@ const SendContent = async () => {
   });
 
   console.log(res.data);
-  
 };
 </script>
 

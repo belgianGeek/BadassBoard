@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { error } = require('console');
 const feedparser = require("feedparser-promised");
 const fs = require('fs');
 
@@ -9,21 +10,32 @@ module.exports = function(app) {
 
     const item = data.elements[Number(req.params.index)];
 
+    // Send a success message by default, but overwrite it in case of error below
+    item.success = true;
+
     if (item.type === 'rss') {
       feedparser.parse(item.reference)
         .then(items => {
           item.feed = items;
           res.send(item);
         })
-        .catch((err) => {
+        .catch(err => {
           if (err === 'Error: Not a feed') {
             res.send({
-              type: 'rss verification',
-              element: `${item.parent} ${item.element}`,
+              success: false,
+              type: 'error',
+              index: Number(req.params.index),
               msg: `${item.reference} is not a valid RSS feed`
             });
           } else {
-            res.send(`Your feed couldn't be loaded because the parser encountered an error : ${err}`);
+            console.error(`Your feed couldn't be loaded because the parser encountered an error : ${err}`);
+            
+            res.send({
+              success: false,
+              type: 'error',
+              index: Number(req.params.index),
+              msg: `Your feed couldn't be loaded because the parser encountered an error : ${err}`
+            });
           }
         });
     } else if (item.type === 'weather') {
@@ -44,13 +56,18 @@ module.exports = function(app) {
                   res.send(item);
                 } else {
                   res.send({
+                    success: false,
                     type: 'weather',
                     msg: 'Sorry homie, it seems this location doesn\'t exist...'
                   });
                 }
                 break;
               default:
-                res.send(`An unknown error occurred : ${axiosResponse}`);
+                res.send({
+                  success: false,
+                  type: 'error',
+                  msg: `An unknown error occurred : ${axiosResponse}`
+                });
                 console.log('An unknown error occurred : ', JSON.stringify(axiosResponse, null, 2));
                 break;
             }

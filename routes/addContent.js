@@ -17,9 +17,7 @@ module.exports = function (app) {
         index: lastEltIndex + 1,
         type: newContent.type,
         reference: newContent.reference,
-      });
-
-      console.log(existingSettings.elements);      
+      });     
 
       fs.writeFile("./settings/settings.json", JSON.stringify(existingSettings, null, 2), 'utf-8', (err) => {
         if (err) {
@@ -53,7 +51,9 @@ module.exports = function (app) {
           } else {
             res.send({
               success: false,
-              msg: `Your feed couldn't be loaded because the parser encountered an error : ${err}`,
+              type: "rss",
+              index: lastEltIndex + 1,
+              msg: `Your feed couldn't be loaded because the parser encountered an error : ${err}`
             });
           }
         });
