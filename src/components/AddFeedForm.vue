@@ -2,6 +2,9 @@
 import axios from "axios";
 import { ref } from 'vue';
 
+import { useContainerStore } from '@/stores/containerStore';
+const containerStore = useContainerStore();
+
 let isFormDisplayed = ref(false);
 let userChoice = ref('');
 let content2add = ref('');
@@ -17,7 +20,9 @@ const SendContent = async () => {
     reference: content2add.value
   });
 
-  console.log(res.data);
+  containerStore.getContent(res.data.index);
+  userChoice.value = '';
+  isFormDisplayed = false;
 };
 </script>
 
@@ -43,8 +48,8 @@ const SendContent = async () => {
           placeholder="Enter a RSS feed URL">
       </div>
       <div v-show="userChoice == 'weather'" class="addContent__weather flex">
-        <input v-model="content2add" type="text" name="addContent__weather__input" class="addContent__weather__input input"
-          placeholder="Enter a location">
+        <input v-model="content2add" type="text" name="addContent__weather__input"
+          class="addContent__weather__input input" placeholder="Enter a location">
       </div>
       <div v-show="userChoice == 'youtubeSearch'" class="addContent__youtube flex">
         <p class="addContent__youtube__msg">Nothing to do here !</p>
@@ -52,7 +57,7 @@ const SendContent = async () => {
         </p>
       </div>
       <div v-show="userChoice !== ''" class="addContent__btnContainer flex">
-        <button @click="isFormDisplayed = false" class="addContent__cancelBtn btn btn--red">Bring me back !</button>
+        <button @click="isFormDisplayed = false, content2add = '', userChoice = ''" class="addContent__cancelBtn btn btn--red">Bring me back !</button>
         <button @click="SendContent()" class="addContent__submitBtn btn btn--green">Ok, that's it</button>
       </div>
     </div>

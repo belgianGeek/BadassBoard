@@ -1,5 +1,7 @@
 <script setup>
 import { useGlobalStore } from '@/stores/globalStore';
+import { useContainerStore } from '@/stores/containerStore';
+const containerStore = useContainerStore();
 const globalStore = useGlobalStore();
 
 import AddFeedForm from '../components/AddFeedForm.vue';
@@ -12,50 +14,12 @@ import SearchForm from '../components/SearchForm.vue';
 import YouTubeSearch from '../components/YouTubeSearch.vue';
 import Wallpaper from '../components/Wallpaper.vue';
 
-let contentLength = ref(Number());
-let contents = ref([]);
+let contentLength = containerStore.content.length;
+let contents = containerStore.content.containers;
 let searchQuery = ref('');
 let sortedContents = computed(() => {
-  return contents.value.sort((a, b) => a.index - b.index);
+  return contents.sort((a, b) => a.index - b.index);
 });
-
-const getContent = index => {
-  axios.get(
-    `http://${window.location.hostname}:3000/api/content/get/${index}`
-  ).then(response => {
-    console.log(response.data);
-
-    if (response.data.success) {
-      response.data.isModified = false;
-
-      if (response.data.type === "rss") {
-        response.data.inputValue = response.data.reference;
-        response.data.containerPageNumber = 1;
-      } else if (response.data.type === "weather") {
-        response.data.inputValue = response.data.reference;
-      }
-
-      sortedContents.value.push(response.data);
-    } else {
-      sortedContents.value.push({
-        type: 'error',
-        msg: response.data.msg
-      })
-    }
-  });
-};
-
-const getContentLength = async () => {
-  let response = await axios.get(
-    `http://${window.location.hostname}:3000/api/content/length`
-  );
-
-  contentLength = response.data;
-
-  for (let i = 0; i < contentLength; i++) {
-    getContent(i);
-  }
-};
 
 const getInvidiousInstanceHealth = async () => {
   const res = await axios.get('https://api.invidious.io/instances.json?pretty=1&sort_by=health');
@@ -136,7 +100,7 @@ const updateContent = async (content, index) => {
 };
 
 onMounted(() => {
-  getContentLength();
+  containerStore.getContentLength();
   getInvidiousInstanceHealth();
 });
 </script>
@@ -213,7 +177,8 @@ onMounted(() => {
             {{ article.title }}</a>
         </div>
         <div class="pager flexRow" v-if="content.type === 'rss' && content.feed.length > 10">
-          <p @click="goToPreviousPage(iContent)" :class="{ 'invisible': sortedContents[iContent].containerPageNumber === 1 }">
+          <p @click="goToPreviousPage(iContent)"
+            :class="{ 'invisible': sortedContents[iContent].containerPageNumber === 1 }">
             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
               stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <path d="M15 18l-6-6 6-6" />

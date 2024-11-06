@@ -15,8 +15,8 @@ module.exports = function (app) {
     const addContent = (existingSettings, newContent) => {
       existingSettings.elements.push({
         index: lastEltIndex + 1,
-        type: newContent.type,
         reference: newContent.reference,
+        type: newContent.type
       });     
 
       fs.writeFile("./settings/settings.json", JSON.stringify(existingSettings, null, 2), 'utf-8', (err) => {
@@ -36,23 +36,24 @@ module.exports = function (app) {
 
           res.send({
             success: true,
+            index: lastEltIndex + 1,
             type: "rss",
-            data: item,
+            data: item
           });
         })
         .catch((err) => {
           if (err === "Error: Not a feed") {
             res.send({
               success: false,
-              type: "rss",
               index: lastEltIndex + 1,
+              type: "rss",
               msg: `${item.reference} is not a valid RSS feed`,
             });
           } else {
             res.send({
               success: false,
-              type: "rss",
               index: lastEltIndex + 1,
+              type: "rss",
               msg: `Your feed couldn't be loaded because the parser encountered an error : ${err}`
             });
           }
@@ -68,6 +69,7 @@ module.exports = function (app) {
               case 401:
                 res.send({
                   success: false,
+                  index: lastEltIndex + 1,
                   type: "weather",
                   msg: "Sorry dude, your OpenWeatherMap token is invalid 😢. Please modify it in the settings.",
                 });
@@ -78,12 +80,14 @@ module.exports = function (app) {
                 if (item.forecast.count !== 0) {
                   res.send({
                     success: true,
+                    index: lastEltIndex + 1,
                     type: "weather",
                     data: item,
                   });
                 } else {
                   res.send({
                     success: false,
+                    index: lastEltIndex + 1,
                     type: "weather",
                     msg: "Sorry homie, it seems this location doesn't exist...",
                   });
@@ -106,7 +110,8 @@ module.exports = function (app) {
     } else if (item.type === "youtubeSearch") {
       res.send({
         success: true,
-        type: "youtubeSearch"
+        index: lastEltIndex + 1,
+        type: "youtubeSearch",
       });
     }
   });
