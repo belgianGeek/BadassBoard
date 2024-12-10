@@ -2,7 +2,7 @@
 import { useGlobalStore } from '@/stores/globalStore';
 const globalStore = useGlobalStore();
 
-const props = defineProps(['componentType']);
+const props = defineProps(['componentType', 'isModified']);
 
 import axios from "axios";
 import { ref } from 'vue';
@@ -44,16 +44,22 @@ const searchYouTube = async query => {
 </script>
 
 <template>
-    <div v-if="props.componentType === 'youtubeSearch'"
-        :class="`${props.componentType}Container__content flex flexColumn`">
+    <div v-if="props.componentType === 'youtubeSearch'" :class="[
+        `${props.componentType}Container__content`,
+        {
+            hidden: props.isModified,
+            flexColumn: !props.isModified
+        }]">
         <input type="text" :class="`${props.componentType}Container__content__input input`"
             placeholder="Type here to search Youtube..." v-model="youtubeSearch.query">
         <button @click="searchYouTube(youtubeSearch.query.trim())">Search</button>
         <div :class="`${props.componentType}Container__content__results flex`">
             <span v-for="[iResult, result] of globalStore.YTsearchResults.entries()"
                 :class="`youtubeSearchContainer__content__results__result youtube__result${iResult} flex`">
-                <img v-if="result.type === 'video'":src="result.videoThumbnails[0].url" :alt="`${result.title} thumbnail`">
-                <img v-if="result.type === 'channel'":src="result.authorThumbnails[0].url" :alt="`${result.title} thumbnail`">
+                <img v-if="result.type === 'video'" :src="result.videoThumbnails[0].url"
+                    :alt="`${result.title} thumbnail`">
+                <img v-if="result.type === 'channel'" :src="result.authorThumbnails[0].url"
+                    :alt="`${result.title} thumbnail`">
                 <span class="youtubeSearchContainer__content__results__result__content flex">
                     <p>
                         <u>Video ID</u> : {{ result.videoId }}

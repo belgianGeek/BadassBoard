@@ -82,20 +82,22 @@ const refreshFeed = async index => {
   });
 }
 
-const updateContent = async (content, index) => {
+const updateContent = async (content) => {
   const settingsUpdate = await axios.post(`http://${window.location.hostname}:3000/api/content/update`, {
-    containerId: index,
+    containerId: content.index,
     itemReference: content.inputValue
   });
 
-  sortedContents[index].type = settingsUpdate.data.type;
-  sortedContents[index].reference = settingsUpdate.data.reference;
+  sortedContents.value[content.index].reference = settingsUpdate.data.reference;
+
+  // Hide the edit form on the container
+  sortedContents.value[content.index].isModified = false;
 
   if (content.type === 'rss') {
-    sortedContents[index].feed = settingsUpdate.data.feed;
+    sortedContents.value[content.index].feed = settingsUpdate.data.feed;
   } else if (content.type === 'weather') {
-    console.log(sortedContents[index]);
-    sortedContents[index].forecast = settingsUpdate.data.forecast;
+    console.log(sortedContents.value[content.index]);
+    sortedContents.value[content.index].forecast = settingsUpdate.data.forecast;
   }
 };
 
@@ -145,19 +147,21 @@ onMounted(() => {
           hidden: !content.isModified,
           flexColumn: content.isModified,
         }">
-          <button>Delete</button>
-          <label class="contentNav__label">
+          <label class="contentNav__label flex">
             Item's reference :
             <input v-bind:type="content.type === 'rss' ? 'url' : 'text'" v-model="content.inputValue" />
           </label>
-          <button @click="getContent(content.index)">Ok</button>
+          <div class="contentNav__btnContainer flex">
+            <button class="btn btn--green" @click="updateContent(content)">Ok</button>
+            <button class="btn btn--red">Delete</button>
+          </div>
         </nav>
         <h1 class="title" :class="{
           hidden: content.isModified,
           flexColumn: !content.isModified,
         }">
-          <a class="link" :href="content.feed[0].meta.link" v-if="content.type === 'rss'">
-            {{ content.feed[0].meta.title }}
+          <a class="link" :href="content.feed.link" v-if="content.type === 'rss'">
+            {{ content.feed.title }}
           </a>
           <a class="link" :href="'https://openweathermap.org/city/' + content.forecast.list[0].id
             " v-else-if="content.type === 'weather'">
@@ -173,20 +177,26 @@ onMounted(() => {
           <a class="linksContainer__link" :class="{
             shown: ((sortedContents[iContent].containerPageNumber === 1) && i <= 9) || ((sortedContents[iContent].containerPageNumber > 1) && (i >= (sortedContents[iContent].containerPageNumber - 1) * 10) || (i < (sortedContents[iContent].containerPageNumber * 10))),
             hidden: ((sortedContents[iContent].containerPageNumber === 1) && i > 9) || ((sortedContents[iContent].containerPageNumber > 1) && (i < (sortedContents[iContent].containerPageNumber - 1) * 10) || (i >= (sortedContents[iContent].containerPageNumber * 10)))
-          }" :href="article.link" v-for="[i, article] of content.feed.entries()">
+          }" :href="article.link" v-for="[i, article] of content.feed.items.entries()">
             {{ article.title }}</a>
         </div>
-        <div class="pager flexRow" v-if="content.type === 'rss' && content.feed.length > 10">
-          <p @click="goToPreviousPage(iContent)"
-            :class="{ 'invisible': sortedContents[iContent].containerPageNumber === 1 }">
+        <div class="pager flexRow" v-if="content.type === 'rss' && content.feed.items.length > 10">
+          <p @click="goToPreviousPage(iContent)" :class="{
+            hidden: content.isModified,
+            flexColumn: !content.isModified,
+            invisible: sortedContents[iContent].containerPageNumber === 1
+          }">
             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
               stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </p>
-          {{ sortedContents[iContent].containerPageNumber }} / {{ Math.floor(content.feed.length / 10) }}
-          <p @click="goToNextPage(iContent)"
-            :class="{ 'invisible': sortedContents[iContent].containerPageNumber === Math.floor(content.feed.length / 10) }">
+          {{ sortedContents[iContent].containerPageNumber }} / {{ Math.floor(content.feed.items.length / 10) }}
+          <p @click="goToNextPage(iContent)" :class="{
+            hidden: content.isModified,
+            flexColumn: !content.isModified,
+            invisible: sortedContents[iContent].containerPageNumber === Math.floor(content.feed.items.length / 10)
+          }">
             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
               stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 18l6-6-6-6" />
@@ -211,7 +221,7 @@ onMounted(() => {
             :alt="content.forecast.list[0].weather[0].description + ' icon'"
             :title="content.forecast.list[0].weather[0].description + ' icon'" />
         </div>
-        <YouTubeSearch :componentType="content.type" />
+        <YouTubeSearch :componentType="content.type" :isModified="content.isModified" />
         <ErrorContainer :componentType="content.type" :errorMsg="content.msg" />
       </section>
       <AddFeedForm />
@@ -259,8 +269,24 @@ onMounted(() => {
   }
 
   &Nav {
+    width: 100%;
+    height: 100%;
+    justify-content: space-evenly;
+    text-align: center;
+
+    &__btnContainer {
+      width: 100%;
+      justify-content: space-evenly;
+      -webkit-justify-content: space-evenly;
+    }
+
     &__label {
-      width: 50%;
+      width: 100%;
+      flex-direction: column;
+
+      input {
+        margin: .5em 0 .5em 0;
+      }
     }
 
     button {
