@@ -1,63 +1,65 @@
 const axios = require("axios");
-const feedparser = require("feedparser-promised");
+const Parser = require("rss-parser");
+const feedparser = new Parser();
 const fs = require("fs-extra");
 
 module.exports = function (app) {
   app.post("/api/content/add", async (req, res) => {
     const item = req.body;
-    
 
     let settings = await fs.readFileSync("./settings/settings.json");
     settings = JSON.parse(settings);
     let lastEltIndex = settings.elements[settings.elements.length - 1].index;
-    
 
     const addContent = (existingSettings, newContent) => {
       existingSettings.elements.push({
         index: lastEltIndex + 1,
         reference: newContent.reference,
-        type: newContent.type
-      });     
-
-      fs.writeFile("./settings/settings.json", JSON.stringify(existingSettings, null, 2), 'utf-8', (err) => {
-        if (err) {
-          console.log(`Error updating the settings file : ${err}`);
-        }
+        type: newContent.type,
       });
+
+      fs.writeFile(
+        "./settings/settings.json",
+        JSON.stringify(existingSettings, null, 2),
+        "utf-8",
+        (err) => {
+          if (err) {
+            console.log(`Error updating the settings file : ${err}`);
+          }
+        }
+      );
     };
 
     if (item.type === "rss") {
-      feedparser
-        .parse(item.reference)
-        .then((items) => {
-          item.feed = items;
+      try {
+        let feed = await feedparser.parseURL(item.reference);
+        item.feed = feed;
 
-          addContent(settings, item);
+        addContent(settings, item);
 
+        res.send({
+          success: true,
+          index: lastEltIndex + 1,
+          type: "rss",
+          data: item,
+        });
+      } catch (err) {
+        if (err === "Error: Not a feed") {
           res.send({
-            success: true,
+            success: false,
             index: lastEltIndex + 1,
             type: "rss",
-            data: item
+            msg: `${item.reference} is not a valid RSS feed`,
           });
-        })
-        .catch((err) => {
-          if (err === "Error: Not a feed") {
-            res.send({
-              success: false,
-              index: lastEltIndex + 1,
-              type: "rss",
-              msg: `${item.reference} is not a valid RSS feed`,
-            });
-          } else {
-            res.send({
-              success: false,
-              index: lastEltIndex + 1,
-              type: "rss",
-              msg: `Your feed couldn't be loaded because the parser encountered an error : ${err}`
-            });
-          }
-        });
+        } else {
+          res.send({
+            success: false,
+            index: lastEltIndex + 1,
+            type: "rss",
+            msg: `Your feed couldn't be loaded because the parser encountered an error : ${err}`,
+          });
+        }
+      }
     } else if (item.type === "weather") {
       if (settings.owmToken.match(/[a-z0-9]{32}/)) {
         axios
