@@ -1,3 +1,6 @@
+@use "../utils/mixins";
+@use "../utils/variables";
+
 .backgroundColor {
   background-color: rgba(0,0,0,0.4);
   width: 100%;
@@ -57,7 +60,7 @@
 
         &__link,
         &__title {
-          color: $link-color;
+          color: variables.$link-color;
         }
 
         &__desc,
@@ -98,7 +101,7 @@
       }
 
       &__sendBtn {
-        @include btn-style(1px solid);
+        @include mixins.btn-style(1px solid);
         background-color: transparent;
         margin-left: 1em;
       }
@@ -109,7 +112,7 @@
     height: 100%;
     width: 30%;
     flex-direction: column;
-    @include align(center, center);
+    @include mixins.align(center, center);
     background-color: rgba(0,0,0,0.3);
     box-shadow: 0 0 1em black;
     font-size: 1.1em;

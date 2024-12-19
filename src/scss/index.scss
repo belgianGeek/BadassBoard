@@ -1,19 +1,19 @@
-@import './utils/mixins';
-@import './utils/variables';
+@use 'utils/mixins';
+@use 'utils/variables';
 
-@import './base/fonts';
-@import './base/body';
+@use 'base/fonts';
+@use 'base/body';
 
-@import './components/button';
-@import './components/input';
+@use 'components/button';
+@use 'components/input';
 
-@import './layouts/about';
-@import './layouts/animations';
-@import './layouts/blur';
-@import './layouts/flex';
-@import './layouts/header';
-@import './layouts/settings';
+@use 'layouts/about';
+@use 'layouts/animations';
+@use 'layouts/blur';
+@use 'layouts/flex';
+@use 'layouts/header';
+@use 'layouts/settings';
 
-@import './pages/chat';
-@import './pages/home';
-@import './pages/yt2rss';
+@use 'pages/chat';
+@use 'pages/home';
+@use 'pages/yt2rss';

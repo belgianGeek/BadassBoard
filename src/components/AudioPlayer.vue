@@ -24,8 +24,8 @@ const props = defineProps(['author', 'url', 'thumbnail', 'title']);
 </template>
 
 <style media="screen" lang="scss">
-@import '@/scss/utils/mixins';
-@import '@/scss/utils/variables';
+@use '@/scss/utils/mixins';
+@use '@/scss/utils/variables';
 
 .audio {
     width: 70%;
@@ -75,15 +75,15 @@ const props = defineProps(['author', 'url', 'thumbnail', 'title']);
             height: min-content;
             min-width: 50%;
             width: 50%;
-            @include align(space-evenly, center);
-            @include flex-direction(row);
+            @include mixins.align(space-evenly, center);
+            @include mixins.flex-direction(row);
         }
 
         .streamInfoContainer {
             width: 50%;
             margin: 0 1vh;
             display: flex;
-            @include flex-direction;
+            @include mixins.flex-direction;
             flex: 1;
             overflow: hidden;
 

@@ -10,7 +10,7 @@ let wallpaper = globalStore.wallpaper;
 </template>
 
 <style media="screen" lang="scss">
-@import '@/scss/utils/mixins';
+@use '@/scss/utils/mixins';
 
 .backgroundImage {
   position: fixed;
@@ -19,6 +19,6 @@ let wallpaper = globalStore.wallpaper;
   left: 0;
   right: 0;
   z-index: -1;
-  @include background-image;
+  @include mixins.background-image;
 }
 </style>

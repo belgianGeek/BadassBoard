@@ -1,13 +1,15 @@
+@use "../utils/variables";
+
 .btn {
   color: white;
   border-radius: 15px;
   border: none;
-  background-color: $underline-input;
+  background-color: variables.$underline-input;
   padding: 0.6em;
   cursor: pointer;
 
   &--green {
-    background-color: $greenChecked;
+    background-color: variables.$greenChecked;
   }
 
   &--red {

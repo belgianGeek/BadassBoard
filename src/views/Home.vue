@@ -230,10 +230,10 @@ onMounted(() => {
 </template>
 
 <style media="screen" lang="scss">
-@import '@/scss/utils/mixins';
-@import '@/scss/utils/variables';
-@import "@/scss/base/body";
-@import "@/scss/base/fonts";
+@use '@/scss/utils/mixins';
+@use '@/scss/utils/variables';
+@use "@/scss/base/body";
+@use "@/scss/base/fonts";
 
 .mainContainer {
   width: 100%;
@@ -290,12 +290,12 @@ onMounted(() => {
     }
 
     button {
-      @include btn-style;
+      @include mixins.btn-style;
     }
 
     input {
       flex: 1;
-      @include input-style;
+      @include mixins.input-style;
     }
   }
 

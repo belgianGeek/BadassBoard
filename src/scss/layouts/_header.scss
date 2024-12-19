@@ -1,8 +1,12 @@
+@use "sass:color";
+@use "../utils/mixins";
+@use "../utils/variables";
+
 .header {
   position: fixed;
   top: 0;
   left: 0;
-  @include align(flex-start, center);
+  @include mixins.align(flex-start, center);
   z-index: 2;
 
   &__menu {
@@ -22,7 +26,7 @@
       height: 60px;
       padding: 0.55rem;
       background-color: transparent;
-      @include align(center, center);
+      @include mixins.align(center, center);
       cursor: pointer;
 
       &__bar {
@@ -30,7 +34,7 @@
         width: 100%;
         height: 2px;
         background-color: #fff;
-        @include align(center, center);
+        @include mixins.align(center, center);
         transition: all 0.4s ease;
 
         &::before {
@@ -70,7 +74,7 @@
     }
 
     &__switch:checked ~ .menu {
-      transform: translateX($menu-item-width * 2);
+      transform: translateX(variables.$menu-item-width * 2);
       transform-origin: left;
       transition: transform 0.5s cubic-bezier(1,0,0,1);
       @media (max-width: 720px) {
@@ -80,7 +84,7 @@
 
     &__switch:checked,
     &__switch:checked + &__icon {
-      transform: translateX(($menu-item-width * 1.5) - 2) rotate(135deg) scale(0.7);
+      transform: translateX((variables.$menu-item-width * 1.5) - 2) rotate(135deg) scale(0.7);
       transform-origin: left;
       transition: transform 0.5s cubic-bezier(1,0,0,1);
       top: -10px;
@@ -116,14 +120,14 @@
   .menu {
     position: absolute;
     height: 100vh;
-    width: $menu-item-width * 1.5;
+    width: variables.$menu-item-width * 1.5;
     top: 0;
-    left: -$menu-item-width * 2;
-    background-color: opacify($contentBackground, 0.3);
+    left: -(variables.$menu-item-width) * 2;
+    background-color: color.adjust(variables.$contentBackground, $alpha: 0.3);
     z-index: 1;
     flex-direction: column;
-    @include align(flex-start, flex-start);
-    @include box-shadow;
+    @include mixins.align(flex-start, flex-start);
+    @include mixins.box-shadow;
     font-size: 1em;
     @media (max-width: 720px) {
       width: 50vw;
@@ -138,7 +142,7 @@
     &__item,
     &__item a {
       width: 100%;
-      @include align(flex-start, center);
+      @include mixins.align(flex-start, center);
       box-sizing: border-box;
       font-size: 1.05em;
       cursor: pointer;

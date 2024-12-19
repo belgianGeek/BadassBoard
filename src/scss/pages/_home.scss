@@ -1,10 +1,14 @@
+@use "sass:color";
+@use "../utils/mixins";
+@use "../utils/variables";
+
 .wrapper {
   padding: 0;
   margin: 0;
-  @include flex-direction;
+  @include mixins.flex-direction;
 
   ::placeholder {
-    @include placeholder();
+    @include mixins.placeholder();
   }
 
   .rssTooltip {
@@ -14,7 +18,7 @@
     .article__desc {
       padding: 1%;
       position: relative;
-      background-color: opacify($contentBackground, 0.2);
+      background-color: color.adjust(variables.$contentBackground, $alpha: 0.2);
       width: 30%;
       height: auto;
       border-radius: 1em;
@@ -36,8 +40,8 @@
 .mainContainer {
   width: 100%;
   height: 100vh;
-  @include align(center, center);
-  @include flex-direction;
+  @include mixins.align(center, center);
+  @include mixins.flex-direction;
 }
 
 .msgContainer {
@@ -47,7 +51,7 @@
   margin: 1% 0;
   border: 1px solid white;
   border-radius: 15px;
-  background-color: $contentBackground;
+  background-color: variables.$contentBackground;
   z-index: 1;
 
   .warning {
@@ -56,8 +60,8 @@
 }
 
 .contentContainers {
-  @include align(space-evenly, flex-start);
-  @include flex-direction(row);
+  @include mixins.align(space-evenly, flex-start);
+  @include mixins.flex-direction(row);
   width: 100%;
   height: 80vh;
   flex-wrap: wrap;
@@ -72,20 +76,20 @@
   .content {
     width: 32%;
     justify-content: space-between;
-    @include flex-direction;
+    @include mixins.flex-direction;
     height: 40vh;
     font-size: 1em;
     @media (max-width: 720px) {
       height: auto;
       width: 100%;
-      @include align(flex-start, end);
+      @include mixins.align(flex-start, end);
       margin-top: 1.5em;
     }
 
     .contentOptions {
       display: none;
-      @include align(space-between, baseline);
-      @include flex-direction(row);
+      @include mixins.align(space-between, baseline);
+      @include mixins.flex-direction(row);
       width: 17%;
       margin-top: 1%;
 
@@ -103,7 +107,7 @@
     }
 
     .blank {
-      @include align(center, center);
+      @include mixins.align(center, center);
       opacity: 0;
       transition: opacity 1000ms, transform 200ms;
 
@@ -123,7 +127,7 @@
     .forecast,
     .rssContainer,
     .warning {
-      @include flex-direction;
+      @include mixins.flex-direction;
       border-radius: 15px;
       height: 100%;
       max-height: 100%;
@@ -169,7 +173,7 @@
       }
 
       &__content {
-        @include flex-direction(row);
+        @include mixins.flex-direction(row);
         width: 100%;
         height: 100%;
         font-size: 1.1em;
@@ -179,7 +183,7 @@
           margin: 0 2%;
           height: 100%;
           width: 50%;
-          @include flex-direction;
+          @include mixins.flex-direction;
 
           * {
             display: flex;
@@ -191,7 +195,7 @@
           }
 
           .forecastIcon {
-            @include forecastIcon();
+            @include mixins.forecastIcon();
           }
 
           &__description__desc,
@@ -204,7 +208,7 @@
 
       &__weatherIcon,
       .icon {
-        @include align(end, flex-start);
+        @include mixins.align(end, flex-start);
         width: 50%;
 
         &__icon {
@@ -257,8 +261,8 @@
     .addContent {
       display: none;
       width: 100%;
-      @include align(flex-start, center);
-      @include flex-direction;
+      @include mixins.align(flex-start, center);
+      @include mixins.flex-direction;
 
       label {
         margin: 2% 0;
@@ -277,8 +281,8 @@
         display: none;
         width: 100%;
         height: 100%;
-        @include align(center, center);
-        @include flex-direction;
+        @include mixins.align(center, center);
+        @include mixins.flex-direction;
       }
 
       &__youtube {
@@ -340,7 +344,7 @@
       }
 
       .article {
-        @include flex-direction;
+        @include mixins.flex-direction;
         margin-top: 0.5em;
         @media (max-width: 720px) {
           padding-left: 0.6em;
@@ -377,8 +381,8 @@
 .footer {
   height: 5vh;
   width: 100%;
-  @include align(center, center);
-  @include flex-direction;
+  @include mixins.align(center, center);
+  @include mixins.flex-direction;
   background: none;
   padding-bottom: 1em;
   position: relative;
@@ -389,8 +393,8 @@
   }
 
   .credits {
-    @include align(center, baseline);
-    @include flex-direction(row);
+    @include mixins.align(center, baseline);
+    @include mixins.flex-direction(row);
     width: 100%;
     margin: 0 0 3vh;
 
@@ -403,11 +407,11 @@
 }
 
 .confirmation {
-  @include align(center, center);
+  @include mixins.align(center, center);
   width: 100%;
   height: 100%;
   position: absolute;
-  background-color: $contentBackground;
+  background-color: variables.$contentBackground;
   display: none;
   z-index: 3;
 
@@ -417,7 +421,7 @@
     background-color: rgba(0, 0, 0, 0.7);
     border-radius: 1em;
     flex-direction: column;
-    box-shadow: 10px 10px 12px 2px $contentBackground;
+    box-shadow: 10px 10px 12px 2px variables.$contentBackground;
 
     &__content {
       height: 75%;
@@ -491,14 +495,14 @@
             }
 
             .forecastIcon {
-              @include forecastIcon();
+              @include mixins.forecastIcon();
             }
           }
         }
 
         &__weatherIcon {
           width: 50%;
-          @include align(end, flex-start);
+          @include mixins.align(end, flex-start);
 
           &__icon {
             font-size: 3.5em;
@@ -538,7 +542,7 @@
       margin: 1em 0;
 
       * {
-        @include btn-style();
+        @include mixins.btn-style();
         width: max-content;
       }
     }

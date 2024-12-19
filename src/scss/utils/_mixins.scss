@@ -1,3 +1,5 @@
+@use "variables";
+
 @mixin align($justify: start, $align: start) {
   justify-content: $justify;
   align-items: $align;
@@ -9,7 +11,7 @@
   background-attachment: fixed;
 }
 @mixin box-shadow {
-  box-shadow: 10px 10px 12px 2px $contentBackground;
+  box-shadow: 10px 10px 12px 2px variables.$contentBackground;
 }
 @mixin btn-style($border: none) {
   border: $border;
@@ -34,7 +36,7 @@
   border-left: none;
   border-right: none;
   border-top: none;
-  border-bottom: 1px solid $underline-input;
+  border-bottom: 1px solid variables.$underline-input;
   max-width: 100%;
   min-width: 0;
   overflow: hidden;

@@ -80,8 +80,9 @@ const searchYouTube = async query => {
 </template>
 
 <style media="screen" lang="scss">
-@import '@/scss/utils/mixins';
-@import '@/scss/utils/variables';
+@use '@/scss/utils/mixins';
+@use '@/scss/utils/variables';
+@use 'sass:color';
 
 .youtubeSearchContainer {
     align-items: center;
@@ -99,16 +100,16 @@ const searchYouTube = async query => {
     &__content {
         height: 85%;
         width: 100%;
-        @include align(flex-start, center);
-        @include flex-direction();
+        @include mixins.align(flex-start, center);
+        @include mixins.flex-direction();
         overflow: hidden;
 
         &__input {
-            @include input-style();
+            @include mixins.input-style();
         }
 
         &__results {
-            @include flex-direction();
+            @include mixins.flex-direction();
             height: 100%;
             width: 100%;
             margin-top: 1em;
@@ -120,7 +121,7 @@ const searchYouTube = async query => {
                 padding: 0.5em;
 
                 &:hover {
-                    background-color: opacify($contentBackground, 0.2);
+                    background-color: color.adjust(variables.$contentBackground, $alpha: .2);
                     border-radius: 1em;
                 }
 
@@ -132,7 +133,7 @@ const searchYouTube = async query => {
                 }
 
                 &__content {
-                    @include flex-direction();
+                    @include mixins.flex-direction();
                     width: 75%;
                     padding: 0 0.5em;
                     font-size: 1.1em;

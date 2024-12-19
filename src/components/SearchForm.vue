@@ -90,12 +90,12 @@ const handleQuery = async () => {
 </template>
 
 <style media="screen" lang="scss">
-@import '@/scss/utils/mixins';
-@import '@/scss/utils/variables';
+@use '@/scss/utils/mixins';
+@use '@/scss/utils/variables';
 
 .formContainer__container {
     height: 20%;
-    @include align(center, center);
+    @include mixins.align(center, center);
     position: sticky;
     top: 0;
     width: 100%;
@@ -111,21 +111,21 @@ const handleQuery = async () => {
         height: 100%;
         width: 100%;
         content: "";
-        @include background-image;
+        @include mixins.background-image;
         background-image: var(--wallpaperSource);
         filter: blur(5px);
     }
 
     .formContainer {
         width: 50%;
-        @include align(center, baseline);
-        @include flex-direction(column);
+        @include mixins.align(center, baseline);
+        @include mixins.flex-direction(column);
         background-color: white;
         padding: 0.5% 1%;
         border-radius: 2em;
         opacity: 0.7;
         margin: 3% 0 0;
-        box-shadow: 10px 10px 12px 2px $contentBackground;
+        box-shadow: 10px 10px 12px 2px variables.$contentBackground;
 
         @media (max-width: 720px) {
             width: 70%;
@@ -152,7 +152,7 @@ const handleQuery = async () => {
             }
 
             ::placeholder {
-                @include placeholder(black);
+                @include mixins.placeholder(black);
                 font-size: 1.2em;
             }
 
@@ -191,7 +191,7 @@ const handleQuery = async () => {
                 padding: 1% 0;
                 align-items: center;
                 width: 99%;
-                @include flex-direction(row);
+                @include mixins.flex-direction(row);
                 cursor: pointer;
 
                 &__icon {

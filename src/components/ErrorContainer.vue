@@ -10,6 +10,6 @@ const props = defineProps(['componentType', 'errorMsg']);
 </template>
 
 <style media="screen" lang="scss">
-@import '@/scss/utils/mixins';
-@import '@/scss/utils/variables';
+@use '@/scss/utils/mixins';
+@use '@/scss/utils/variables';
 </style>

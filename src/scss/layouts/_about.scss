@@ -1,17 +1,19 @@
+@use "../utils/mixins";
+
 .about__container {
   width: 100vw;
   height: 100vh;
   position: absolute;
   top: 0;
   left: 0;
-  @include align(center, center);
+  @include mixins.align(center, center);
   z-index: 1;
 
   &__child {
     width: 60%;
     height: max-content;
     border-radius: 0.5em;
-    @include box-shadow;
+    @include mixins.box-shadow;
     background-color: rgba(0, 0, 0, 0.8);
     flex-direction: column;
     @media(max-width: 1000px) {

@@ -1,7 +1,9 @@
+@use "../utils/mixins";
+
 .input {
-  @include input-style;
+  @include mixins.input-style;
 
   ::placeholder {
-    @include placeholder();
+    @include mixins.placeholder();
   }
 }

@@ -65,11 +65,11 @@ const SendContent = async () => {
 </template>
 
 <style media="screen" lang="scss">
-@import '@/scss/utils/mixins';
-@import '@/scss/utils/variables';
-@import '@/scss/components/button';
-@import '@/scss/components/input';
-@import '@/scss/components/select';
+@use '@/scss/utils/mixins';
+@use '@/scss/utils/variables';
+@use '@/scss/components/button';
+@use '@/scss/components/input';
+@use '@/scss/components/select';
 
 .addContent {
   flex-direction: column;
@@ -96,8 +96,8 @@ const SendContent = async () => {
   &__youtube {
     width: 100%;
     height: 100%;
-    @include align(center, center);
-    @include flex-direction;
+    @include mixins.align(center, center);
+    @include mixins.flex-direction;
   }
 
   &__youtube {
