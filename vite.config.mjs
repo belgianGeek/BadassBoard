@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import path from "path";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
+import AutoImport from 'unplugin-auto-import/vite';
+import { unheadComposablesImports } from 'unhead';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,6 +23,10 @@ export default defineConfig({
       'zlib'
     ],
     protocolImports: true
+  }), AutoImport({
+    imports: [
+      unheadComposablesImports[0],
+    ],
   })],
   resolve: {
     alias: {

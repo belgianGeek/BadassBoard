@@ -13,6 +13,12 @@ import ErrorContainer from '../components/ErrorContainer.vue';
 import SearchForm from '../components/SearchForm.vue';
 import YouTubeSearch from '../components/YouTubeSearch.vue';
 import Wallpaper from '../components/Wallpaper.vue';
+import { useHead } from 'unhead';
+
+// Configure the head
+useHead({
+  title: "My awesome dashboard"
+});
 
 let contentLength = containerStore.content.length;
 let contents = containerStore.content.containers;
@@ -20,28 +26,6 @@ let searchQuery = ref('');
 let sortedContents = computed(() => {
   return contents.sort((a, b) => a.index - b.index);
 });
-
-const getInvidiousInstanceHealth = async () => {
-  const res = await axios.get('https://api.invidious.io/instances.json?pretty=1&sort_by=health');
-  for (let i = 0; i < res.data.length; i++) {
-    if (res.data[i][1].monitor !== null) {
-      if (res.data[i][1].monitor['last_status'] === 200 && res.data[i][1].api) {
-        // Remove the final / if any
-        globalStore.addInvidiousInstance(res.data[i][1].uri.replace(/\/$/, ''));
-      }
-
-      if (i === res.data.length - 1) {
-        if (globalStore.invidiousInstances[0] === undefined) {
-          return 'Unable to retrieve Invidious instances health : instances health is unknown.';
-        } else {
-          return globalStore.invidiousInstances;
-        }
-      }
-    } else {
-      return `Monitoring data unavailable for instance ${res.data[i][0]}`;
-    }
-  }
-};
 
 const goToNextPage = async (containerId) => {
   sortedContents.value[containerId].containerPageNumber++;
@@ -103,7 +87,6 @@ const updateContent = async (content) => {
 
 onMounted(() => {
   containerStore.getContentLength();
-  getInvidiousInstanceHealth();
 });
 </script>
 
@@ -180,7 +163,10 @@ onMounted(() => {
           }" :href="article.link" v-for="[i, article] of content.feed.items.entries()">
             {{ article.title }}</a>
         </div>
-        <div class="pager flexRow" v-if="content.type === 'rss' && content.feed.items.length > 10">
+        <div v-if="content.type === 'rss' && content.feed.items.length > 10" class="pager flexRow" :class="{
+          hidden: content.isModified,
+          flexColumn: !content.isModified,
+        }">
           <p @click="goToPreviousPage(iContent)" :class="{
             hidden: content.isModified,
             flexColumn: !content.isModified,
@@ -266,6 +252,10 @@ onMounted(() => {
       margin: 0 .3em;
       cursor: pointer;
     }
+  }
+
+  .title a {
+    text-align: center;
   }
 
   &Nav {
