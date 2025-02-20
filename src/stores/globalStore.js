@@ -11,29 +11,17 @@ export const useGlobalStore = defineStore("global", {
       thumbnail: '',
       url: ''
     },
-    invidiousInstances: [],
     search: {
       query: ''
     },
     YTsearchResults: [],
     wallpaper: '/wallpaper.jpg'
-  }),
-  actions: {
-    addInvidiousInstance(instance) {
-      this.invidiousInstances.push(instance);
-      return ;
-    }
-  }
+  })
 });
 
 /*getters: {
-    getInvidiousInstances: (state) => {
-      state.invidiousInstances;
-    },
     getUserData: (state, payload) => {
       state.connectedUser = payload;
-    },
-    updateInvidiousInstances: (state, payload) => {
-      state.invidiousInstances = payload;
-    },
-  },*/
+    }
+    }
+  }*/

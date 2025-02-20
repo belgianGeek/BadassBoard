@@ -4,50 +4,35 @@ import axios from 'axios';
 
 const globalStore = useGlobalStore();
 let searchQuery = globalStore.search.query;
-let currentInstance = 0;
 
-const playAudio = async (invidiousInstance, videoId) => {
+const playAudio = async (videoId) => {
     // Display a loading animation
     globalStore.audio.url = `http://${window.location.hostname}:3000/#`;
     globalStore.audio.title = 'Loading...';
     globalStore.audio.thumbnail = `http://${window.location.hostname}:3000/loadingBar.gif`;
     globalStore.audio.isDisplayed = true;
 
-    const audioRequest = await axios.post(`http://${window.location.hostname}:3000/api/audio`, {
-        invidiousInstance: invidiousInstance,
-        videoId: videoId
-    });
+    const streamInfo = await axios.get(`http://${window.location.hostname}:3000/api/audio/info/${videoId}`);
 
-    // Prevent nackground requests when an API call is successfull by using the isPlaying property condition
-    if (audioRequest.data.success && !globalStore.audio.isPlaying) {
-        globalStore.audio.author = audioRequest.data.audio.author;
-        globalStore.audio.url = audioRequest.data.audio.url;
-        globalStore.audio.thumbnail = audioRequest.data.audio.thumbnail;
-        globalStore.audio.title = audioRequest.data.audio.title;
+    // Prevent background requests when an API call is successfull by using the isPlaying property condition
+    if (!globalStore.audio.isPlaying) {
+        globalStore.audio.author = streamInfo.data.audio.author;
+        globalStore.audio.url = `http://${window.location.hostname}:3000/api/audio/play/${videoId}`;
+        globalStore.audio.thumbnail = streamInfo.data.audio.thumbnail;
+        globalStore.audio.title = streamInfo.data.audio.title;
         globalStore.audio.isPlaying = true;
 
-        await axios
-            .get(globalStore.audio.url)
-            .catch(error => {
-                console.error(`An error occurred while loading the audio feed of "${globalStore.audio.author}, "${globalStore.audio.title}" :\n${error}`);
-            });
-
-            // Hide the player when the audio stream is ended
-            document.querySelector('#audio__player').onended = () => {
-                globalStore.audio.isDisplayed = false;
-                globalStore.audio.isPlaying = false;
-            };
-    } else {
-        console.error(`The Invidious instance ${invidiousInstance} did not fullfill the request.`, currentInstance, globalStore.invidiousInstances.length);
-        if (currentInstance < globalStore.invidiousInstances.length) {
+        // Hide the player when the audio stream is ended
+        document.querySelector('#audio__player').onended = () => {
+            globalStore.audio.isDisplayed = false;
             globalStore.audio.isPlaying = false;
-            playAudio(globalStore.invidiousInstances[currentInstance++], videoId);
-        } else {
-            console.error("No Invidious instance can fullfill this request.");
-        }
+        };
+    } else {
+        console.error(`An error occurred while getting the stream of the video ${videoId}... Check the server logs for details.`);
+        globalStore.audio.isPlaying = false;
     }
 
-    return audioRequest;
+    return streamInfo;
 }
 
 const handleQuery = async () => {
@@ -57,7 +42,7 @@ const handleQuery = async () => {
             let id = searchQuery.match(/[0-9A-Za-z_-]{11}/)[0];
 
             try {
-                playAudio(globalStore.invidiousInstances[currentInstance], id);
+                await playAudio(id);
             } catch (error) {
                 console.log(error);
             }

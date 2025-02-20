@@ -121,7 +121,8 @@ updateSettings();
 // App routes
 // require('./routes/chat')(app, io, settings);
 // require('./routes/download')(app, io);
-require("./routes/audio")(app);
+require("./routes/audioInfo")(app);
+require("./routes/audioPlay")(app);
 require("./routes/addContent")(app);
 require("./routes/content")(app);
 require("./routes/contentLength")(app);
