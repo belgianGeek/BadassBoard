@@ -15,7 +15,6 @@ module.exports = function (app) {
         success: true,
         audio: {
           title: info.videoDetails.title,
-          author: info.videoDetails.author.name,
           url: info.videoDetails.video_url,
           thumbnail: info.videoDetails.thumbnails[0].url
         },

@@ -97,8 +97,7 @@ onMounted(() => {
     <div class="msgContainer">
       <!-- <%= typeof msg != 'undefined' ? msg : '' %> -->
     </div>
-    <AudioPlayer v-if="globalStore.audio.isDisplayed" :author="globalStore.audio.author" :url="globalStore.audio.url"
-      :thumbnail="globalStore.audio.thumbnail" :title="globalStore.audio.title" />
+    <AudioPlayer v-if="globalStore.audio.isDisplayed" :url="globalStore.audio.url" :thumbnail="globalStore.audio.thumbnail" :title="globalStore.audio.title" :type="globalStore.audio.streamType" :currentStream="globalStore.audio.currentStreamNb" :totalStreams="globalStore.audio.totalStreamsNb" />
     <div class="contentContainers flexRow">
       <section :class="content.type + 'Container'" class="content flexColumn"
         v-for="[iContent, content] of sortedContents.entries()">

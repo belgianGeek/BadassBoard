@@ -5,7 +5,6 @@ export const useGlobalStore = defineStore("global", {
     /* connectedUser: {},
     date: new Date().toISOString().substring(0, 10),*/
     audio: {
-      author: '',
       currentStreamNb: 0,
       isDisplayed: false,
       isPlaying: false,
