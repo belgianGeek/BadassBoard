@@ -19,7 +19,8 @@
     "rss-parser": "^3.13.0",
     "sass": "^1.77.4",
     "vue": "^3.4.27",
-    "vue-router": "^4.3.2"
+    "vue-router": "^4.3.2",
+    "youtubei": "^1.6.7"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",
