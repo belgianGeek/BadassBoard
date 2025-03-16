@@ -1,17 +1,21 @@
 <script setup>
-const props = defineProps(['author', 'url', 'thumbnail', 'title']);
+const props = defineProps(['currentStream', 'url', 'thumbnail', 'title', 'totalStreams', 'type']);
 </script>
 
 <template>
     <div class="audio flexRow fixed" v-if="props.url">
+        <svg class="audio__leftSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24"
+            fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6" v-if="type === 'playlist'" />
+        </svg>
         <img class="audio__remove removeContentBtn flexRow" alt="Remove the audio player from the interface"
             src="@/scss/icons/interface/cross.svg" />
         <span class="audio__container flexRow">
             <div class="audio__container__msg flexRow">
                 <img :src="props.thumbnail" alt="">
                 <article>
-                    <p>{{ props.author }}</p>
-                    <p>{{ props.title }}</p>
+                    <p class="playlistStatus" v-if="props.type === 'playlist'">{{ props.currentStream + 1 }} / {{ props.totalStreams }}</p>
+                    <p class="title">{{ props.title }}</p>
                 </article>
             </div>
             <div class="audio__container__player flexRow">
@@ -20,6 +24,10 @@ const props = defineProps(['author', 'url', 'thumbnail', 'title']);
                 </audio>
             </div>
         </span>
+        <svg class="audio__rightSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24"
+            fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6" v-if="type === 'playlist'"/>
+        </svg>
     </div>
 </template>
 

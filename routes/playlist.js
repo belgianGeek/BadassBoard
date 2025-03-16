@@ -1,21 +1,48 @@
-const axios = require('axios');
+const fs = require("fs-extra");
+const path = require("path");
+const { Client } = require("youtubei");
+const youtubei = new Client();
 
-module.exports = function(app) {
-  app.post('/api/playlist', async (req, res) => {
-    if (res.data.error === undefined) {
-      fs.writeFile(path.join(__dirname, '../tmp', 'playlist.json'), JSON.stringify(res.data, null, 2), 'utf-8', (err) => {
-        if (err) throw err;
+module.exports = function (app) {
+  app.post("/api/audio/playlist/:id", async (req, res) => {
+    try {
+      const playlist = await youtubei.getPlaylist(req.params.id);
+      let playlistObj = {
+        id: playlist.id,
+        title: playlist.title,
+        videoCount: playlist.videoCount,
+        videos: [],
+      };
 
-        res.send({
-          success: true
+      for (const video of playlist.videos.items) {
+        playlistObj.videos.push({
+          channelID: video.channel.id,
+          channelName: video.channel.name,
+          duration: video.duration,
+          id: video.id,
+          thumbnails: video.thumbnails,
+          title: video.title,
         });
-      });
-    } else if (res.data.error !== undefined && res.data.error === 'Playlist is empty') {
+      }
+
+      await fs.writeFile(
+        path.join(__dirname, "../tmp", "playlist.json"),
+        JSON.stringify(playlistObj, null, 2),
+        "utf-8"
+      );
+
       res.send({
-        success: false
-      })
-    } else {
-      console.log(res.data.error);
+        success: true,
+        playlistInfo: playlistObj,
+      });
+    } catch (err) {
+      const errorStatement = `An error occurred while parsing a playlist : ${err}`;
+      console.error(errorStatement);
+
+      res.send({
+        success: false,
+        msg: errorStatement,
+      });
     }
   });
-}
+};

@@ -126,6 +126,7 @@ require("./routes/audioPlay")(app);
 require("./routes/addContent")(app);
 require("./routes/content")(app);
 require("./routes/contentLength")(app);
+require("./routes/playlist")(app);
 require("./routes/updateContent")(app, settings);
 require("./routes/ytSearch")(app);
 require("./routes/index")(app);

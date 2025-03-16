@@ -6,9 +6,12 @@ export const useGlobalStore = defineStore("global", {
     date: new Date().toISOString().substring(0, 10),*/
     audio: {
       author: '',
+      currentStreamNb: 0,
       isDisplayed: false,
       isPlaying: false,
+      streamType: '',
       thumbnail: '',
+      totalStreamsNb: 0,
       url: ''
     },
     search: {
