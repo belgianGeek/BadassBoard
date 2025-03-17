@@ -14,15 +14,26 @@ const getUserChoice = (event) => {
 }
 
 const SendContent = async () => {
-  const res = await axios.post(
-    `http://${window.location.hostname}:3000/api/content/add`, {
-    type: userChoice.value,
-    reference: content2add.value
-  });
+  let data = {};
+  
+  if (userChoice.value === 'youtubeSearch') {
+    data.type = userChoice.value
+  } else {
+    data = {
+      type: userChoice.value,
+      reference: content2add.value
+    };
+  }
 
-  containerStore.getContent(res.data.index);
+  const res = await axios.post(
+    `http://${window.location.hostname}:3000/api/content/add`, data);
+
+  containerStore.content.containers.push(res.data);
+  // containerStore.getContent(res.data.index);
   userChoice.value = '';
   isFormDisplayed = false;
+
+  containerStore.content.containers.sort((a, b) => a.index - b.index)
 };
 </script>
 
@@ -41,23 +52,24 @@ const SendContent = async () => {
         <option value="">Choose a field</option>
         <option value="rss">Add a feed</option>
         <option value="weather">Weather forecast</option>
-        <option value="YouTube">YouTube search box</option>
+        <option value="youtubeSearch">YouTube search box</option>
       </select>
-      <div v-show="userChoice == 'rss'" class="addContent__feed flex">
+      <div v-show="userChoice === 'rss'" class="addContent__feed flex">
         <input v-model="content2add" type="text" name="addContent__feed__input" class="addContent__feed__input input"
           placeholder="Enter a RSS feed URL">
       </div>
-      <div v-show="userChoice == 'weather'" class="addContent__weather flex">
+      <div v-show="userChoice === 'weather'" class="addContent__weather flex">
         <input v-model="content2add" type="text" name="addContent__weather__input"
           class="addContent__weather__input input" placeholder="Enter a location">
       </div>
-      <div v-show="userChoice == 'youtubeSearch'" class="addContent__youtube flex">
+      <div v-show="userChoice === 'youtubeSearch'" class="addContent__youtube flex">
         <p class="addContent__youtube__msg">Nothing to do here !</p>
         <p class="addContent__youtube__msg">Just click on the green button below <br>and you're all set, dude ! 😉
         </p>
       </div>
       <div v-show="userChoice !== ''" class="addContent__btnContainer flex">
-        <button @click="isFormDisplayed = false, content2add = '', userChoice = ''" class="addContent__cancelBtn btn btn--red">Bring me back !</button>
+        <button @click="isFormDisplayed = false, content2add = '', userChoice = ''"
+          class="addContent__cancelBtn btn btn--red">Bring me back !</button>
         <button @click="SendContent()" class="addContent__submitBtn btn btn--green">Ok, that's it</button>
       </div>
     </div>
