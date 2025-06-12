@@ -52,11 +52,33 @@ let settings = (settingsTemplate = {
 });
 
 // Create the settings file if it doesn't exist...
-functions.createSettingsFile(settingsPath, settingsTemplate);
 const updateSettings = () => {
-  // Update the settings variable with the new data
-  settings = fs.readFileSync(settingsPath, "utf-8");
-  settings = JSON.parse(settings);
+  fs.stat(settingsPath, (err) => {
+    if (err) {
+      if (err.code === "ENOENT") {
+        fs.writeFile(
+          settingsPath,
+          JSON.stringify(settingsTemplate, null, 2),
+          "utf-8",
+          (err) => {
+            if (err) {
+              console.log(`Error creating the settings file : ${err}`);
+            } else {
+              // Update the settings variable with the new data
+              settings = fs.readFileSync(settingsPath, "utf-8");
+              settings = JSON.parse(settings);
+            }
+          }
+        );
+      } else {
+        console.log(`Error retrieving settings : ${err}`);
+      }
+    } else {
+      // Update the settings variable with the new data
+      settings = fs.readFileSync(settingsPath, "utf-8");
+      settings = JSON.parse(settings);
+    }
+  });
 
   // Sort settings elements by element to avoid frontend bugs while adding new content
   // settings.elements.forEach((item, i) => {
