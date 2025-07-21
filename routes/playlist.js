@@ -1,3 +1,4 @@
+const { log } = require("console");
 const fs = require("fs-extra");
 const path = require("path");
 const { Client } = require("youtubei");
@@ -12,9 +13,9 @@ module.exports = function (app) {
         title: playlist.title,
         videoCount: playlist.videoCount,
         videos: [],
-      };
+      };      
 
-      for (const video of playlist.videos.items) {
+      for (const video of playlist.videos) {
         playlistObj.videos.push({
           channelID: video.channel.id,
           channelName: video.channel.name,
@@ -23,6 +24,7 @@ module.exports = function (app) {
           thumbnails: video.thumbnails,
           title: video.title,
         });
+        
       }
 
       await fs.writeFile(

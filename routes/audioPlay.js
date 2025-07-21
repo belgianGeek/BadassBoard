@@ -23,30 +23,30 @@ module.exports = function (app) {
       const end = rangeEnd ? parseInt(rangeEnd, 10) : contentLength - 1;
       const chunksize = end - start + 1;
 
-      const audioStream = ytdl(videoId, {
-        quality: "highestaudio",
-        range: { start, end },
-      });
+      try {
+        const audioStream = ytdl(videoId, {
+          quality: "highestaudio",
+          range: { start, end },
+        });
 
-      // Send the appropriate headers for a partial content response
-      res.writeHead(206, {
-        "Content-Range": `bytes ${start}-${end}/${contentLength}`,
-        "Accept-Ranges": "bytes",
-        "Content-Length": chunksize,
-        "Content-Type": "audio/mp4",
-      });
+        // Send the appropriate headers for a partial content response
+        res.writeHead(206, {
+          "Content-Range": `bytes ${start}-${end}/${contentLength}`,
+          "Accept-Ranges": "bytes",
+          "Content-Length": chunksize,
+          "Content-Type": "audio/mp4",
+        });
 
-      // Redirect the stream to the web interface
-      audioStream.pipe(res);
-
-      audioStream.on("error", (err) => {
+        // Redirect the stream to the web interface
+        audioStream.pipe(res);
+      } catch (error) {
         const errorStatement = `Error getting the audio stream : ${err.message}`;
         console.error(errorStatement);
         res.send({
           success: false,
           error: errorStatement,
         });
-      });
+      }
     } catch (error) {
       const errorStatement = `Error getting the audio feed : ${error.message}`;
       console.error(errorStatement);

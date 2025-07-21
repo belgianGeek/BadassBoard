@@ -8,6 +8,7 @@ export const useGlobalStore = defineStore("global", {
       currentStreamNb: 0,
       isDisplayed: false,
       isPlaying: false,
+      playlistData: [],
       streamType: '',
       thumbnail: '',
       totalStreamsNb: 0,

@@ -1,9 +1,12 @@
 <script setup>
 import { useGlobalStore } from '@/stores/globalStore';
 import axios from 'axios';
+import { ref } from 'vue';
 
 const globalStore = useGlobalStore();
 let searchQuery = globalStore.search.query;
+
+const axiosController = ref(new AbortController());
 
 const hideAudioPlayer = () => {
     document.querySelector('#audio__player').onended = () => {
@@ -12,41 +15,75 @@ const hideAudioPlayer = () => {
     };
 }
 
+const playNext = async () => {
+    if (axiosController.current) {
+        console.log("Next !");
+        
+        axiosController.current.abort();
+    }
+
+    globalStore.audio.currentStreamNb++;
+    await playAudio(globalStore.audio.playlistData.data.playlistInfo.videos[globalStore.audio.currentStreamNb].id, 'playlist');
+
+    if (globalStore.audio.currentStreamNb === globalStore.audio.playlistData.data.playlistInfo.videos.length - 1) {
+        document.querySelector('.audio__rightSvg').classList.add('hidden');
+    } else {
+        document.querySelector('.audio__rightSvg').classList.remove('hidden');
+    }
+}
+
 const playAudio = async (videoId, type = 'single') => {
+    // Create a new AbortController instance
+    if (axiosController.current) {
+        axiosController.current.abort();
+    }
+
+    axiosController.current = new AbortController();
+
     // Display a loading animation
     globalStore.audio.url = `http://${window.location.hostname}:3000/#`;
     globalStore.audio.title = 'Loading...';
     globalStore.audio.thumbnail = `http://${window.location.hostname}:3000/loadingBar.gif`;
     globalStore.audio.isDisplayed = true;
 
-    const streamInfo = await axios.get(`http://${window.location.hostname}:3000/api/audio/info/${videoId}`);
+    try {
+        const StreamInfoRequest = await axios.get(`http://${window.location.hostname}:3000/api/audio/info/${videoId}`, {
+            signal: axiosController.current.signal
+        });
 
-    // Prevent background requests when an API call is successfull by using the isPlaying property condition
-    // if (!globalStore.audio.isPlaying) {
-    globalStore.audio.url = `http://${window.location.hostname}:3000/api/audio/play/${videoId}`;
-    globalStore.audio.thumbnail = streamInfo.data.audio.thumbnail;
-    globalStore.audio.title = streamInfo.data.audio.title;
-    globalStore.audio.isPlaying = true;
-    // } else {
-    //     console.error(`An error occurred while getting the stream of the video ${videoId}... Check the server logs for details.`);
-    //     globalStore.audio.isPlaying = false;
-    // }
+        // Prevent background requests when an API call is successfull by using the isPlaying property condition
+        // if (!globalStore.audio.isPlaying) {
+        globalStore.audio.url = `http://${window.location.hostname}:3000/api/audio/play/${videoId}`;
+        globalStore.audio.thumbnail = StreamInfoRequest.data.audio.thumbnail;
+        globalStore.audio.title = StreamInfoRequest.data.audio.title;
+        globalStore.audio.isPlaying = true;
+        // } else {
+        //     console.error(`An error occurred while getting the stream of the video ${videoId}... Check the server logs for details.`);
+        //     globalStore.audio.isPlaying = false;
+        // }
 
-    if (type === 'single') {
-        // Hide the player when the audio stream is ended only when playing a single video
-        hideAudioPlayer();
-        globalStore.audio.streamType = 'single';
-    } else if (type === 'playlist') {
-        globalStore.audio.streamType = 'playlist';
+        if (type === 'single') {
+            // Hide the player when the audio stream is ended only when playing a single video
+            hideAudioPlayer();
+            globalStore.audio.streamType = 'single';
+        } else if (type === 'playlist') {
+            globalStore.audio.streamType = 'playlist';
 
-        if (globalStore.audio.currentStreamNb === 0) {
-            document.querySelector('.audio__leftSvg').classList.add('hidden');
-        } else {
-            document.querySelector('.audio__leftSvg').classList.remove('hidden');
+            if (globalStore.audio.currentStreamNb === 0) {
+                document.querySelector('.audio__leftSvg').classList.add('hidden');
+            } else {
+                document.querySelector('.audio__leftSvg').classList.remove('hidden');
+            }
+
+            // document.querySelector('.audio__rightSvg').addEventListener('click', () => {
+            //     axiosController.abort();
+            // });
         }
-    }
 
-    return streamInfo;
+        return StreamInfoRequest;
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 const handleQuery = async () => {
@@ -66,40 +103,23 @@ const handleQuery = async () => {
 
             try {
                 const playlistData = await axios.post(`http://${window.location.hostname}:3000/api/audio/playlist/${id}`);
-                console.log(playlistData);
+                globalStore.audio.playlistData = playlistData;
 
-                await playAudio(playlistData.data.playlistInfo.videos[0].id, 'playlist');
+                await playAudio(globalStore.audio.playlistData.data.playlistInfo.videos[0].id, 'playlist');
 
-                if (globalStore.audio.currentStreamNb < playlistData.data.playlistInfo.videos.length) {
-                    const playNext = async () => {
-                        globalStore.audio.currentStreamNb++;
-                        await playAudio(playlistData.data.playlistInfo.videos[globalStore.audio.currentStreamNb].id, 'playlist');
-
-                        if (globalStore.audio.currentStreamNb === playlistData.data.playlistInfo.videos.length - 1) {
-                            document.querySelector('.audio__rightSvg').classList.add('hidden');
-                        } else {
-                            document.querySelector('.audio__rightSvg').classList.remove('hidden');
-                        }
-                    }
-
-                    document.querySelector('#audio__player').onended = async () => {
-                        await playNext();
-                    };
-
-                    document.querySelector('#audio__player').onerror = async () => {
-                        await playNext();
-                    };
+                if (globalStore.audio.currentStreamNb < globalStore.audio.playlistData.data.playlistInfo.videos.length) {
+                    // document.querySelector('#audio__player').onended = async () => {
+                    //     await playNext();
+                    // };
 
                     document.querySelector('.audio__leftSvg').onclick = async () => {
                         globalStore.audio.currentStreamNb--;
-                        await playAudio(playlistData.data.playlistInfo.videos[globalStore.audio.currentStreamNb].id, 'playlist');
+                        await playAudio(globalStore.audio.playlistData.data.playlistInfo.videos[globalStore.audio.currentStreamNb].id, 'playlist');
                     };
 
-                    document.querySelector('.audio__rightSvg').onclick = async () => {
-                        await playNext();
-                    };
+                    ['ended', 'click'].forEach(event => document.querySelector('.audio__rightSvg').addEventListener(event, async () => await playNext()));
 
-                    globalStore.audio.totalStreamsNb = playlistData.data.playlistInfo.videoCount;
+                    globalStore.audio.totalStreamsNb = globalStore.audio.playlistData.data.playlistInfo.videoCount;
                 } else {
                     hideAudioPlayer();
                     globalStore.audio.currentStreamNb = 0;
