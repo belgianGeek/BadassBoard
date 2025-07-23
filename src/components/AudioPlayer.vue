@@ -1,5 +1,12 @@
 <script setup>
 const props = defineProps(['currentStream', 'url', 'thumbnail', 'title', 'totalStreams', 'type']);
+import { useGlobalStore } from '@/stores/globalStore';
+const globalStore = useGlobalStore();
+
+const hideAudioPlayer = () => {
+    globalStore.audio.isDisplayed = false;
+    globalStore.audio.isPlaying = false;
+}
 </script>
 
 <template>
@@ -9,12 +16,13 @@ const props = defineProps(['currentStream', 'url', 'thumbnail', 'title', 'totalS
             <path d="M15 18l-6-6 6-6" v-if="type === 'playlist'" />
         </svg>
         <img class="audio__remove removeContentBtn flexRow" alt="Remove the audio player from the interface"
-            src="@/scss/icons/interface/cross.svg" />
+            src="@/scss/icons/interface/cross.svg" @click="hideAudioPlayer()" />
         <span class="audio__container flexRow">
             <div class="audio__container__msg flexRow">
                 <img :src="props.thumbnail" alt="">
                 <article>
-                    <p class="playlistStatus" v-if="props.type === 'playlist'">{{ props.currentStream + 1 }} / {{ props.totalStreams }}</p>
+                    <p class="playlistStatus" v-if="props.type === 'playlist'">{{ props.currentStream + 1 }} / {{
+                        props.totalStreams }}</p>
                     <p class="title">{{ props.title }}</p>
                 </article>
             </div>
@@ -26,7 +34,7 @@ const props = defineProps(['currentStream', 'url', 'thumbnail', 'title', 'totalS
         </span>
         <svg class="audio__rightSvg" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24"
             fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 18l6-6-6-6" v-if="type === 'playlist'"/>
+            <path d="M9 18l6-6-6-6" v-if="type === 'playlist'" />
         </svg>
     </div>
 </template>
