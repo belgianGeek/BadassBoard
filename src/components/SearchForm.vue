@@ -8,6 +8,14 @@ let searchQuery = globalStore.search.query;
 
 const axiosController = ref(new AbortController());
 
+const axiosAbort = () => {
+    if (axiosController.current) {
+        axiosController.current.abort();
+    }
+
+    axiosController.current = new AbortController();
+}
+
 const hideAudioPlayer = () => {
     document.querySelector('#audio__player').onended = () => {
         globalStore.audio.isDisplayed = false;
@@ -16,11 +24,7 @@ const hideAudioPlayer = () => {
 }
 
 const playNext = async () => {
-    if (axiosController.current) {
-        console.log("Next !");
-        
-        axiosController.current.abort();
-    }
+    axiosAbort();
 
     globalStore.audio.currentStreamNb++;
     await playAudio(globalStore.audio.playlistData.data.playlistInfo.videos[globalStore.audio.currentStreamNb].id, 'playlist');
@@ -33,12 +37,8 @@ const playNext = async () => {
 }
 
 const playAudio = async (videoId, type = 'single') => {
-    // Create a new AbortController instance
-    if (axiosController.current) {
-        axiosController.current.abort();
-    }
-
-    axiosController.current = new AbortController();
+    // Abort any previous audio request and create a new AbortController
+    axiosAbort();
 
     // Display a loading animation
     globalStore.audio.url = `http://${window.location.hostname}:3000/#`;
@@ -51,16 +51,10 @@ const playAudio = async (videoId, type = 'single') => {
             signal: axiosController.current.signal
         });
 
-        // Prevent background requests when an API call is successfull by using the isPlaying property condition
-        // if (!globalStore.audio.isPlaying) {
         globalStore.audio.url = `http://${window.location.hostname}:3000/api/audio/play/${videoId}`;
         globalStore.audio.thumbnail = StreamInfoRequest.data.audio.thumbnail;
         globalStore.audio.title = StreamInfoRequest.data.audio.title;
         globalStore.audio.isPlaying = true;
-        // } else {
-        //     console.error(`An error occurred while getting the stream of the video ${videoId}... Check the server logs for details.`);
-        //     globalStore.audio.isPlaying = false;
-        // }
 
         if (type === 'single') {
             // Hide the player when the audio stream is ended only when playing a single video
@@ -74,10 +68,6 @@ const playAudio = async (videoId, type = 'single') => {
             } else {
                 document.querySelector('.audio__leftSvg').classList.remove('hidden');
             }
-
-            // document.querySelector('.audio__rightSvg').addEventListener('click', () => {
-            //     axiosController.abort();
-            // });
         }
 
         return StreamInfoRequest;
@@ -108,9 +98,9 @@ const handleQuery = async () => {
                 await playAudio(globalStore.audio.playlistData.data.playlistInfo.videos[0].id, 'playlist');
 
                 if (globalStore.audio.currentStreamNb < globalStore.audio.playlistData.data.playlistInfo.videos.length) {
-                    // document.querySelector('#audio__player').onended = async () => {
-                    //     await playNext();
-                    // };
+                    document.querySelector('#audio__player').onended = async () => {
+                        await playNext();
+                    };
 
                     document.querySelector('.audio__leftSvg').onclick = async () => {
                         globalStore.audio.currentStreamNb--;
